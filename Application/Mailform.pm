@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.7 2002/05/06 03:10:43 jesse Exp $
+# $Id: Mailform.pm,v 1.8 2002/05/06 11:15:35 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -7,7 +7,8 @@ use strict;
 
 
 # This is a CGI::Application module
-use base qw/CGI::Application/;
+use CGI::Application;
+@CGI::Application::Mailform::ISA = qw/CGI::Application/;
 
 
 # Required, but not enforced by Makefile.PL!

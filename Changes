@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.18 2002/05/06 03:10:43 jesse Exp $
+# $Id: Changes,v 1.19 2002/05/06 11:15:35 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -62,4 +62,7 @@ Revision history for Perl extension CGI::Application.
 	  gets the name of the run-mode as a parameter.  This would
 	  allow the user to perform some action based on the
 	  current run-mode.
+
+2.3   Mon May  6 07:12:09 EDT 2002
+	- Fixed minor bug in build system for older Perl versions.
 

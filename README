@@ -29,6 +29,7 @@ CHANGES SINCE VERSION 2.1:
   gets the name of the run-mode as a parameter.  This would
   allow the user to perform some action based on the
   current run-mode.
+- Fixed minor bug in build system for older Perl versions.
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 

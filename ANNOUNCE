@@ -1,4 +1,4 @@
-Version 2.2 of CGI::Application is now available via CPAN!
+Version 2.3 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -22,6 +22,7 @@ CHANGES SINCE VERSION 2.1:
   gets the name of the run-mode as a parameter.  This would
   allow the user to perform some action based on the
   current run-mode.
+- Fixed minor bug in build system for older Perl versions.
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 
@@ -59,4 +60,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.14 2002/05/06 03:10:43 jesse Exp $
+# $Id: ANNOUNCE,v 1.15 2002/05/06 11:15:35 jesse Exp $
