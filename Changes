@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.10 2001/05/21 03:49:49 jesse Exp $
+# $Id: Changes,v 1.11 2001/05/28 18:22:00 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -23,3 +23,7 @@ Revision history for Perl extension CGI::Application.
 	- All run modes may be referenced by method name, in addition to subref.
 	- Created cgiapp_init() hook to allow for inherited common behaviors.
 	- Fixed minor bugs in default values.
+
+1.31  Mon May 28 14:06:16 EDT 2001
+	- Updated docs to favor new name-based run-mode method references.
+

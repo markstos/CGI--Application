@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.12 2001/05/21 03:49:49 jesse Exp $
+# $Id: Application.pm,v 1.13 2001/05/28 18:22:00 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '1.3';
+$CGI::Application::VERSION = '1.31';
 
 
 use CGI;
@@ -444,8 +444,8 @@ Framework for building reusable web-applications
 	$self->start_mode('mode1');
 	$self->mode_param('rm');
 	$self->run_modes(
-		'mode1' => \&do_stuff,
-		'mode2' => \&do_more_stuff,
+		'mode1' => 'do_stuff',
+		'mode2' => 'do_more_stuff',
 		'mode3' => 'do_something_else'
 	);
   }
@@ -525,9 +525,9 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $self = shift;
 	$self->start_mode('mode1');
 	$self->run_modes(
-		'mode1' => \&showform,
-		'mode2' => \&showlist,
-		'mode3' => \&showdetail
+		'mode1' => 'showform',
+		'mode2' => 'showlist',
+		'mode3' => 'showdetail'
 	);
 
 	# Connect to DBI database
@@ -777,8 +777,8 @@ Your setup() method might be implemented something like this:
 		$self->tmpl_path('/path/to/my/templates/');
 		$self->start_mode('putform');
 		$self->run_modes({
-			'putform' => \&my_putform_func,
-			'postdata' => \&my_data_func
+			'putform'  => 'my_putform_func',
+			'postdata' => 'my_data_func'
 		});
 		$self->param('myprop1');
 		$self->param('myprop2', 'prop2value');
@@ -1004,7 +1004,7 @@ name as a key.  The value should be either a hard reference to the function whic
 you want to be called when the CGI enters the specified mode, or the 
 name of the function to be called:
 
-    'mode_name_by_ref' => \&mode_function
+    'mode_name_by_ref'  => \&mode_function
     'mode_name_by_name' => 'mode_function'
 
 The function specified is expected to return a block of text which 

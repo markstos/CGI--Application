@@ -8,6 +8,14 @@ if followed, will make your web software easier to design, easier to
 document, easier to write, and easier to evolve.
 
 
+CHANGES SINCE VERSION 1.2:
+- Enhanced capabilities for creating general superclasses for your projects.
+- All run modes may be referenced by method name, in addition to subref.
+- Created cgiapp_init() hook to allow for inherited common behaviors.
+- Fixed minor bugs in default values.
+- Updated docs to favor new name-based run-mode method references.
+
+
 HOW DO I INSTALL IT?
 
 To install this module, cd to the directory that contains this README
