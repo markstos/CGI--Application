@@ -22,8 +22,9 @@ sub mode1 {
 
 sub error {
     my $self = shift;
+    my ($error) = @_;
 
-    return "Success!";
+    return "Success! Received '$error'";
 }
 
 1;

@@ -4,7 +4,7 @@ package CGI::Application;
 use Carp;
 use strict;
 
-$CGI::Application::VERSION = '4.0_1';
+$CGI::Application::VERSION = '4.0_2';
 
 our %DEFAULT_HOOKS = (
                       init     => 'cgiapp_init',
@@ -1029,7 +1029,7 @@ croak().
  
 If the runmode dies for whatever reason, run() will see if you have set a
 value for error_mode(). If you have, run() will call that method 
-as a run mode.
+as a run mode, passing $@ as the only parameter.
 
 =back
 

@@ -11,6 +11,7 @@ Revision history for Perl extension CGI::Application.
     - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
     - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
     - Clarified Plug-in documentation (Timothy Appnel)
+    - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
 
 3.31 Sun Sep 26, 2004
     - Documentation clean-ups. No code changes. 

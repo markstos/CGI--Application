@@ -1,4 +1,4 @@
-use Test::More tests=>5;
+use Test::More tests=>6;
 
 # Include the test hierarchy
 use lib './test';
@@ -15,7 +15,8 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 {
     my $app = TestApp11->new;
     my $output = $app->run();
-    like($output, qr/Success!$/, "Errormode works");
+    like($output, qr/Success!/, "Errormode works");
+    like($output, qr/mode1 failed/, 'Errormode received $@ as value');
 }
 
 # Need to see what happens when error_mode itself fails
