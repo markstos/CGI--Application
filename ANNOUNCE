@@ -1,4 +1,4 @@
-Version 1.4 of CGI::Application is now available via CPAN!
+Version 2.0 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -14,6 +14,12 @@ CHANGES SINCE VERSION 1.31:
 - Run-modes may now return scalar-refs in addition to scalars.
 - Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
 - Updated MAJOR REVISION number to 2 -- new functionality deserves it.
+
+
+Read the recent "Using CGI::Application" article on Perl.com for an 
+overview of the module and its usage:
+
+  http://www.perl.com/pub/2001/06/05/cgi.html
 
 
 CGI::Application is intended to make it easier to create sophisticated,
@@ -45,4 +51,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.9 2001/06/25 03:01:19 jesse Exp $
+# $Id: ANNOUNCE,v 1.10 2001/06/25 03:05:20 jesse Exp $
