@@ -15,7 +15,7 @@ my $mf = CGI::Application::Mailform->new();
 #
 $mf->param( 'MAIL_FROM'   => 
 	$ENV{SERVER_ADMIN} || 
-	'webmaster@' . ($ENV{SERVER_NAME} || $ENV{HOSTNAME})   );
+	($ENV{USER} || 'webmaster') . '@' . ($ENV{HOSTNAME} || $ENV{SERVER_NAME})   );
 $mf->param( 'MAIL_TO'     => 'jesse@VM.COM' );
 $mf->param( 'SUCCESS_REDIRECT_URL' => 'thankyou.html' );
 $mf->param( 'FORM_FIELDS' => [qw/
