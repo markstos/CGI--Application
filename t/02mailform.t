@@ -2,8 +2,8 @@ use Test::More tests => 4;
 
 SKIP: {
 	# Check for Net::SMTP
-	eval { require Net::SwwMTP; };
-	skip("Net::SMTP is not installed.  CGI::Application::Mailform tests have been skipped.", 4)
+	eval { require Net::SMTP; };
+	skip("Net::SMTP is not installed.  CGI::Application::Mailform requires Net::SMTP.", 4)
 		if ($@);
 
 	# Can we even use this module?
