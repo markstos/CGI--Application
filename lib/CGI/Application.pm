@@ -1841,14 +1841,13 @@ Writing plug-ins is simple. Simply create a new package, and export the
 methods that you want to become part of a CGI::Application project. See
 L<CGI::Application::Plugin::ValidateRM> for an example.
 
-You only need to keep in mind that your extension should "play well with
-others". The method names exported should be unique. Also, additions to
-the CGI::Application object should be designed not to conflict with other
-potentional plug-ins. For that reason, it's recommended that you add a
-a hash key to the CGI::Application which reflects the name of your
-plug-in, such as:
+In order to avoid namespace conflicts within a CGI::Application object,
+plugin developers are recommended to use a unique prefix, such as the
+name of plugin package, when storing information. For instance:
 
- $self->{'Config::Simple'}
+ $app->{__PARAM} = 'foo'; # BAD! Could conflict.
+ $app->{'MyPlugin::Module::__PARAM'} = 'foo'; # Good.
+ $app->{'MyPlugin::Module'}{__PARAM} = 'foo'; # Good.
 
 =head2 Writing Advanced Plug-ins - Using callbacks
 
