@@ -7,7 +7,6 @@ use strict;
 $CGI::Application::VERSION = '4.0_2';
 
 our %DEFAULT_HOOKS = (
-                      init     => 'cgiapp_init',
                       prerun   => 'cgiapp_prerun',
                       postrun  => 'cgiapp_postrun',
                       teardown => 'teardown',
@@ -78,8 +77,7 @@ sub new {
 	# Call cgiapp_init() method, which may be implemented in the sub-class.
 	# Pass all constructor args forward.  This will allow flexible usage 
 	# down the line.
-  #$self->cgiapp_init(@args);
-	$self->call_hook('init', @args);
+  $self->cgiapp_init(@args);
 
 	# Call setup() method, which should be implemented in the sub-class!
 	$self->setup();
@@ -1886,7 +1884,7 @@ B<Callback Methods>
 
 The add_callback method allows you to register a callback
 function that is to be called at the given stage of execution.
-Valid hooks include 'init', 'prerun', 'postrun' and 'teardown',
+Valid hooks include 'prerun', 'postrun' and 'teardown',
 and possible a new hook defined using the new_hook method.
 
 The callback should be a reference to a subroutine.  The order

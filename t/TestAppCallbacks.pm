@@ -5,17 +5,12 @@ use strict;
 use CGI::Application;
 @TestAppCallbacks::ISA = qw(CGI::Application);
 
-sub cgiapp_init {
-    my $self = shift;
-    delete $ENV{'INIT_TEST'};
-    $self->new_hook('test_hook');
-    $self->add_callback('test_hook', \&callback);
-    $self->call_hook('test_hook');
-}
-
 sub cgiapp_prerun {
     my $self = shift;
     delete $ENV{'PRERUN_TEST'};
+    $self->new_hook('test_hook');
+    $self->add_callback('test_hook', \&callback);
+    $self->call_hook('test_hook');
 }
 
 sub cgiapp_postrun {
