@@ -1,0 +1,70 @@
+<html>
+	<head>
+		<title>CGI::Application::Mailform Example</title>
+		<meta name="description" content="CGI::Application::Mailform - A simple HTML form to email system.  CGI::Application::Mailform is a subclass of CGI::Application.  CGI::Application and CGI::Application::Mailform are Perl modules written by Jesse Erlbaum and are available at http://www.cpan.org/authors/id/J/JE/JERLBAUM/">
+		<meta name="keywords" content="CGI Application Mailform Example Email Mail Form CGI::Application Usage Example CGI::Application::Mailform Usage Example Jesse Erlbaum Vanguard Media Perl CPAN">
+	</head>
+	<body>
+		<h1>CGI::Application::Mailform Example</h1>
+
+		<h3>A simple HTML form to email system.</h3>
+
+		<p>CGI::Application::Mailform is a subclass of CGI::Application.  CGI::Application and
+			CGI::Application::Mailform are Perl modules written by Jesse Erlbaum and
+			are available at <a href="http://www.cpan.org/authors/id/J/JE/JERLBAUM/">http://www.cpan.org/authors/id/J/JE/JERLBAUM/</a></p>
+
+
+		<form action="mailform.cgi" method="POST">
+			<table border="1" cellspacing="0" cellpadding="5">
+				<tr>
+					<td align="right" valign="top">Name:</td>
+					<td><input type="textfield" name="name" size="40"></td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">Email Address:</td>
+					<td><input type="textfield" name="email" size="40"></td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">Company:</td>
+					<td><input type="textfield" name="company_name" size="40"></td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">Postal Address:</td>
+					<td><textarea name="postal_address" cols="40" rows="4"></textarea></td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">CGI::Application::Mailform is:</td>
+					<td><select name="mailform_is">
+							<option value="Pretty Swell">Pretty Swell
+							<option value="Earth Shattering">Earth Shattering
+							<option value="Mind Blowing">Mind Blowing
+							<option value="A Religious Experience">A Religious Experience
+					</select></td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">Perl is:</td>
+					<td>
+						<input type="radio" name="perl_is" value="great" checked>Great!
+						<input type="radio" name="perl_is" value="superfabulastic">SuperFabulastic!
+					</td>
+				</tr>
+
+				<tr>
+					<td align="right" valign="top">Would you like Jesse to sing you Happy Birthday?</td>
+					<td><input type="checkbox" name="sing_happy_bday" value="yes" checked>Yes, please!</td>
+				</tr>
+
+				<tr>
+					<td colspan="2" align="center"><input type="submit" name="submit"></td>
+				</tr>
+
+			</table>
+		</form>
+	</body>
+</html>
+
