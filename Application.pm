@@ -1,16 +1,17 @@
-# $Id: Application.pm,v 1.3 2000/07/06 12:22:03 jesse Exp $
+# $Id: Application.pm,v 1.4 2000/07/06 13:51:44 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.0';
+$VERSION = '0.1';
 
 
 use CGI;
 use CGI::Carp;
 use HTML::Template;
+
 
 
 
@@ -52,8 +53,6 @@ sub new {
 	# Set tmpl_path()
 	if (exists($rprops->{TMPL_PATH})) {
 		$self->tmpl_path($rprops->{TMPL_PATH});
-	} else {
-		$self->tmpl_path('./');
 	}
 
 	# Set up init param() values
@@ -80,7 +79,8 @@ sub run {
 	my $def_rm = $self->start_mode() || '';
 	my $rm = $q->param($rm_param) || $def_rm;
 
-	my $rmeth = $self->run_modes()->{$rm}
+	my %rmodes = ($self->run_modes());
+	my $rmeth = $rmodes{$rm}
 		|| croak("No function specified for run mode '$rm'");
 
 	my $output = $rmeth->($self);
@@ -101,10 +101,19 @@ sub run {
 
 sub setup {
 	my $self = shift;
+
+	$self->start_mode('start');
+	$self->run_modes(
+		'start' => \&dump_html,
+	);
 }
 
 
-sub teardown {}
+sub teardown {
+	my $self = shift;
+
+	# Nothing to shut down, yet!
+}
 
 
 
@@ -113,22 +122,129 @@ sub teardown {}
 ####  APPLICATION MODULE METHODS  ####
 ######################################
 
-sub dump {}
+sub dump {
+	my $self = shift;
+	my $output = '';
+
+	# Dump Params
+	$output .= "Query Parameters:\n";
+	my @params = $self->query->param();
+	foreach my $p (sort(@params)) {
+		my @data = $self->query->param($p);
+		my $data_str = "'".join("', '", @data)."'";
+		$output .= "\t$p => $data_str\n";
+	}
+
+	# Dump ENV
+	$output .= "\nQuery Environment:\n";
+	foreach my $ek (sort(keys(%ENV))) {
+		$output .= "\t$ek => '".$ENV{$ek}."'\n";
+	}
+
+	return $output;
+}
 
 
-sub dump_html {}
+sub dump_html {
+	my $self = shift;
+	my $output = '';
+
+	# Dump Params
+	$output .= "<P>\nQuery Parameters:<BR>\n<OL>\n";
+	my @params = $self->query->param();
+	foreach my $p (sort(@params)) {
+		my @data = $self->query->param($p);
+		my $data_str = "'<B>".join("</B>', '<B>", @data)."</B>'";
+		$output .= "<LI> $p => $data_str\n";
+	}
+	$output .= "</OL>\n";
+
+	# Dump ENV
+	$output .= "<P>\nQuery Environment:<BR>\n<OL>\n";
+	foreach my $ek (sort(keys(%ENV))) {
+		$output .= "<LI> $ek => '<B>".$ENV{$ek}."</B>'\n";
+	}
+	$output .= "</OL>\n";
+
+	return $output;
+}
 
 
-sub header_props {}
+sub header_props {
+	my $self = shift;
+	my (@data) = (@_);
+
+	# First use?  Create new __HEADER_PROPS!
+	$self->{__HEADER_PROPS} = {} unless (exists($self->{__HEADER_PROPS}));
+
+	my $rh_p = $self->{__HEADER_PROPS};
+
+	# If data is provided, set it!
+	if (scalar(@data)) {
+		# Is it a hash, or hash-ref?
+		if (ref($data[0]) eq 'HASH') {
+			# Make a copy
+			%$rh_p = %{$data[0]};
+		} elsif ((scalar(@data) % 2) == 0) {
+			# It appears to be a possible hash (even # of elements)
+			%$rh_p = @data;
+		} else {
+			croak("Odd number of elements passed to header_props().  Not a valid hash")
+		}
+	}
+
+	# If we've gotten this far, return the value!
+	return (%$rh_p);
+}
 
 
-sub header_type {}
+sub header_type {
+	my $self = shift;
+	my ($header_type) = @_;
+
+	# First use?  Create new __HEADER_TYPE!
+	$self->{__HEADER_TYPE} = 'header' unless (exists($self->{__HEADER_TYPE}));
+
+	# If data is provided, set it!
+	if (defined($header_type)) {
+		$header_type = lc($header_type);
+		croak("Invalid header type '$header_type'.  Header type must be 'header' or 'redirect'")
+			unless(($header_type eq 'header') || ($header_type eq 'redirect'));
+		$self->{__HEADER_TYPE} = $header_type;
+	}
+
+	# If we've gotten this far, return the value!
+	return $self->{__HEADER_TYPE};
+}
 
 
-sub load_tmpl {}
+sub load_tmpl {
+	my $self = shift;
+	my ($tmpl_file) = @_;
+
+	my $fq_tmpl_file = $self->tmpl_path() . $tmpl_file;
+
+	my $t = HTML::Template->new_file($fq_tmpl_file);
+
+	return $t;
+}
 
 
-sub mode_param {}
+sub mode_param {
+	my $self = shift;
+	my ($mode_param) = @_;
+
+	# First use?  Create new __MODE_PARAM!
+	$self->{__MODE_PARAM} = 'header' unless (exists($self->{__MODE_PARAM}));
+
+	# If data is provided, set it!
+	if (defined($mode_param)) {
+		$self->{__MODE_PARAM} = $mode_param;
+	}
+
+	# If we've gotten this far, return the value!
+	return $self->{__MODE_PARAM};
+}
 
 
 sub param {
@@ -138,29 +254,92 @@ sub param {
 	# First use?  Create new __PARAMS!
 	$self->{__PARAMS} = {} unless (exists($self->{__PARAMS}));
 
+	my $rp = $self->{__PARAMS};
+
 	# Return the list of param keys if no param is specified.
-	return (keys(%{$self->{__PARAMS}})) unless(defined($param));
+	return (keys(%$rp)) unless(defined($param));
 
 	# If a value is specified, set it!
 	if (defined($value)) {
-		$self->{__PARAMS}->{$param} = $value;
+		$rp->{$param} = $value;
 	}
 
-	# If we've goten this far, return the param value!
-	return $self->{__PARAMS}->{$param};
+	# If we've gotten this far, return the param value!
+	return $rp->{$param};
 }
 
 
-sub query {}
+sub query {
+	my $self = shift;
+
+	# First use?  Create new __QUERY_OBJ!
+	$self->{__QUERY_OBJ} = CGI->new() 
+		unless (exists($self->{__QUERY_OBJ}));
+
+	return $self->{__QUERY_OBJ};
+}
 
 
-sub run_modes {}
+sub run_modes {
+	my $self = shift;
+	my (@data) = (@_);
+
+	# First use?  Create new __RUN_MODES!
+	$self->{__RUN_MODES} = {} unless (exists($self->{__RUN_MODES}));
+
+	my $rr_m = $self->{__RUN_MODES};
+
+	# If data is provided, set it!
+	if (scalar(@data)) {
+		# Is it a hash, or hash-ref?
+		if (ref($data[0]) eq 'HASH') {
+			# Make a copy
+			%$rr_m = %{$data[0]};
+		} elsif ((scalar(@data) % 2) == 0) {
+			# It appears to be a possible hash (even # of elements)
+			%$rr_m = @data;
+		} else {
+			croak("Odd number of elements passed to run_modes().  Not a valid hash")
+		}
+	}
+
+	# If we've gotten this far, return the value!
+	return (%$rr_m);
+}
 
 
-sub start_mode {}
+sub start_mode {
+	my $self = shift;
+	my ($start_mode) = @_;
+
+	# First use?  Create new __START_MODE!
+	$self->{__START_MODE} = 'header' unless (exists($self->{__START_MODE}));
+
+	# If data is provided, set it!
+	if (defined($start_mode)) {
+		$self->{__START_MODE} = $start_mode;
+	}
+
+	# If we've gotten this far, return the value!
+	return $self->{__START_MODE};
+}
 
 
-sub tmpl_path {}
+sub tmpl_path {
+	my $self = shift;
+	my ($tmpl_path) = @_;
+
+	# First use?  Create new __TMPL_PATH!
+	$self->{__TMPL_PATH} = '' unless (exists($self->{__TMPL_PATH}));
+
+	# If data is provided, set it!
+	if (defined($tmpl_path)) {
+		$self->{__TMPL_PATH} = $tmpl_path;
+	}
+
+	# If we've gotten this far, return the value!
+	return $self->{__TMPL_PATH};
+}
 
 
 
@@ -175,9 +354,9 @@ sub _send_headers {
 	my $q = $self->query();
 
 	if ($self->header_type() =~ /redirect/i) {
-		print $q->redirect(%{$self->header_props()});
+		print $q->redirect($self->header_props());
 	} else {
-		print $q->header(%{$self->header_props()});
+		print $q->header($self->header_props());
 	}
 }
 
@@ -740,11 +919,15 @@ not defined.  Generally, this is the first time your application is executed.
 
 =item tmpl_path()
 
-    $webapp->tmpl_path('/path/to/some/templates');
+    $webapp->tmpl_path('/path/to/some/templates/');
 
 This access/mutator method sets the file path to the directory where the templates 
-are stored.  It is used by load_tmpl() to find the template files.  The default 
-value is "./" for the current directory.
+are stored.  It is used by load_tmpl() to find the template files.
+
+It is important to make sure your tmpl_path() ends with your operating system's
+directory delimiter ('/' for UNIX, '\' for windows, ':' for Macintosh, etc).  The 
+load_tmpl() method does not try to make sense of the various OS particularities -- 
+it simply prepends tmpl_path() to the file name passed to load_tmpl().
 
 
 =back
