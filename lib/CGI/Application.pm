@@ -1442,7 +1442,7 @@ sub mode_param {
 			# computer scientists like to start counting from zero. 
 			my $idx = $p{path_info} - 1;
 
-			# remove the leading slash
+			# remove the leading slash
 			$pi =~ s!^/!!;
 
 			# grab the requested field location
