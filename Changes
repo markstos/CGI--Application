@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.27 2003/03/01 23:42:26 jesse Exp $
+# $Id: Changes,v 1.28 2003/06/02 03:40:03 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -110,4 +110,12 @@ Revision history for Perl extension CGI::Application.
         - Changed dump_html default run-mode to be referenced by name 
           instead of sub-ref.  This allows dump_html() to be overridden 
           in sub-class.
-
+	- Added current run-mode to output of dump() and dump_html().
+	  (Thanks to Mark Stosberg for the suggestion.)
+	- Added example of doing an HTTP redirect (suggested by Sam Tregar)
+	- Fixed bug where non-CGI.pm query objects couldn't be set
+	  at initialization time via the new() method.  (Thanks to Steve 
+	  Hay for the catch.)
+        - Added header_type("none") to surpress HTTP header output.
+          (Thanks to Steve Comrie for the suggestion.)
+        - Numerous typos corrected in POD.

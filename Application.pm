@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.31 2003/03/01 23:41:30 jesse Exp $
+# $Id: Application.pm,v 1.32 2003/06/02 03:40:03 jesse Exp $
 
 package CGI::Application;
 
@@ -229,8 +229,13 @@ sub dump {
 	my $self = shift;
 	my $output = '';
 
+	# Dump run-mode
+	my $current_runmode = $self->get_current_runmode();
+	$current_runmode = "" unless (defined($current_runmode));
+	$output .= "Current Run-mode: '$current_runmode'\n";
+
 	# Dump Params
-	$output .= "Query Parameters:\n";
+	$output .= "\nQuery Parameters:\n";
 	my @params = $self->query->param();
 	foreach my $p (sort(@params)) {
 		my @data = $self->query->param($p);
@@ -251,6 +256,10 @@ sub dump {
 sub dump_html {
 	my $self = shift;
 	my $output = '';
+
+	# Dump run-mode
+	my $current_runmode = $self->get_current_runmode();
+	$output .= "<P>\nCurrent Run-mode: '<B>$current_runmode</B>'<BR>\n";
 
 	# Dump Params
 	$output .= "<P>\nQuery Parameters:<BR>\n<OL>\n";
@@ -305,14 +314,16 @@ sub header_type {
 	my $self = shift;
 	my ($header_type) = @_;
 
+        my @allowed_header_types = qw(header redirect none);
+
 	# First use?  Create new __HEADER_TYPE!
 	$self->{__HEADER_TYPE} = 'header' unless (exists($self->{__HEADER_TYPE}));
 
 	# If data is provided, set it!
 	if (defined($header_type)) {
 		$header_type = lc($header_type);
-		croak("Invalid header type '$header_type'.  Header type must be 'header' or 'redirect'")
-			unless(($header_type eq 'header') || ($header_type eq 'redirect'));
+		croak("Invalid header_type '$header_type'")
+			unless(grep { $_ eq $header_type } @allowed_header_types);
 		$self->{__HEADER_TYPE} = $header_type;
 	}
 
@@ -408,7 +419,7 @@ sub query {
 		my $new_query_obj;
 
 		# If data is provided, set it!  Otherwise, create a new one.
-		if (defined($query) && $query->isa('CGI')) {
+		if (defined($query)) {
 			$new_query_obj = $query;
 		} else {
 			$new_query_obj = $self->cgiapp_get_query();
@@ -532,11 +543,18 @@ sub _send_headers {
 	my $self = shift;
 	my $q = $self->query();
 
-	if ($self->header_type() =~ /redirect/i) {
+        my $header_type = $self->header_type();
+
+	if ($header_type eq 'redirect') {
 		return $q->redirect($self->header_props());
-	} else {
+	} elsif ($header_type eq 'header' ) {
 		return $q->header($self->header_props());
 	}
+
+        # Do nothing if header type eq "none".
+        croak ("Invalid header_type '$header_type'") unless ($header_type eq "none");
+
+        return;
 }
 
 
@@ -838,12 +856,12 @@ TMPL_PATH - This optional parameter adds value to the load_tmpl()
 method (specified below).  This sets a path using HTML::Template's
 C<path> option when you call load_tmpl() to get your HTML::Template
 object.  This run-time parameter allows you to further encapsulate
-instantiating templates, providing potential for more reusability.
+instantiating templates, providing potential for more re-usability.
 
 PARAMS        - This parameter, if used, allows you to set a number 
 of custom parameters at run-time.  By passing in different 
 values in different instance scripts which use the same application 
-module you can achieve a higher level of reusability.  For instance, 
+module you can achieve a higher level of re-usability.  For instance, 
 imagine an application module, "Mailform.pm".  The application takes 
 the contents of a HTML form and emails it to a specified recipient.
 You could have multiple instance scripts throughout your site which 
@@ -931,7 +949,7 @@ method to store state information about the application to the server.
 =item cgiapp_init()
 
 If implemented, this method is called automatically right before the
-setup() method is called.  This method provides an optional initalization
+setup() method is called.  This method provides an optional initialization
 hook, which improves the object-oriented characteristics of 
 CGI::Application.  The cgiapp_init() method receives, as its parameters,
 all the arguments which were sent to the new() method.
@@ -1090,14 +1108,29 @@ Understanding this relationship is important if you wish to manipulate
 the HTTP header properly.
 
 
-=item header_type([<'header' || 'redirect'>])
+=item header_type([<'header' || 'redirect' || 'none'>])
 
     $webapp->header_type('redirect');
 
-The header_type() method expects to be passed either 'header' or 'redirect'.
+The header_type() method expects to be passed either 'header', 'redirect', or 'none'.
 This method specifies the type of HTTP headers which should be sent back to 
 the browser.  If not specified, defaults is 'header'.  See the 
 header section of L<CGI> for details.
+
+To perform a redirect using CGI::Application (and CGI.pm), you would
+do the following:
+
+  sub some_redirect_mode {
+    my $self = shift;
+    my $new_url = "http://site/path/doc.html";
+    $self->header_type('redirect');
+    $self->header_props(-url=>$new_url);
+    return "Redirecting to $new_url";
+  }
+
+If you wish to suppress HTTP headers entirely (as might be the case if 
+you're working in a slightly more exotic environment), you can set
+header_type() to "none".  This will completely hide headers.
 
 
 =item load_tmpl()
@@ -1113,7 +1146,7 @@ If tmpl_path() has been specified, load_tmpl() will set the
 HTML::Template C<path> option to the path provided.  This further
 assists in encapsulating template usage.
 
-The load_tmpl() method will pass any extra paramaters sent to it directly to 
+The load_tmpl() method will pass any extra parameters sent to it directly to 
 HTML::Template->new_file().  This will allow the HTML::Template object to be 
 further customized:
 
@@ -1123,7 +1156,7 @@ further customized:
     );
 
 If your application requires more specialized behavior than this, you are
-encoraged to override load_tmpl() by implementing your own load_tmpl() 
+encouraged to override load_tmpl() by implementing your own load_tmpl() 
 in your CGI::Application sub-class application module.
 
 
@@ -1196,7 +1229,7 @@ multiple boards, each with a different topic and set of administrators.
 The new() method provides a shortcut for specifying a number of run-time
 parameters at once.  Internally, CGI::Application calls the param() 
 method to set these properties.  The param() method is a powerful tool for 
-greatly increasing your application's reusability.
+greatly increasing your application's re-usability.
 
 
 =item query()
@@ -1310,10 +1343,10 @@ a run-mode with the reserved name "AUTOLOAD":
 	"AUTOLOAD" => \&catch_my_exception
   );
 
-Before CGI::Application calls croak() it will check for the existance 
+Before CGI::Application calls croak() it will check for the existence 
 of a run-mode called "AUTOLOAD".  If specified, this run-mode will in 
-involked just like a regular run-mode, with one exception:  It will 
-receive, as an argument, the name of the run-mode which involked it:
+invoked just like a regular run-mode, with one exception:  It will 
+receive, as an argument, the name of the run-mode which invoked it:
 
   sub catch_my_exception {
 	my $self = shift;
@@ -1374,7 +1407,7 @@ For example, consider:
 
 
 In this example, the web user will be forced into the "login" run-mode
-unless they have aleady logged in.  The prerun_mode() method permits
+unless they have already logged in.  The prerun_mode() method permits
 a scalar text string to be set which overrides whatever the run-mode
 would otherwise be.
 
@@ -1469,6 +1502,7 @@ patches which have helped improve CGI::Application --
     Steve Comrie
     Darin McBride
     Eric Andreychek
+    Steve Hay
 
 
 Thanks also to all the members of the CGI-App mailing list!
