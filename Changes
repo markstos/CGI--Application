@@ -1,12 +1,20 @@
-# $Id: Changes,v 1.32 2004/02/04 16:42:12 mark Exp $
+# $Id: Changes,v 1.33 2004/02/14 02:36:47 mark Exp $
 
 Revision history for Perl extension CGI::Application.
 
-3.21  Wed Feb 4, 2003
+3.22  Fri Feb 13, 2004
+    - The nocgicarp flag introduced in 3.2 has now been removed due
+      to ill importing side effects. Instead, we now simply use Carp
+      instead of CGI::Carp. You must now explicitly load CGI::Carp if you want
+      it. Any code that used the brief-lived 'nocgicarp' feature will need to
+      be updated. 
+    - Support for run modes named '0'. (Josh Glover)
+
+3.21  Wed Feb 4, 2004
     - Updated some header tests to be compatible with old and new versions of CGI.pm, which
       handled the capitalization of the header differently. (Mark Stosberg) 
 
-3.2   Sat Jan 31, 2003  
+3.2   Sat Jan 31, 2004
     - header_add() has been added to allow setting extra headers, particularly cookies,
       after header_props has already been called (Cees Hek, Mark Stosberg)
     - CGI::Carp is now optional. See docs for details. (Steve Hay)

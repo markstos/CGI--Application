@@ -1,4 +1,4 @@
-Version 3.21 of CGI::Application is now available via CPAN!
+Version 3.22 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -24,6 +24,7 @@ CHANGES SINCE VERSION 3.1:
 - dump_html() is now properly HTML-escaped (podmaster, Brian Cassidy)
 - Migrated from Makefile.PL to Build.PL. Either can now be used for installation.
 - Updated 'Changes' file to put new releases on top.
+- Support for run modes named '0'. (Josh Glover)
 
 
 Read the article "Using CGI::Application" on Perl.com for an 
@@ -61,4 +62,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
-# $Id: ANNOUNCE,v 1.28 2004/02/04 16:42:38 mark Exp $
+# $Id: ANNOUNCE,v 1.29 2004/02/14 02:36:47 mark Exp $

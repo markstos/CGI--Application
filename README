@@ -32,6 +32,7 @@ CHANGES SINCE VERSION 3.1:
 - dump_html() is now properly HTML-escaped (podmaster, Brian Cassidy)
 - Migrated from Makefile.PL to Build.PL. Either can now be used for installation.
 - Updated 'Changes' file to put new releases on top.
+- Support for run modes named '0'. (Josh Glover)
 
 
 Read the article "Using CGI::Application" on Perl.com for an 

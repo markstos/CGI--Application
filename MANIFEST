@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.20 2004/01/31 23:33:10 mark Exp $
+# $Id: MANIFEST,v 1.21 2004/02/14 02:36:47 mark Exp $
 ANNOUNCE
 lib/CGI/Application.pm
 lib/CGI/Application/Mailform.pm
@@ -22,6 +22,7 @@ t/05arrayrefmodes.t
 t/06enhancement31.t
 t/07postrun.t
 t/08cgicarp.t
+t/09zerorm.t
 test/TestApp.pm
 test/TestApp2.pm
 test/TestApp3.pm
@@ -31,5 +32,6 @@ test/TestApp6.pm
 test/TestApp7.pm
 test/TestApp8.pm
 test/TestApp9.pm
+test/TestApp10.pm
 test/TestCGI.pm
 test/templates/test.tmpl
