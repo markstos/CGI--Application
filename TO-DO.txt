@@ -1,68 +1,13 @@
 TO-DO: Future additions to CGI::Application
 ===============================================
 
-"I have a suggestion for the CGI::App dump function. I suggest added
-the run mode called to the output. Yes, it must originate somewhere
-from the query or the environment info, but it would be nice to
-reality check the function that was actually called, once the
-application got through parsing it."  -- Mark Stosberg
-<mark@summersault.com>
+
+Separate CGI::Application::Mailform from CGI-App
 
 ---
 
-
-Add EXAMPLE for doing a redirect   -- Sam Tregar
-
-
----
-
-'Steve Hay' steve.hay@uk.radan.com --
-> Actually, it's also a shame that I can't just pass the 
-> Apache::Request 
-> object to CGI::Application::new() in the QUERY parameter.  I 
-> tried that, 
-> but it just ignores it (in the query() method) because it isn't a CGI 
-> object!
-
-That's a bug.  The restriction should have been removed when
-cgiapp_get_query() was added.  I'll fix that in the forthcoming release.
-It will only require a ref() in the next version.
+Release Apache::Application based on Apache::Request
+  o Wrapper class for CGI.pm compatibility.
 
 ---
 
-Steve Comrie <steve@contextsoftware.ca>:
-> what about considering a change to header_type() so that it accepts
-> 'header|redirect|none' .. that would seem to fix a lot of problems that some
-> people have been having as of late.
-
----
-
-Hi Steve --
-
-Steve Comrie <steve@contextsoftware.ca> wrote:
-> Thought I'd throw my 2 cents in on the issue. What about 
-> adding a method
-> callable in the setup routine along the same lines of 
-> mode_param & run_modes
-> that looks like:
-> 
-> $self->output_filter( 'name_of_output_filter_method' );
-
-I wanted to get some feedback from you and the list on this idea before
-I jump ahead with a post-run (aka, filter) hook.
-
-This idea you have would be in lieu of an overridable method,
-"cgiapp_postrun()".  An aspect of implementing cgiapp_postrun() as an
-overridable method is that it would allow a general set of behaviors to
-be easily implemented in a custom superclass, to be inherited by your
-apps.  In that sense it is the mirror of cgiapp_prerun().
-
-An output_filter() method, OTOH, would be more suited for making changes
-to an individual app, or making changes within the context of an
-individual run-mode.  You could probably use output_filter() to
-influence behavior via a custom superclass without much trouble, but it
-does not use the same idiom as cgiapp_prerun().
-
-Either way seems fine to me.  Both would be object methods, thereby
-getting access to all object methods and properties.  Does anyone have
-an opinion on this, or should I just flip a coin?  :-)
