@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.18 2001/08/11 19:08:33 jesse Exp $
+# $Id: Application.pm,v 1.19 2001/08/11 21:03:17 jesse Exp $
 
 package CGI::Application;
 
@@ -1105,7 +1105,7 @@ The run_modes() method may be called more than once.  Additional values passed
 into run_modes() will be added to the run-modes table.  In the case that an 
 existing run-mode is re-defined, the new value will override the existing value.
 This behavior might be useful for applications which are created via inheritance 
-fron another application, or some advanced application which modifies its
+from another application, or some advanced application which modifies its
 own capabilities based on user input.
 
 
