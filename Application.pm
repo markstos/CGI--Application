@@ -1,11 +1,11 @@
-# $Id: Application.pm,v 1.7 2000/07/12 02:54:52 jesse Exp $
+# $Id: Application.pm,v 1.8 2000/07/12 03:01:10 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.0';
+$VERSION = '1.1';
 
 
 use CGI;

@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.3 2000/07/11 03:15:07 jesse Exp $
+# $Id: test.pl,v 1.4 2000/07/12 03:01:10 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -45,7 +45,7 @@ if (($t3_output =~ /^Content\-Type\:\ text\/html/) && ($t3_output =~ /Query\ Env
 
 
 # Test 4: Instantiate CGI::Application sub-class.
-my $ta_obj = TestApp->new();
+my $ta_obj = TestApp->new(QUERY=>CGI->new(""));
 if ((ref($ta_obj) && $ta_obj->isa('CGI::Application'))) {
 	print "ok 4\n";
 } else {
