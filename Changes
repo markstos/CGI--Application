@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.14 2001/06/25 03:05:20 jesse Exp $
+# $Id: Changes,v 1.15 2001/08/11 18:43:47 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -35,3 +35,13 @@ Revision history for Perl extension CGI::Application.
 	- Run-modes may now return scalar-refs in addition to scalars.
 	- Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
 	- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
+
+2.1   Sat Aug 11 12:57:49 EDT 2001
+	- The param() method has been extended to allow multiple parameters
+	  to be set at one time, via a hash (or hashref).
+	- Fixed bug in run() method where a null-string run-mode would be
+	  considered valid.  A zero-length run-mode will now result in the 
+	  start_mode() being called.
+	  (Thanks to Mark Stosberg for the two preceding ideas!)
+	- The run_mode() method now may be called a subsequent time to 
+	  amend the list of run-modes.

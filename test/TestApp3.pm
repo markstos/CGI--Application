@@ -1,4 +1,4 @@
-# $Id: TestApp3.pm,v 1.1 2001/06/21 17:26:11 jesse Exp $
+# $Id: TestApp3.pm,v 1.2 2001/08/11 18:43:47 jesse Exp $
 
 package TestApp3;
 
@@ -18,7 +18,7 @@ sub setup {
 
 	$self->run_modes(
 		'subref_modeparam'	=> \&subref_modeparam_meth,
-		''			=> \&blank_mode,
+		'0'			=> \&blank_mode,
 		'default_mode'		=> \&default_mode_meth,
 	);
 }
@@ -28,7 +28,7 @@ sub set_up_runmode {
 	my $self = shift;
 
 	my $q = $self->query();
-	my $rm = $q->param('go_to_mode') || '';
+	my $rm = $q->param('go_to_mode');
 
 	return undef if ($rm eq 'undef_rm');
 

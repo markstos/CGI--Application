@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.16 2001/06/25 03:29:12 jesse Exp $
+# $Id: Application.pm,v 1.17 2001/08/11 18:43:47 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '2.0';
+$CGI::Application::VERSION = '2.1';
 
 
 use CGI;
@@ -98,7 +98,7 @@ sub run {
 
 	# If $rm undefined, use default (start) mode
 	my $def_rm = $self->start_mode() || '';
-	$rm = $def_rm unless (defined($rm));
+	$rm = $def_rm unless (defined($rm) && length($rm));
 
 	my %rmodes = ($self->run_modes());
 
@@ -320,23 +320,36 @@ sub mode_param {
 
 sub param {
 	my $self = shift;
-	my ($param, $value) = @_;
+	my (@data) = (@_);
 
 	# First use?  Create new __PARAMS!
 	$self->{__PARAMS} = {} unless (exists($self->{__PARAMS}));
 
 	my $rp = $self->{__PARAMS};
 
-	# Return the list of param keys if no param is specified.
-	return (keys(%$rp)) unless(defined($param));
-
-	# If a value is specified, set it!
-	if (defined($value)) {
-		$rp->{$param} = $value;
+	# If data is provided, set it!
+	if (scalar(@data)) {
+		# Is it a hash, or hash-ref?
+		if (ref($data[0]) eq 'HASH') {
+			# Make a copy, which augments the existing contents (if any)
+			%$rp = (%$rp, %{$data[0]});
+		} elsif ((scalar(@data) % 2) == 0) {
+			# It appears to be a possible hash (even # of elements)
+			%$rp = (%$rp, @data);
+		} elsif (scalar(@data) > 1) {
+			croak("Odd number of elements passed to param().  Not a valid hash");
+		}
+	} else {
+		# Return the list of param keys if no param is specified.
+		return (keys(%$rp));
 	}
 
-	# If we've gotten this far, return the param value!
-	return $rp->{$param};
+	# If exactly one parameter was sent to param(), return the value
+	if (scalar(@data) <= 2) {
+		my $param = $data[0];
+		return $rp->{$param};
+	}
+	return;  # Otherwise, return undef
 }
 
 
@@ -375,13 +388,13 @@ sub run_modes {
 	if (scalar(@data)) {
 		# Is it a hash, or hash-ref?
 		if (ref($data[0]) eq 'HASH') {
-			# Make a copy
-			%$rr_m = %{$data[0]};
+			# Make a copy, which augments the existing contents (if any)
+			%$rr_m = (%$rr_m, %{$data[0]});
 		} elsif ((scalar(@data) % 2) == 0) {
 			# It appears to be a possible hash (even # of elements)
-			%$rr_m = @data;
+			%$rr_m = (%$rr_m, @data);
 		} else {
-			croak("Odd number of elements passed to run_modes().  Not a valid hash")
+			croak("Odd number of elements passed to run_modes().  Not a valid hash");
 		}
 	}
 
@@ -986,8 +999,6 @@ be used as the value of the current run-mode.  E.g., a "mode param method":
 This would allow you to programmatically set the run-mode based on something 
 besides the value of a CGI parameter -- $ENV{PATH_INFO}, for example.
 
-(Thanks to Stephen Howard for this idea!)
-
 
 
 =item param()
@@ -1009,6 +1020,15 @@ specified, param() returns an array containing all the parameters which
 currently exist:
 
     my @all_params = $webapp->param();
+
+The param() method also allows you to set a bunch of parameters at once
+by passing in a hash (or hashref):
+
+    $webapp->param(
+        'key1' => 'val1',
+        'key2' => 'val2',
+        'key3' => 'val3',
+    );
 
 The param() method enables a very valuable system for 
 customizing your applications on a per-instance basis.  
@@ -1080,6 +1100,13 @@ An advantage of specifying your run-mode methods by reference instead of by name
 is performance.  Dereferencing a subref is faster than eval()-ing 
 a code block.  If run-time performance is a significant issue, specify
 your run-mode methods by reference and not by name.
+
+The run_modes() method may be called more than once.  Additional values passed 
+into run_modes() will be added to the run-modes table.  In the case that an 
+existing run-mode is re-defined, the new value will override the existing value.
+This behavior might be useful for applications which are created via inheritance 
+fron another application, or some advanced application which modifies its
+own capabilities based on user input.
 
 
 B<IMPORTANT NOTE ABOUT RUN-MODE METHODS>
@@ -1162,6 +1189,19 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
+B<More Reading>
+
+If you're interested in finding out more about CGI::Application, the 
+following article is available on Perl.com:
+
+  Using CGI::Application
+  http://www.perl.com/pub/a/2001/06/05/cgi.html
+
+Thanks to Simon Cozens and the O'Reilly network for publishing this
+article, and for the incredible value they provide to the Perl
+community!
+
+
 =head1 CREDITS
 
 Thanks go to my place of work, Vanguard Media (http://www.vm.com),
@@ -1173,6 +1213,16 @@ Many thanks to Sam Tregar (author of the most excellent
 HTML::Template module!) for his innumerable contributions 
 to this module over the past year, and most of all for getting 
 me off my ass to finally get this thing up on CPAN!
+
+
+The following people have contributed suggestions or patches
+which have helped improve CGI::Application --
+
+  Stephen Howard
+  Mark Stosberg
+
+Thanks!
+
 
 
 =head1 LICENSE

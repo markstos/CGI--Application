@@ -1,0 +1,14 @@
+
+=============
+
+
+
+EXAMPLE CODE:
+* Number guessing game?
+* Psudo-AI, 20-questions game?
+
+
+
+
+=============
+
