@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.32 2003/06/02 03:40:03 jesse Exp $
+# $Id: Application.pm,v 1.33 2003/06/02 12:33:54 jesse Exp $
 
 package CGI::Application;
 
@@ -142,18 +142,17 @@ sub run {
         my $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() };
         die "Error executing run mode '$rm': $@" if $@;
 
+        # Support scalar-ref for body return
+        my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
+
+        # Call cgiapp_postrun() hook
+        $self->cgiapp_postrun($bodyref);
+
 	# Set up HTTP headers
 	my $headers = $self->_send_headers();
 
 	# Build up total output
-	my $output = $headers;
-
-	# Support return as SCALARREF
-	if (ref($body) eq 'SCALAR') {
-		$output .= $$body;
-	} else {
-		$output .= $body;
-	}
+	my $output = $headers . $$bodyref;
 
 	# Send output to browser (unless we're in serious debug mode!)
 	unless ($ENV{CGI_APP_RETURN_ONLY}) {
@@ -199,6 +198,14 @@ sub cgiapp_prerun {
 	my $rm = shift;
 
 	# Nothing to prerun, yet!
+}
+
+
+sub cgiapp_postrun {
+	my $self = shift;
+	my $bodyref = shift;
+
+	# Nothing to postrun, yet!
 }
 
 
@@ -551,10 +558,11 @@ sub _send_headers {
 		return $q->header($self->header_props());
 	}
 
-        # Do nothing if header type eq "none".
+        # croak() if we have an unknown header type
         croak ("Invalid header_type '$header_type'") unless ($header_type eq "none");
 
-        return;
+        # Do nothing if header type eq "none".
+        return "";
 }
 
 
@@ -1025,6 +1033,58 @@ built on object-oriented inheritance.
 It is also possible, within your cgiapp_prerun() method, to change the
 run-mode of your application.  This can be done via the prerun_mode()
 method, which is discussed elsewhere in this POD.
+
+
+
+=item cgiapp_postrun()
+
+If implemented, this hook will be called after the run-mode method
+has returned its output, but before HTTP headers are generated.  This
+will give you an opportunity to modify the body and headers before they 
+are returned to the web browser.
+
+A typical use for this hook is pipelining the output of a CGI-Application 
+through a series of "filter" processors.  For example:
+
+  * You want to enclose the output of all your CGI-Applications in 
+    an HTML table in a larger page.
+
+  * Your run-modes return structured data (such as XML), which you
+    want to transform using a standard mechanism (such as XSLT).
+
+  * You want to post-process CGI-App output through another system,
+    such as HTML::Mason.
+
+  * You want to modify HTTP headers in a particular way across all
+    run-modes, based on particular criteria.
+
+The cgiapp_postrun() hook receives a reference to the output from
+your run-mode method, in addition to the CGI-App object.  A typical
+cgiapp_postrun() method might be implemented as follows:
+
+  sub cgiapp_postrun {
+    my $self = shift;
+    my $output_ref = shift;
+
+    # Enclose output HTML table
+    my $new_output = "<table border=1>";
+    $new_output .= "<tr><td> Hello, World! </td></tr>";
+    $new_output .= "<tr><td>". $$output_ref ."</td></tr>";
+    $new_output .= "</table>";
+
+    # Replace old output with new output
+    $output_ref = \$new_output;
+  }
+
+
+Obviously, with access to the CGI-App object you have full access to
+use all the methods normally available in a run-mode.  You could, for 
+example, use load_tmpl() to replace the static HTML in this example
+with HTML::Template.  You could change the HTTP headers (via 
+header_type() and header_props() methods) to set up a redirect.
+You could also use the objects properties to 
+apply changes only under certain circumstance, such as a in only 
+certain run-modes, and when a param() is a particular value.
 
 
 =item cgiapp_get_query()

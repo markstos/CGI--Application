@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.28 2003/06/02 03:40:03 jesse Exp $
+# $Id: Changes,v 1.29 2003/06/02 12:33:54 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -106,7 +106,7 @@ Revision history for Perl extension CGI::Application.
 	- Clarified license for module (GPL or Artistic).  Included
 	  licenses in distribution package.
 
-3.1   <date unspecified>
+3.1   Mon Jun  2 07:54:31 EDT 2003
         - Changed dump_html default run-mode to be referenced by name 
           instead of sub-ref.  This allows dump_html() to be overridden 
           in sub-class.
@@ -119,3 +119,6 @@ Revision history for Perl extension CGI::Application.
         - Added header_type("none") to surpress HTTP header output.
           (Thanks to Steve Comrie for the suggestion.)
         - Numerous typos corrected in POD.
+        - Added cgiapp_postrun() hook.  This hook allows run-mode output
+          to be "pipelined" through optional filters, modifying the
+          content and HTTP headers if so desired.

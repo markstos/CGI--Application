@@ -13,18 +13,26 @@ Download site for CGI::Application:
   http://www.cpan.org/authors/id/J/JE/JERLBAUM/
 
 
-CHANGES SINCE VERSION 2.6:
-- Changed run_modes() method to allow list of run-modes to be
-  designated via an array reference.  This will automatically
-  create a run-modes table which maps from a run-mode to a
-  run-mode method of the same name.  Bumped major revision
-  number to reflect this significant change in functionality.
-- Clarified license for module (GPL or Artistic).  Included
-  licenses in distribution package.
+CHANGES SINCE VERSION 3.0:
+- Changed dump_html default run-mode to be referenced by name 
+  instead of sub-ref.  This allows dump_html() to be overridden 
+  in sub-class.
+- Added current run-mode to output of dump() and dump_html().
+  (Thanks to Mark Stosberg for the suggestion.)
+- Added example of doing an HTTP redirect (suggested by Sam Tregar)
+- Fixed bug where non-CGI.pm query objects couldn't be set
+  at initialization time via the new() method.  (Thanks to Steve 
+  Hay for the catch.)
+- Added header_type("none") to surpress HTTP header output.
+  (Thanks to Steve Comrie for the suggestion.)
+- Numerous typos corrected in POD.
+- Added cgiapp_postrun() hook.  This hook allows run-mode output
+  to be "pipelined" through optional filters, modifying the
+  content and HTTP headers if so desired.
 
 
-Read the recent "Using CGI::Application" article on Perl.com for an 
-overview of the module and its usage:
+Read the article "Using CGI::Application" on Perl.com for an 
+overview of this module and its usage:
 
   http://www.perl.com/pub/a/2001/06/05/cgi.html
 
