@@ -1503,7 +1503,7 @@ sub mode_param {
 		%p = @_;
 		$mode_param = $p{param};
 
-		if ($p{path_info}) {
+		if ( $p{path_info} && $self->query->path_info() ) {
 			my $pi = $self->query->path_info();
 
 			# computer scientists like to start counting from zero. 

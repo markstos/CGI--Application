@@ -9,6 +9,7 @@ Revision history for Perl extension CGI::Application.
       CGI::Application::Plugin::Stream helps stream files to the browser
     - Documented return value of header_props()
     - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
+    - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
     - Clarified Plug-in documentation (Timothy Appnel)
 
 3.31 Sun Sep 26, 2004
