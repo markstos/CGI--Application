@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.29 2002/10/07 00:09:18 jesse Exp $
+# $Id: Application.pm,v 1.30 2003/02/01 07:46:11 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '2.6';
+$CGI::Application::VERSION = '3.0';
 
 
 use CGI::Carp;
@@ -432,10 +432,15 @@ sub run_modes {
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
-		# Is it a hash, or hash-ref?
+		# Is it a hash, hash-ref, or array-ref?
 		if (ref($data[0]) eq 'HASH') {
 			# Make a copy, which augments the existing contents (if any)
 			%$rr_m = (%$rr_m, %{$data[0]});
+		} elsif (ref($data[0]) eq 'ARRAY') {
+			# Convert array-ref into hash table
+			foreach my $rm (@{$data[0]}) {
+				$rr_m->{$rm} = $rm;
+			}
 		} elsif ((scalar(@data) % 2) == 0) {
 			# It appears to be a possible hash (even # of elements)
 			%$rr_m = (%$rr_m, @data);
@@ -1257,6 +1262,33 @@ This behavior might be useful for applications which are created via inheritance
 from another application, or some advanced application which modifies its
 own capabilities based on user input.
 
+The run_modes() method also supports a second interface for designating 
+run-modes and their methods:  Via array reference:
+
+    $webapp->run_modes([ 'mode1', 'mode2', 'mode3' ]);
+
+This is the same as the following, via hash:
+
+    $webapp->run_modes(
+        'mode1' => 'mode1',
+        'mode2' => 'mode2',
+        'mode3' => 'mode3'
+    );
+
+Often, it makes good organizational sense to have your run-modes map to
+methods of the same name.  The array-ref interface provides a shortcut 
+to that behavior while reducing verbosity of your code.
+
+Note that another importance of specifying your run-modes in either a 
+hash or array-ref is to assure that only those Perl methods which are 
+specifically designated may be called via your application.  Application
+environments which don't specify allowed methods and disallow all others
+are insecure, potentially opening the door to allowing execution of 
+arbitrary code.  CGI::Application maintains a strict "default-deny" stance
+on all method invocation, thereby allowing secure applications
+to be built upon it.
+
+
 
 B<IMPORTANT NOTE ABOUT RUN-MODE METHODS>
 
@@ -1448,10 +1480,31 @@ send a blank message to "cgiapp-subscribe@lists.erlbaum.net".)
 
 =head1 LICENSE
 
-Copyright (c) 2000, 2001, 2002, Jesse Erlbaum <jesse@erlbaum.net>
+CGI::Application : Framework for building reusable web-applications
+Copyright (C) 2000-2003 Jesse Erlbaum <jesse@erlbaum.net>
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This module is free software; you can redistribute it and/or modify it
+under the terms of either:
+
+a) the GNU General Public License as published by the Free Software
+Foundation; either version 1, or (at your option) any later version,
+
+or
+
+b) the "Artistic License" which comes with this module.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either
+the GNU General Public License or the Artistic License for more details.
+
+You should have received a copy of the Artistic License with this
+module, in the file ARTISTIC.  If not, I'll be glad to provide one.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
 
 
 =cut

@@ -1,12 +1,14 @@
-# $Id: MANIFEST,v 1.16 2002/10/07 00:09:18 jesse Exp $
+# $Id: MANIFEST,v 1.17 2003/02/01 07:46:11 jesse Exp $
 ANNOUNCE
 Application.pm
 Application/Mailform.pm
+ARTISTIC
 Changes
 Examples/Mailform/README
 Examples/Mailform/mailform.cgi
 Examples/Mailform/mailform.html
 Examples/Mailform/thankyou.html
+GPL
 MANIFEST
 Makefile.PL
 README
@@ -14,6 +16,7 @@ t/01cgiapp.t
 t/02mailform.t
 t/03prerun.t
 t/04getquery.t
+t/05arrayrefmodes.t
 test/TestApp.pm
 test/TestApp2.pm
 test/TestApp3.pm
@@ -21,5 +24,6 @@ test/TestApp4.pm
 test/TestApp5.pm
 test/TestApp6.pm
 test/TestApp7.pm
+test/TestApp8.pm
 test/TestCGI.pm
 test/templates/test.tmpl

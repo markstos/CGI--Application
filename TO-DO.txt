@@ -1,6 +1,4 @@
-Be more specific about licensing terms.
-	- Specify: Artistic license.
-	- Provide URL: http://www.perl.com/language/misc/Artistic.html
+TO-DO: Future additions to CGI::Application
+===============================================
 
-==============
 

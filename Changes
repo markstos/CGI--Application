@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.25 2002/10/07 11:36:56 jesse Exp $
+# $Id: Changes,v 1.26 2003/02/01 07:46:11 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -97,3 +97,11 @@ Revision history for Perl extension CGI::Application.
 	  that it is sufficiently compatible.  Thanks to Eric Andreychek
 	  for the suggestion and his help troubleshooting the code.
 
+3.0   Sat Feb  1 02:27:19 EST 2003
+	- Changed run_modes() method to allow list of run-modes to be 
+	  designated via an array reference.  This will automatically
+	  create a run-modes table which maps from a run-mode to a 
+	  run-mode method of the same name.  Bumped major revision
+	  number to reflect this significant change in functionality.
+	- Clarified license for module (GPL or Artistic).  Included
+	  licenses in distribution package.

@@ -1,4 +1,4 @@
-Version 2.6 of CGI::Application is now available via CPAN!
+Version 3.0 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -6,18 +6,14 @@ Download site for CGI::Application:
   http://www.cpan.org/authors/id/J/JE/JERLBAUM/
 
 
-CHANGES SINCE VERSION 2.5:
-- Changed the run() method to use Perl's built-in dynamic method
-  call for all run modes, whether by name or by code ref.  This
-  is intended to improve run-time performance somewhat.  Thanks 
-  to Darin McBride for this patch.
-- Added new override-able method cgiapp_get_query().  This method
-  is called when CGI::Application first needs access to the CGI
-  query object.  By default, this is a CGI.pm object.  It is 
-  possible to override the cgiapp_get_query() method to return 
-  an object of some other module besides CGI.pm, providing
-  that it is sufficiently compatible.  Thanks to Eric Andreychek
-  for the suggestion and his help troubleshooting the code.
+CHANGES SINCE VERSION 2.6:
+- Changed run_modes() method to allow list of run-modes to be
+  designated via an array reference.  This will automatically
+  create a run-modes table which maps from a run-mode to a
+  run-mode method of the same name.  Bumped major revision
+  number to reflect this significant change in functionality.
+- Clarified license for module (GPL or Artistic).  Included
+  licenses in distribution package.
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 
@@ -55,4 +51,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
-# $Id: ANNOUNCE,v 1.21 2002/10/07 11:36:56 jesse Exp $
+# $Id: ANNOUNCE,v 1.23 2003/02/01 07:48:05 jesse Exp $
