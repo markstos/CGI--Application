@@ -1,4 +1,4 @@
-# $Id: Build.PL,v 1.1 2004/01/31 23:33:10 mark Exp $
+# $Id: Build.PL,v 1.2 2004/02/14 02:09:17 mark Exp $
 use Module::Build;
 my $build = Module::Build->new
   (
@@ -8,6 +8,7 @@ my $build = Module::Build->new
        'CGI'            => 0, 
        'HTML::Template' => 0,
        'Test::More'     => 0,
+	'Carp'		=> 0,
        },
    'dist_author'        => 'Jesse Erlbaum <jesse@erlbaum.net>',
    'dist_abstract'      => 'Framework for building reusable web-applications',
