@@ -1751,6 +1751,10 @@ L<CGI::Application::Plugin::DBH> - Integration with DBI.
 
 L<CGI::Application::Plugin::Session> - Integration with L<CGI::Session>
 
+=item *
+
+L<CGI::Application::Plugin::Stream> - Help stream files to the browser
+
 =item * 
 
 L<CGI::Application::Plugin::TT> - Use L<Template::Toolkit> as an alternative to HTML::Template.

@@ -2,6 +2,10 @@
 
 Revision history for Perl extension CGI::Application.
 
+XXX
+    - Document new plug-in available: 
+      CGI::Application::Plugin::Stream helps stream files to the browser
+
 3.31 Sun Sep 26, 2004
     - Documentation clean-ups. No code changes. 
 
