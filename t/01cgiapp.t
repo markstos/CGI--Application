@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.5 2002/05/25 17:32:24 jesse Exp $
+# $Id: 01cgiapp.t,v 1.6 2002/05/26 23:18:47 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..21\n"; }
+BEGIN { $| = 1; print "1..19\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -26,7 +26,6 @@ use TestApp2;
 use TestApp3;
 use TestApp4;
 use TestApp5;
-use TestApp6;
 
 $ENV{CGI_APP_RETURN_ONLY} = 1;
 
@@ -409,37 +408,17 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 19-20: Test cgiapp_prerun()
+# Test 19: test use of TMPL_PATH without trailing slash
 {
-	my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
-	my $output = $ta_obj->run();
-
-	# Did the run-mode work?
-	if (($output =~ /^Content\-Type\:\ text\/html/) && ($output =~ /Hello\ World\:\ prerun\_test\ OK/)) {
+	my $t19_ta_obj = TestApp->new(TMPL_PATH=>'test/templates');
+	$t19_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
+	my $t19_output = $t19_ta_obj->run();
+	if (($t19_output =~ /^Content\-Type\:\ text\/html/) && ($t19_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
 		print "ok 19\n";
 	} else {
 		print "not ok 19\n";
 	}
-
-	# Did the cgiapp_prerun work?
-	if ($ta_obj->param('PRERUN_RUNMODE') eq 'prerun_test') {
-		print "ok 20\n";
-	} else {
-		print "not ok 20\n";
-	}
 }
 
-
-# Test 21: test use of TMPL_PATH without trailing slash
-{
-	my $t21_ta_obj = TestApp->new(TMPL_PATH=>'test/templates');
-	$t21_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
-	my $t21_output = $t21_ta_obj->run();
-	if (($t21_output =~ /^Content\-Type\:\ text\/html/) && ($t21_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
-		print "ok 21\n";
-	} else {
-		print "not ok 21\n";
-	}
-}
 
 # All done!
