@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.6 2002/05/26 23:18:47 jesse Exp $
+# $Id: 01cgiapp.t,v 1.7 2002/10/07 00:09:18 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -18,6 +18,9 @@ print "ok 1\n";
 # Insert your test code below (better if it prints "ok 13"
 # (correspondingly "not ok 13") depending on the success of chunk 13
 # of the test code):
+
+# Need CGI.pm for tests
+use CGI;
 
 # bring in testing hierarchy
 use lib './test';

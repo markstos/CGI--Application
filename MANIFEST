@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.15 2002/05/26 23:18:47 jesse Exp $
+# $Id: MANIFEST,v 1.16 2002/10/07 00:09:18 jesse Exp $
 ANNOUNCE
 Application.pm
 Application/Mailform.pm
@@ -13,10 +13,13 @@ README
 t/01cgiapp.t
 t/02mailform.t
 t/03prerun.t
+t/04getquery.t
 test/TestApp.pm
 test/TestApp2.pm
 test/TestApp3.pm
 test/TestApp4.pm
 test/TestApp5.pm
 test/TestApp6.pm
+test/TestApp7.pm
+test/TestCGI.pm
 test/templates/test.tmpl

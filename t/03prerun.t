@@ -1,5 +1,8 @@
 use Test::More tests => 10;
 
+# Need CGI.pm for tests
+use CGI;
+
 # Include the test hierarchy
 use lib './test';
 

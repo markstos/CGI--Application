@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.23 2002/09/28 13:10:18 jesse Exp $
+# $Id: Changes,v 1.24 2002/10/07 00:09:18 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -89,3 +89,11 @@ Revision history for Perl extension CGI::Application.
 	  call for all run modes, whether by name or by code ref.  This
 	  is intended to improve run-time performance somewhat.  Thanks 
 	  to Darin McBride for this patch!
+	- Added new override-able method cgiapp_get_query().  This method
+	  is called when CGI::Application first needs access to the CGI
+	  query object.  By default, this is a CGI.pm object.  It is 
+	  possible to override the cgiapp_get_query() method to return 
+	  an object of some other module besides CGI.pm, providing
+	  that it is sufficiently compatible.  Thanks to Eric Andreychek
+	  for the suggestion and his help troubleshooting the code.
+
