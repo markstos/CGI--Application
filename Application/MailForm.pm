@@ -1,18 +1,60 @@
-# $Id: MailForm.pm,v 1.1 2001/08/19 16:13:18 jesse Exp $
+# $Id: MailForm.pm,v 1.2 2001/08/19 16:38:08 jesse Exp $
+
 package CGI::Application::MailForm;
+
+# Always use strict!
 use strict;
+
 
 # This is a CGI::Application module
 use base 'CGI::Application';
+
+
 
 # Required, but not enforced by Makefile.PL!
 use Net::SMTP;
 
 
+
+
+#############################################
+##  OVERRIDE METHODS
+##
+
 sub setup {
+	my $self = shift;
+
+	$self->start_mode('sendmail');
+	$self->run_modes(
+		'sendmail' => 'sendmail',
+	);
 }
 
 
+
+#############################################
+##  RUN-MODE METHODS
+##
+
+sub sendmail {
+	my $self = shift;
+
+	return $self->dump_html();
+}
+
+
+
+#############################################
+##  PRIVATE METHODS
+##
+
+
+
+
+
+#############################################
+##  POD
+##
 
 =pod
 

@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.15 2001/08/11 18:43:47 jesse Exp $
+# $Id: Changes,v 1.16 2001/08/19 16:38:08 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -45,3 +45,17 @@ Revision history for Perl extension CGI::Application.
 	  (Thanks to Mark Stosberg for the two preceding ideas!)
 	- The run_mode() method now may be called a subsequent time to 
 	  amend the list of run-modes.
+
+2.2   Sun Aug 19 12:20:21 EDT 2001
+	- Added new module CGI::Application::MailForm as both an 
+	  example of how to use CGI::Application and a useful
+	  (albeit simple) reusable web-based application.
+	- CGI::Application::MailForm allows the contents of 
+	  data submitted through HTML forms to be easily sent
+	  via email to a specified recipient.  This application 
+	  is intended to be very easy to reuse, yet secure
+	  and functional enough to replace some of the most
+	  onerous "mailform" scripts which have been floating
+	  around the Internet for ages. 
+
+
