@@ -1,16 +1,72 @@
 * Decouple CGI.pm from CGI::Application via encapsulation.
 
-==============
+  - Provide a means of gluing in a different module besides CGI.pm
+  - Compatibility is *ENTIRELY* in the hands of the developer.
+  - If a CGI.pm-wannabe is slightly incompatible, the developer
+    should create a wrapper class.
 
-* Provide a means through which cgiapp_prerun() can be used to 
-change the run-mode.
 
-Possibly propagate the run-mode to a paramater ('CGIAPP_RUNMODE'), 
-and then re-load run-mode from that parameter after cgiapp_prerun()
-has been called.
-
-This would allow behaviors to be "stacked".
 
 ==============
 
+Add patch from Darin McBride [darin@naboo.to.org] (Tue 9/24/2002 12:42 AM):
 
+
+----START---->
+diff -Naur CGI-Application-2.5/Application.pm CGI-Application-2.6/Application.pm
+--- CGI-Application-2.5/Application.pm  Thu Jul 18 05:50:20 2002
++++ CGI-Application-2.6/Application.pm  Mon Sep 23 19:06:33 2002
+@@ -4,7 +4,7 @@
+ 
+ use strict;
+ 
+-$CGI::Application::VERSION = '2.5';
++$CGI::Application::VERSION = '2.6';
+ 
+ 
+ use CGI;
+@@ -142,19 +142,8 @@
+        }
+ 
+        # Process run mode!
+-       my $body;
+-       if (ref($rmeth) eq 'CODE') {
+-               if ($autoload_mode) {
+-                       $body = $rmeth->($self, $rm);
+-               } else {
+-                       $body = $rmeth->($self);
+-               }
+-       } else {
+-               my $meth_call = '$self->' . $rmeth;
+-               $meth_call .= '($rm)' if ($autoload_mode);
+-               $body = eval($meth_call);
+-               die ("Error executing run mode '$rm'.  Eval of code '$meth_call' resulted in error: " . $@) if ($@);
+-       }
++        my $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() };
++        die "Error executing run mode '$rm': $@" if $@;
+ 
+        # Set up HTTP headers
+        my $headers = $self->_send_headers();
+@@ -1222,8 +1211,9 @@
+ 
+ An advantage of specifying your run-mode methods by reference instead of by name 
+ is performance.  Dereferencing a subref is faster than eval()-ing 
+-a code block.  If run-time performance is a significant issue, specify
+-your run-mode methods by reference and not by name.
++a code block.  If run-time performance is a critical issue, specify
++your run-mode methods by reference and not by name.  The speed differences
++are generally small, however, so specifying by name is preferred.
+ 
+ The run_modes() method may be called more than once.  Additional values passed 
+ into run_modes() will be added to the run-modes table.  In the case that an 
+diff -Naur CGI-Application-2.5/Changes CGI-Application-2.6/Changes
+--- CGI-Application-2.5/Changes Thu Jul 18 05:50:20 2002
++++ CGI-Application-2.6/Changes Mon Sep 23 19:04:09 2002
+@@ -84,3 +84,6 @@
+          To subscribe: cgiapp-subscribe@lists.erlbaum.net
+          To post message: cgiapp@lists.erlbaum.net
+ 
++2.6   Mon Sep 23 21:06:05 EDT 2002
++        - Changed the run() method to use Perl's built-in dynamic method
++          call for all run modes, whether by name or by code ref.
+<----END----
