@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.4 2002/05/06 11:52:13 jesse Exp $
+# $Id: 01cgiapp.t,v 1.5 2002/05/25 17:32:24 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..20\n"; }
+BEGIN { $| = 1; print "1..21\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -430,6 +430,16 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-
+# Test 21: test use of TMPL_PATH without trailing slash
+{
+	my $t21_ta_obj = TestApp->new(TMPL_PATH=>'test/templates');
+	$t21_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
+	my $t21_output = $t21_ta_obj->run();
+	if (($t21_output =~ /^Content\-Type\:\ text\/html/) && ($t21_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
+		print "ok 21\n";
+	} else {
+		print "not ok 21\n";
+	}
+}
 
 # All done!

@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.23 2002/05/06 11:15:35 jesse Exp $
+# $Id: Application.pm,v 1.24 2002/05/25 17:32:24 jesse Exp $
 
 package CGI::Application;
 
@@ -306,10 +306,23 @@ sub load_tmpl {
 	my $self = shift;
 	my ($tmpl_file, @extra_params) = @_;
 
-	my $fq_tmpl_file = $self->tmpl_path() . $tmpl_file;
+	# add tmpl_path to path array of one is set, otherwise add a path arg
+	if (my $tmpl_path = $self->tmpl_path) {
+	        my $found = 0;
+	        for( my $x = 0; $x < @extra_params; $x += 2 ) {
+		        if ($extra_params[$x] eq 'path' and 
+		            ref $extra_params[$x+1]     and
+		            ref $extra_params[$x+1] eq 'ARRAY') {
+		                unshift @{$extra_params[$x+1]}, $tmpl_path;
+		                $found = 1;
+		                last;
+		        }
+		}
+	    push(@extra_params, path => [ $tmpl_path ]) unless $found;
+	}
 
 	require HTML::Template;
-	my $t = HTML::Template->new_file($fq_tmpl_file, @extra_params);
+	my $t = HTML::Template->new_file($tmpl_file, @extra_params);
 
 	return $t;
 }
@@ -773,12 +786,11 @@ new() may take a set of parameters as key => value pairs:
 
 This method may take some specific parameters:
 
-TMPL_PATH     - This optional parameter adds value to the load_tmpl() 
-method (specified below).  This sets a path which is prepended to 
-all the filenames specified when you call load_tmpl() to get your 
-HTML::Template object.  This run-time parameter allows you to 
-further encapsulate instantiating templates, providing potential 
-for more reusability.
+TMPL_PATH - This optional parameter adds value to the load_tmpl()
+method (specified below).  This sets a path using HTML::Template's
+C<path> option when you call load_tmpl() to get your HTML::Template
+object.  This run-time parameter allows you to further encapsulate
+instantiating templates, providing potential for more reusability.
 
 PARAMS        - This parameter, if used, allows you to set a number 
 of custom parameters at run-time.  By passing in different 
@@ -1020,9 +1032,9 @@ HTML::Template object.  The HTML::Template->new_file() constructor
 is used for create the object.  Refer to L<HTML::Template> for specific usage
 of HTML::Template.
 
-If tmpl_path() has been specified, load_tmpl() will prepend the tmpl_path()
-property to the filename provided.  This further assists in encapsulating 
-template usage.
+If tmpl_path() has been specified, load_tmpl() will set the
+HTML::Template C<path> option to the path provided.  This further
+assists in encapsulating template usage.
 
 The load_tmpl() method will pass any extra paramaters sent to it directly to 
 HTML::Template->new_file().  This will allow the HTML::Template object to be 
@@ -1224,14 +1236,9 @@ not defined.  Generally, this is the first time your application is executed.
 
     $webapp->tmpl_path('/path/to/some/templates/');
 
-This access/mutator method sets the file path to the directory where the templates 
-are stored.  It is used by load_tmpl() to find the template files.
-
-It is important to make sure your tmpl_path() ends with your operating system's
-directory delimiter ('/' for UNIX, '\' for windows, ':' for Macintosh, etc).  The 
-load_tmpl() method does not try to make sense of the various OS particularities -- 
-it simply prepends tmpl_path() to the file name passed to load_tmpl().
-
+This access/mutator method sets the file path to the directory where
+the templates are stored.  It is used by load_tmpl() to find the
+template files, using HTML::Template's C<path> option.
 
 =back
 
