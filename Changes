@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.20 2002/05/25 17:37:42 jesse Exp $
+# $Id: Changes,v 1.21 2002/05/26 23:26:32 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -71,5 +71,12 @@ Revision history for Perl extension CGI::Application.
 	- Modified tmpl_path() to propagate to HTML::Template's PATH
 	  parameter.  This provides much more useful and intuitive 
 	  behavior.  Thanks to Sam Tregar for the patch!
-
+	- Added prerun_mode() method to allow the run-mode to be
+	  dynamically changed inside the cgiapp_prerun() method.  
+	  Thanks to Steve Comrie for the suggestion of using a 
+	  method call for this function.  Thanks to many other list 
+	  members for further refining this idea.
+	- Refactored some test cases, general code clean-up.
+	- Refactored POD a bit to make it less intimidating for
+	  new users.
 
