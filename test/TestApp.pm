@@ -1,10 +1,12 @@
-# $Id: TestApp.pm,v 1.2 2000/07/11 03:15:07 jesse Exp $
+# $Id: TestApp.pm,v 1.3 2000/07/18 21:04:46 jesse Exp $
 
 package TestApp;
 
 use strict;
 
-use base 'CGI::Application';
+
+use CGI::Application;
+@TestApp::ISA = qw(CGI::Application);
 
 
 sub setup {
@@ -19,6 +21,7 @@ sub setup {
 		'redirect_test' => \&redirect_test,
 		'cookie_test'   => \&cookie_test,
 		'tmpl_test'     => \&tmpl_test,
+		'tmpl_badparam_test'     => \&tmpl_badparam_test,
 	);
 
 	$self->param('last_orm', 'setup');
@@ -75,6 +78,20 @@ sub tmpl_test {
 
 	my $t = $self->load_tmpl('test.tmpl');
 	$t->param('ping', 'Hello World: tmpl_test');
+	
+	return $t->output();
+}
+
+
+sub tmpl_badparam_test {
+	my $self = shift;
+
+	my $t = $self->load_tmpl('test.tmpl', die_on_bad_params => 0);
+
+	# This tests to see if die_on_bad_params was really turned off!
+	$t->param('some_non_existent_tmpl_var', 123);
+
+	$t->param('ping', 'Hello World: tmpl_badparam_test');
 	
 	return $t->output();
 }

@@ -7,9 +7,9 @@ Download site for CGI::Application:
 
 
 Changes:
-        - Tweaked test.pl to avoid CGI.pm command line debugging interface 
-          which requires user to hit CTRL-D to continue
-        - Added ANNOUNCE file.          
+        - Modified load_tmpl() to pass extra params to HTML::Template->new_file().
+        - Fixed up the docs a bit.
+        - Minor code clean-up.
 
 
 CGI::Application is intended to make it easier to create sophisticated,
@@ -41,4 +41,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.3 2000/07/12 15:18:09 jesse Exp $
+# $Id: ANNOUNCE,v 1.4 2000/07/18 21:04:46 jesse Exp $

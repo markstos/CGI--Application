@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.7 2000/07/14 05:52:09 jesse Exp $
+# $Id: Changes,v 1.8 2000/07/18 21:04:46 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -14,5 +14,6 @@ Revision history for Perl extension CGI::Application.
 	- Added ANNOUNCE file.
 
 1.2   Fri Jul 14 01:49:30 EDT 2000
-	- Fixed up the docs a bit
-	- Minor code clean-up
+	- Modified load_tmpl() to pass extra params to HTML::Template->new_file().
+	- Fixed up the docs a bit.
+	- Minor code clean-up.

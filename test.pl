@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.4 2000/07/12 03:01:10 jesse Exp $
+# $Id: test.pl,v 1.5 2000/07/18 21:04:46 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..8\n"; }
+BEGIN { $| = 1; print "1..9\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -92,6 +92,17 @@ if (($t8_output =~ /^Content\-Type\:\ text\/html/) && ($t8_output =~ /\-\-\-\-\>
 	print "ok 8\n";
 } else {
 	print "not ok 8\n";
+}
+
+
+# Test 9: run() CGI::Application sub-class, in run-mode 'tmpl_badparam_test'.  Expect HTTP header + 'Hello World: tmpl_badparam_test'.
+my $t9_ta_obj = TestApp->new(TMPL_PATH=>'test/templates/');
+$t9_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
+my $t9_output = $t9_ta_obj->run();
+if (($t9_output =~ /^Content\-Type\:\ text\/html/) && ($t9_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
+	print "ok 9\n";
+} else {
+	print "not ok 9\n";
 }
 
 # All done!
