@@ -8,16 +8,15 @@
 * Has the MANIFEST been updated to include any new files?
 * Make announcements!
 	- CGI::Application list:  cgiapp@lists.erlbaum.net
-	- HTML::Template list:    html-template-users-admin@lists.sourceforge.net
-	- mod_perl list:          modperl@apache.org
+	- HTML::Template list:    html-template-users@lists.sourceforge.net
+	- mod_perl list:          modperl@perl.apache.org
 	- DBI list:               dbi-users@perl.org
 	- Mason list:             mason-users@lists.sourceforge.net
 	- Embperl list:           embperl@perl.apache.org
-	- WWWAC list:             wwwac@lists.wwwac.org
 	- Usenet:                 news://comp.lang.perl.announce
 		o Use Google's USENET posting system: 
 		  http://groups.google.com/groups?hl=en&lr=&ie=UTF8&oe=UTF8&group=comp.lang.perl.announce
-		  jesse@vm.com/belfry
+		  jesse-googlegroups@erlbaum.net/belfry
 	- Freshmeat Website:      http://freshmeat.net/
 		o stiggystiggy/belfry
 
