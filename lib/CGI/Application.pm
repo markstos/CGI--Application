@@ -1440,7 +1440,8 @@ sub mode_param {
 		$mode_param = $p{param};
 
 		if ($p{path_info}) {
-			my $pi = $ENV{PATH_INFO};
+			my $pi = $self->query->path_info();
+
 			# computer scientists like to start counting from zero. 
 			my $idx = $p{path_info} - 1;
 

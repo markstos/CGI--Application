@@ -6,6 +6,8 @@ XXX
     - Document new plug-in available: 
       CGI::Application::Plugin::Stream helps stream files to the browser
 
+    - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
+
 3.31 Sun Sep 26, 2004
     - Documentation clean-ups. No code changes. 
 
