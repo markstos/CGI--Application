@@ -1,14 +1,15 @@
-# $Id: Changes,v 1.5 2000/07/12 03:24:17 jesse Exp $
+# $Id: Changes,v 1.6 2000/07/12 15:16:54 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
 0.01  Mon Jul  3 20:40:30 2000
 	- original version; created by h2xs 1.19
 
-1.00  Mon Jul  10 23:47:30 2000
+1.0   Mon Jul  10 23:47:30 2000
 	- Release 1.0 complete.  Woohoo!
 
 1.1   Tue Jul 11 22:59:17 EDT 2000
-	- Tweaked test.pl to avoid CGI.pm debugging w/ older versions.
-	- Added ANNOUNCE file
+	- Tweaked test.pl to avoid CGI.pm command line debugging interface 
+          which requires user to hit CTRL-D to continue
+	- Added ANNOUNCE file.
 
