@@ -1,4 +1,3 @@
-# $Id: MANIFEST,v 1.22 2004/05/08 21:07:49 mark Exp $
 ANNOUNCE
 lib/CGI/Application.pm
 lib/CGI/Application/Mailform.pm
@@ -38,3 +37,6 @@ test/TestApp11.pm
 test/TestApp12.pm
 test/TestCGI.pm
 test/templates/test.tmpl
+t/TestAppCallbacks.pm
+t/callbacks.t
+
