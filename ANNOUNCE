@@ -23,6 +23,9 @@ CHANGES SINCE VERSION 2.1:
   allow the user to perform some action based on the
   current run-mode.
 - Fixed minor bug in build system for older Perl versions.
+- Modified tmpl_path() to propagate to HTML::Template's PATH
+  parameter.  This provides much more useful and intuitive
+  behavior.  Thanks to Sam Tregar for the patch!
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 
@@ -60,4 +63,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.15 2002/05/06 11:15:35 jesse Exp $
+# $Id: ANNOUNCE,v 1.16 2002/05/25 17:37:42 jesse Exp $

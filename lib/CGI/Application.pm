@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.24 2002/05/25 17:32:24 jesse Exp $
+# $Id: Application.pm,v 1.25 2002/05/25 17:37:42 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '2.3';
+$CGI::Application::VERSION = '2.4';
 
 
 use CGI;
