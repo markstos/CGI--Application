@@ -1,4 +1,4 @@
-# $Id: MailForm.pm,v 1.2 2001/08/19 16:38:08 jesse Exp $
+# $Id: MailForm.pm,v 1.4 2001/08/21 02:04:53 jesse Exp $
 
 package CGI::Application::MailForm;
 
@@ -7,8 +7,8 @@ use strict;
 
 
 # This is a CGI::Application module
-use base 'CGI::Application';
-
+use CGI::Application;
+@CGI::Application::MailForm::ISA = qw/CGI::Application/;
 
 
 # Required, but not enforced by Makefile.PL!
@@ -96,7 +96,7 @@ A simple HTML form to email system
 
 =head1 DESCRIPTION
 
-CGI::Application::MailForm is a simple, reusable and customizable mail-form
+CGI::Application::MailForm is a simple, reusable and customizable mailform
 for the web.  It is intentionally simple, and provides very few facilities.
 What it does do is provide a simple and secure system for taking the contents 
 of a HTML form submission and sending it, via email, to a specified recipient.
@@ -371,7 +371,7 @@ Jesse Erlbaum <jesse@vm.com>
 
 =head1 LICENSE
 
-Copyright (c) 2000, Jesse Erlbaum <jesse@vm.com> and
+Copyright (c) 2001, Jesse Erlbaum <jesse@vm.com> and
 Vanguard Media (http://www.vm.com).  All rights reserved.
 
 This library is free software; you can redistribute it
