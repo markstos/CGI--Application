@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.38 2004/02/14 02:36:47 mark Exp $
+# $Id: Application.pm,v 1.39 2004/03/20 19:17:16 mark Exp $
 
 package CGI::Application;
 use Carp;
@@ -114,7 +114,6 @@ sub run {
 	# If prerun_mode has been set, use it!
 	my $prerun_mode = $self->prerun_mode();
 	if (length($prerun_mode)) {
-		carp ("Replacing previous run mode '$rm' with prerun_mode '$prerun_mode'") if ($^W);
 		$rm = $prerun_mode;
 		$self->{__CURRENT_RUNMODE} = $rm;
 	}
@@ -130,7 +129,6 @@ sub run {
 		unless (exists($rmodes{'AUTOLOAD'})) {
 			croak("No such run mode '$rm'");
 		}
-		carp ("No such run mode '$rm'.  Using run mode 'AUTOLOAD'") if ($^W);
 		$rmeth = $rmodes{'AUTOLOAD'};
 		$autoload_mode = 1;
 	}

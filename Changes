@@ -1,6 +1,9 @@
-# $Id: Changes,v 1.33 2004/02/14 02:36:47 mark Exp $
+# $Id: Changes,v 1.34 2004/03/20 19:17:12 mark Exp $
 
 Revision history for Perl extension CGI::Application.
+
+3.23 XXX
+    - Removed warnings being emitted for documented API calls
 
 3.22  Fri Feb 13, 2004
     - The nocgicarp flag introduced in 3.2 has now been removed due
