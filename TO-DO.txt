@@ -1,11 +1,6 @@
-* Decouple CGI.pm from CGI::Application via encapsulation.
-
-  - Provide a means of gluing in a different module besides CGI.pm
-  - Compatibility is *ENTIRELY* in the hands of the developer.
-  - If a CGI.pm-wannabe is slightly incompatible, the developer
-    should create a wrapper class.
-
-
+Be more specific about licensing terms.
+	- Specify: Artistic license.
+	- Provide URL: http://www.perl.com/language/misc/Artistic.html
 
 ==============
 
