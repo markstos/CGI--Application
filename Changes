@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.8 2000/07/18 21:04:46 jesse Exp $
+# $Id: Changes,v 1.9 2000/07/20 04:46:56 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -17,3 +17,6 @@ Revision history for Perl extension CGI::Application.
 	- Modified load_tmpl() to pass extra params to HTML::Template->new_file().
 	- Fixed up the docs a bit.
 	- Minor code clean-up.
+
+1.3
+	- Fixed minor bug in default values for properties.

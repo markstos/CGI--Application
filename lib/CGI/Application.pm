@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.10 2000/07/18 21:04:46 jesse Exp $
+# $Id: Application.pm,v 1.11 2000/07/20 04:46:56 jesse Exp $
 
 package CGI::Application;
 
@@ -247,7 +247,7 @@ sub mode_param {
 	my ($mode_param) = @_;
 
 	# First use?  Create new __MODE_PARAM!
-	$self->{__MODE_PARAM} = 'header' unless (exists($self->{__MODE_PARAM}));
+	$self->{__MODE_PARAM} = 'rm' unless (exists($self->{__MODE_PARAM}));
 
 	# If data is provided, set it!
 	if (defined($mode_param)) {
@@ -336,7 +336,7 @@ sub start_mode {
 	my ($start_mode) = @_;
 
 	# First use?  Create new __START_MODE!
-	$self->{__START_MODE} = 'header' unless (exists($self->{__START_MODE}));
+	$self->{__START_MODE} = 'start' unless (exists($self->{__START_MODE}));
 
 	# If data is provided, set it!
 	if (defined($start_mode)) {
