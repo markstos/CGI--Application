@@ -1273,6 +1273,8 @@ previously set.
 To add additional headers later without clobbering the old ones,
 see L<header_add()>.
 
+header_props() return a hash of all the headers that have currently 
+been set.
 
 B<IMPORTANT NOTE REGARDING HTTP HEADERS>
 
