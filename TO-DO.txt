@@ -1,6 +1,10 @@
 TO-DO: Future additions to CGI::Application
 ===============================================
 
+Mark:  Make release v3.2
+
+---
+
 > -----Original Message-----
 > From: Arkady Grudzinsky [mailto:grudziar@linuxhightech.com] 
 > Sent: Wednesday, June 04, 2003 6:28 PM
