@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.24 2002/10/07 00:09:18 jesse Exp $
+# $Id: Changes,v 1.25 2002/10/07 11:36:56 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -84,11 +84,11 @@ Revision history for Perl extension CGI::Application.
 	  To subscribe: cgiapp-subscribe@lists.erlbaum.net
 	  To post message: cgiapp@lists.erlbaum.net
 
-2.6   Mon Sep 23 21:06:05 EDT 2002
+2.6   Mon Oct  7 07:34:35 EDT 2002
 	- Changed the run() method to use Perl's built-in dynamic method
 	  call for all run modes, whether by name or by code ref.  This
 	  is intended to improve run-time performance somewhat.  Thanks 
-	  to Darin McBride for this patch!
+	  to Darin McBride for this patch.
 	- Added new override-able method cgiapp_get_query().  This method
 	  is called when CGI::Application first needs access to the CGI
 	  query object.  By default, this is a CGI.pm object.  It is 

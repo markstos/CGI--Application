@@ -17,7 +17,7 @@ CHANGES SINCE VERSION 2.5:
 - Changed the run() method to use Perl's built-in dynamic method
   call for all run modes, whether by name or by code ref.  This
   is intended to improve run-time performance somewhat.  Thanks 
-  to Darin McBride for this patch!
+  to Darin McBride for this patch.
 - Added new override-able method cgiapp_get_query().  This method
   is called when CGI::Application first needs access to the CGI
   query object.  By default, this is a CGI.pm object.  It is 
