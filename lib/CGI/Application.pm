@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.27 2002/07/18 11:50:20 jesse Exp $
+# $Id: Application.pm,v 1.28 2002/09/28 13:10:18 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '2.5';
+$CGI::Application::VERSION = '2.6';
 
 
 use CGI;
@@ -142,19 +142,8 @@ sub run {
 	}
 
 	# Process run mode!
-	my $body;
-	if (ref($rmeth) eq 'CODE') {
-		if ($autoload_mode) {
-			$body = $rmeth->($self, $rm);
-		} else {
-			$body = $rmeth->($self);
-		}
-	} else {
-		my $meth_call = '$self->' . $rmeth;
-		$meth_call .= '($rm)' if ($autoload_mode);
-		$body = eval($meth_call);
-		die ("Error executing run mode '$rm'.  Eval of code '$meth_call' resulted in error: " . $@) if ($@);
-	}
+        my $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() };
+        die "Error executing run mode '$rm': $@" if $@;
 
 	# Set up HTTP headers
 	my $headers = $self->_send_headers();
@@ -1222,8 +1211,9 @@ from the parent class.
 
 An advantage of specifying your run-mode methods by reference instead of by name 
 is performance.  Dereferencing a subref is faster than eval()-ing 
-a code block.  If run-time performance is a significant issue, specify
-your run-mode methods by reference and not by name.
+a code block.  If run-time performance is a critical issue, specify
+your run-mode methods by reference and not by name.  The speed differences
+are generally small, however, so specifying by name is preferred.
 
 The run_modes() method may be called more than once.  Additional values passed 
 into run_modes() will be added to the run-modes table.  In the case that an 
@@ -1410,7 +1400,8 @@ patches which have helped improve CGI::Application --
     Stephen Howard
     Mark Stosberg
     Steve Comrie
-    
+    Darin McBride
+
 
 Thanks also to all the members of the CGI-App mailing list!
 Your ideas, suggestions, insights (and criticism!) have helped
