@@ -2,4 +2,15 @@
 
 ==============
 
+* Provide a means through which cgiapp_prerun() can be used to 
+change the run-mode.
+
+Possibly propagate the run-mode to a paramater ('CGIAPP_RUNMODE'), 
+and then re-load run-mode from that parameter after cgiapp_prerun()
+has been called.
+
+This would allow behaviors to be "stacked".
+
+==============
+
 
