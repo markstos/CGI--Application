@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.3 2002/05/06 03:10:43 jesse Exp $
+# $Id: 01cgiapp.t,v 1.4 2002/05/06 11:52:13 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -196,7 +196,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 
 # Test 15: Test run-modes returning scalar-refs instead of scalars
 {
-	my $t15_ta_obj = TestApp4->new();
+	my $t15_ta_obj = TestApp4->new(QUERY=>CGI->new(""));
 	my $t15_output = $t15_ta_obj->run();
 	if (($t15_output =~ /^Content\-Type\:\ text\/html/) && ($t15_output =~ /Hello\ World\:\ subref\_test\ OK/)) {
 		print "ok 15\n";
@@ -411,7 +411,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 
 # Test 19-20: Test cgiapp_prerun()
 {
-	my $ta_obj = TestApp6->new();
+	my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
 	my $output = $ta_obj->run();
 
 	# Did the run-mode work?
