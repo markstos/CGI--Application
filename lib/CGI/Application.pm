@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.35 2004/02/04 04:02:47 mark Exp $
+# $Id: Application.pm,v 1.36 2004/02/04 16:42:41 mark Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '3.2';
+$CGI::Application::VERSION = '3.21';
 
 
 sub import {

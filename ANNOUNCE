@@ -1,4 +1,4 @@
-Version 3.2 of CGI::Application is now available via CPAN!
+Version 3.21 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -61,4 +61,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
-# $Id: ANNOUNCE,v 1.27 2004/01/31 23:33:10 mark Exp $
+# $Id: ANNOUNCE,v 1.28 2004/02/04 16:42:38 mark Exp $
