@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.4 2002/05/05 16:25:30 jesse Exp $
+# $Id: Mailform.pm,v 1.5 2002/05/05 16:40:45 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -49,13 +49,14 @@ sub submitform_and_sendmail {
 	# Actually send out the email message
 	$self->sendmail();
 
-	# Get the message body
-	my $msgbody = $self->build_msgbody();
-
+	# Set up the HTTP redirect
 	my $redirect_url = $self->param('SUCCESS_REDIRECT_URL');
-	my $redirect_html = "<pre>$msgbody</pre>\n<br><br><hr><br>\nContinue: <a href=\"$redirect_url\">$redirect_url</a>";
+	$self->header_type( 'redirect' );
+	$self->header_props( -url => $redirect_url );
 
-	return "$redirect_html \n<br><br><hr><br>\n\n" . $self->dump_html();
+	# Return HTML to the web browser
+	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
+	return $redirect_html;
 }
 
 
