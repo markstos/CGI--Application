@@ -1,4 +1,18 @@
 TO-DO: Future additions to CGI::Application
 ===============================================
 
+"I have a suggestion for the CGI::App dump function. I suggest added
+the run mode called to the output. Yes, it must originate somewhere
+from the query or the environment info, but it would be nice to
+reality check the function that was actually called, once the
+application got through parsing it."  -- Mark Stosberg
+<mark@summersault.com>
+
+---
+
+
+Add EXAMPLE for doing a redirect   -- Sam Tregar
+
+
+---
 
