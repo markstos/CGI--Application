@@ -1,8 +1,20 @@
 --- #YAML:1.0
 name: CGI-Application
-version: 3.22
-author:
-  - Jesse Erlbaum <jesse@erlbaum.net>
-abstract: Framework for building reusable web-applications
+version: 3.31
 license: perl
-generated_by: Module::Build version 0.22, without YAML.pm
+distribution_type: module
+requires:
+  CGI: 0
+  Carp: 0
+  HTML::Template: 0
+  Test::More: 0
+recommends: {}
+build_requires: {}
+conflicts: {}
+provides:
+  CGI::Application:
+    file: lib/CGI/Application.pm
+    version: 3.31
+  CGI::Application::Mailform:
+    file: lib/CGI/Application/Mailform.pm
+generated_by: Module::Build version 0.21

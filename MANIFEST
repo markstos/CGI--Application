@@ -22,6 +22,8 @@ t/05arrayrefmodes.t
 t/06enhancement31.t
 t/07postrun.t
 t/09zerorm.t
+t/10errormode.t
+t/mode_param_path_info.t
 test/TestApp.pm
 test/TestApp2.pm
 test/TestApp3.pm
@@ -32,5 +34,7 @@ test/TestApp7.pm
 test/TestApp8.pm
 test/TestApp9.pm
 test/TestApp10.pm
+test/TestApp11.pm
+test/TestApp12.pm
 test/TestCGI.pm
 test/templates/test.tmpl

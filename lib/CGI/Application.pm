@@ -4,7 +4,7 @@ package CGI::Application;
 use Carp;
 use strict;
 
-$CGI::Application::VERSION = '3.23';
+$CGI::Application::VERSION = '3.31';
 
 ###################################
 ####  INSTANCE SCRIPT METHODS  ####
@@ -87,8 +87,13 @@ sub run {
 	if (ref($rm_param) eq 'CODE') {
 		# Get run mode from subref
 		$rm = $rm_param->($self);
-	} else {
-		# Get run mode from CGI param
+	}
+	# support setting run mode from PATH_INFO
+	elsif (ref($rm_param) eq 'HASH') {
+		$rm = $rm_param->{run_mode};
+	} 
+	# Get run mode from CGI param
+	else {
 		$rm = $q->param($rm_param);
 	}
 
@@ -134,14 +139,18 @@ sub run {
 	}
 
 	# Process run mode!
-    my $body;                                                                                         
-    if ($self->can($rmeth)) {                                                                         
-        $body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();                                
-    }                                                                                                 
-    else {                                                                                            
-        $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() }; 
-        die "Error executing run mode '$rm': $@" if $@;                                               
-    }                                                                                                 
+    my $body;
+	eval {
+        $body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();
+	}; 
+	if ($@) {
+		my $error = $@;
+		if (my $em = $self->error_mode) {
+			$body = $self->$em( $error );
+		} else {
+            croak("Error executing run mode '$rm': $error");
+		}
+	}
 
     # Make sure that $body is not undefined (supress 'uninitialized value' warnings)
     $body = "" unless defined $body;
@@ -382,16 +391,17 @@ sub load_tmpl {
 
 	# add tmpl_path to path array if one is set, otherwise add a path arg
 	if (my $tmpl_path = $self->tmpl_path) {
-	        my $found = 0;
-	        for( my $x = 0; $x < @extra_params; $x += 2 ) {
-		        if ($extra_params[$x] eq 'path' and 
-		            ref $extra_params[$x+1] eq 'ARRAY') {
-		                unshift @{$extra_params[$x+1]}, $tmpl_path;
-		                $found = 1;
-		                last;
-		        }
+		my @tmpl_paths = (ref $tmpl_path eq 'ARRAY') ? @$tmpl_path : $tmpl_path;
+		my $found = 0;
+		for( my $x = 0; $x < @extra_params; $x += 2 ) {
+			if ($extra_params[$x] eq 'path' and 
+			ref $extra_params[$x+1] eq 'ARRAY') {
+				unshift @{$extra_params[$x+1]}, @tmpl_paths;
+				$found = 1;
+				last;
+			}
 		}
-        push(@extra_params, path => [ $tmpl_path ]) unless $found;
+		push(@extra_params, path => [ @tmpl_paths ]) unless $found;
 	}
 
 	require HTML::Template;
@@ -401,21 +411,6 @@ sub load_tmpl {
 }
 
 
-sub mode_param {
-	my $self = shift;
-	my ($mode_param) = @_;
-
-	# First use?  Create new __MODE_PARAM!
-	$self->{__MODE_PARAM} = 'rm' unless (exists($self->{__MODE_PARAM}));
-
-	# If data is provided, set it!
-	if (defined($mode_param)) {
-		$self->{__MODE_PARAM} = $mode_param;
-	}
-
-	# If we've gotten this far, return the value!
-	return $self->{__MODE_PARAM};
-}
 
 
 sub param {
@@ -523,16 +518,31 @@ sub start_mode {
 	my $self = shift;
 	my ($start_mode) = @_;
 
-	# First use?  Create new __START_MODE!
+	# First use?  Create new __START_MODE
 	$self->{__START_MODE} = 'start' unless (exists($self->{__START_MODE}));
 
-	# If data is provided, set it!
+	# If data is provided, set it
 	if (defined($start_mode)) {
 		$self->{__START_MODE} = $start_mode;
 	}
 
-	# If we've gotten this far, return the value!
 	return $self->{__START_MODE};
+}
+
+
+sub error_mode {
+	my $self = shift;
+	my ($error_mode) = @_;
+
+	# First use?  Create new __ERROR_MODE
+	$self->{__ERROR_MODE} = undef unless (exists($self->{__ERROR_MODE}));
+
+	# If data is provided, set it.
+	if (defined($error_mode)) {
+		$self->{__ERROR_MODE} = $error_mode;
+	}
+
+	return $self->{__ERROR_MODE};
 }
 
 
@@ -912,6 +922,7 @@ method (specified below).  This sets a path using HTML::Template's
 C<path> option when you call load_tmpl() to get your HTML::Template
 object.  This run-time parameter allows you to further encapsulate
 instantiating templates, providing potential for more re-usability.
+It can be either a scalar or an array reference of multiple paths.
 
 PARAMS        - This parameter, if used, allows you to set a number 
 of custom parameters at run-time.  By passing in different 
@@ -952,9 +963,11 @@ data returned is print()'ed to STDOUT and to the browser.  If
 the specified mode is not found in the run_modes() table, run() will 
 croak().
  
+If the runmode dies for whatever reason, run() will see if you have set a
+value for error_mode(). If you have, run() will call that method 
+as a run mode.
 
 =back
-
 
 =head2 Sub-classing and Override Methods
 
@@ -970,8 +983,9 @@ setup() method should be used to define the following property/methods:
 
     mode_param() - set the name of the run mode CGI param.
     start_mode() - text scalar containing the default run mode.
+    error_mode() - text scalar containing the error mode.
     run_modes() - hash table containing mode => function mappings.
-    tmpl_path() - text scalar containing path to template files.
+    tmpl_path() - text scalar or array refefence containing path(s) to template files.
 
 Your setup() method may call any of the instance methods of your application.
 This function is a good place to define properties specific to your application
@@ -983,6 +997,7 @@ Your setup() method might be implemented something like this:
 		my $self = shift;
 		$self->tmpl_path('/path/to/my/templates/');
 		$self->start_mode('putform');
+		$self->error_mode('my_error_rm');
 		$self->run_modes({
 			'putform'  => 'my_putform_func',
 			'postdata' => 'my_data_func'
@@ -1202,6 +1217,24 @@ a chunk of text which contains all the environment and CGI form
 data of the request, formatted nicely for human readability via 
 a web browser.  Useful for outputting to a browser.
 
+=item error_mode()
+
+    $webapp->error_mode('my_error_rm');
+
+The error_mode contains the name of a run mode to call in the event that the
+planned run mode call fails C<eval>. No error_mode is defined by default. 
+The death of your error_mode() run mode is not trapped, so you can also use
+it to die in your own special way. 
+
+=item get_current_runmode()
+
+    $webapp->get_current_runmode();
+
+The get_current_runmode() method will return a text scalar containing
+the name of the run mode which is currently being executed.  If the 
+run mode has not yet been determined, such as during setup(), this method
+will return undef.
+
 =item header_add()
 
     # add or replace the 'type' header
@@ -1290,7 +1323,7 @@ is used for create the object.  Refer to L<HTML::Template> for specific usage
 of HTML::Template.
 
 If tmpl_path() has been specified, load_tmpl() will set the
-HTML::Template C<path> option to the path provided.  This further
+HTML::Template C<path> option to the path(s) provided.  This further
 assists in encapsulating template usage.
 
 The load_tmpl() method will pass any extra parameters sent to it directly to 
@@ -1309,29 +1342,124 @@ in your CGI::Application sub-class application module.
 
 =item mode_param()
 
-    $webapp->mode_param('rm');
+ # Name the CGI form parameter that contains the run mode name.
+ # This is the the default behavior, and is often sufficient.
+ $webapp->mode_param('rm');
+
+ # Set the run mode name directly from a code ref 
+ $webapp->mode_param(\&some_method);
+ 
+ # Alternate interface, which allows you to set the run 
+ # mode name directly from $ENV{PATH_INFO}.
+ $webapp->mode_param( 
+ 	path_info=> 1, 
+ 	param =>'rm'
+ );
 
 This accessor/mutator method is generally called in the setup() method.  
-The mode_param() method sets the name of the CGI form parameter which contains the 
-run mode of the application.  If not specified, the default value is 'rm'.  
-This CGI parameter is queried by the run() method to send the program to the correct mode.
+It is used to help determine the run mode to call. There are three options for calling it. 
 
-Alternatively you can set mode_param() to use a call-back via subroutine reference:
+ $webapp->mode_param('rm');
 
-    $webapp->mode_param(\&some_method);
+Here, a CGI form parameter is named that will contain the name of the run mode
+to use. This is the default behavior, with 'rm' being the parameter named used. 
 
-This would allow you to create an instance method whose output would
-be used as the value of the current run mode.  E.g., a "mode param method":
+ $webapp->mode_param(\&some_method);
 
-    sub some_method {
-      my $self = shift;
-      return 'run_mode_x';
-    }
+Here a code reference is provided. It will return the name of the run mode
+to use directly. Example:
 
-This would allow you to programmatically set the run mode based on something 
-besides the value of a CGI parameter -- $ENV{PATH_INFO}, for example.
+ sub some_method {
+   my $self = shift;
+   return 'run_mode_x';
+ }
 
+This would allow you to programmatically set the run mode based on arbitrary logic.
 
+ $webapp->mode_param( 
+ 	path_info=> 1, 
+ 	param =>'rm'
+ );
+
+This syntax allows you to easily set the run mode from $ENV{PATH_INFO}.  It
+will try to set the run mode from the first part of $ENV{PATH_INFO} (before the
+first "/"). To specify that you would rather get the run name from the 2nd
+part of $ENV{PATH_INFO}:
+
+ $webapp->mode_param( path_info=> 2 );
+
+This also demonstrates that you don't need to pass in the C<param> hash key. It will
+still default to C<rm>.
+
+If no run mode is found in $ENV{PATH_INFO}, it will fall back to looking in the
+value of a the CGI form field defined with 'param', as described above.  This
+allows you to use the convenient $ENV{PATH_INFO} trick most of the time, but
+also supports the edge cases, such as when you don't know what the run mode
+will be ahead of time and want to define it with JavaScript. 
+
+B<More about $ENV{PATH_INFO}>.
+
+Using $ENV{PATH_INFO} to name your run mode creates a clean seperation between
+the form variables you submit and how you determine the processing run mode. It
+also creates URLs that are more search engine friendly. Let's look at an
+example form submission using this syntax:
+
+	<form action="/cgi-bin/instance.cgi/edit_form" method=post>
+		<input type="hidden" name="breed_id" value="4">
+	
+Here the run mode would be set to "edit_form". Here's another example with a
+query string:
+
+	/cgi-bin/instance.cgi/edit_form?breed_id=2
+
+This demostrates that you can use $ENV{PATH_INFO} and a query string together
+without problems. $ENV{PATH_INFO} is defined as part of the CGI specification
+should be supported by any web server that supports CGI scripts. 
+
+=cut 
+
+sub mode_param {
+	my $self = shift;
+	my $mode_param;
+
+	# First use?  Create new __MODE_PARAM
+	$self->{__MODE_PARAM} = 'rm' unless (exists($self->{__MODE_PARAM}));
+
+	my %p;
+	# expecting a scalar or code ref
+	if ((scalar @_) == 1) {
+		$mode_param = $_[0];
+	}
+	# expecting hash style params
+	else {
+  		croak("CGI::Application->mode_param() : You gave me an odd number of parameters to mode_param()!")
+    		unless ((@_ % 2) == 0);
+		%p = @_;
+		$mode_param = $p{param};
+
+		if ($p{path_info}) {
+			my $pi = $ENV{PATH_INFO};
+			# computer scientists like to start counting from zero. 
+			my $idx = $p{path_info} - 1;
+
+			# remove the leading slash
+			$pi =~ s!^/!!;
+
+			# grab the requested field location
+			$pi = (split q'/', $pi)[$idx] || '';
+
+			$mode_param = (length $pi) ?  { run_mode => $pi } : $mode_param;
+		}
+
+	}
+
+	# If data is provided, set it
+	if (defined($mode_param)) {
+		$self->{__MODE_PARAM} = $mode_param;
+	}
+
+	return $self->{__MODE_PARAM};
+}
 
 =item param()
 
@@ -1378,6 +1506,49 @@ parameters at once.  Internally, CGI::Application calls the param()
 method to set these properties.  The param() method is a powerful tool for 
 greatly increasing your application's re-usability.
 
+=item prerun_mode()
+
+    $webapp->prerun_mode('new_run_mode');
+
+The prerun_mode() method is an accessor/mutator which can be used within 
+your cgiapp_prerun() method to change the run mode which is about to be executed.
+For example, consider:
+
+  # In WebApp.pm:
+  package WebApp;
+  use base 'CGI::Application';
+  sub cgiapp_prerun {
+	my $self = shift;
+
+	# Get the web user name, if any
+	my $q = $self->query();
+	my $user = $q->remote_user();
+
+	# Redirect to login, if necessary
+	unless ($user) {
+		$self->prerun_mode('login');
+	}
+  }
+
+
+In this example, the web user will be forced into the "login" run mode
+unless they have already logged in.  The prerun_mode() method permits
+a scalar text string to be set which overrides whatever the run mode
+would otherwise be.
+
+The use of prerun_mode() within cgiapp_prerun() differs from setting 
+mode_param() to use a call-back via subroutine reference.  It differs 
+because cgiapp_prerun() allows you to selectively set the run mode based 
+on some logic in your cgiapp_prerun() method.  The call-back facility of 
+mode_param() forces you to entirely replace CGI::Application's mechanism 
+for determining the run mode with your own method.  The prerun_mode()
+method should be used in cases where you want to use CGI::Application's
+normal run mode switching facility, but you want to make selective
+changes to the mode under specific conditions.
+
+B<Note:>  The prerun_mode() method may ONLY be called in the context of
+a cgiapp_prerun() method.  Your application will die() if you call 
+prerun_mode() elsewhere, such as in setup() or a run mode method.
 
 =item query()
 
@@ -1514,73 +1685,16 @@ table.  Default mode is "start".  The mode key specified here will be used
 whenever the value of the CGI form parameter specified by mode_param() is 
 not defined.  Generally, this is the first time your application is executed.
 
-
 =item tmpl_path()
 
     $webapp->tmpl_path('/path/to/some/templates/');
 
-This access/mutator method sets the file path to the directory where
-the templates are stored.  It is used by load_tmpl() to find the
-template files, using HTML::Template's C<path> option.
+This access/mutator method sets the file path to the directory (or directories)
+where the templates are stored.  It is used by load_tmpl() to find the template
+files, using HTML::Template's C<path> option. To set the path you can either
+pass in a text scalar or an array reference of multiple paths.
 
 =back
-
-
-=item prerun_mode()
-
-    $webapp->prerun_mode('new_run_mode');
-
-The prerun_mode() method is an accessor/mutator which can be used within 
-your cgiapp_prerun() method to change the run mode which is about to be executed.
-For example, consider:
-
-  # In WebApp.pm:
-  package WebApp;
-  use base 'CGI::Application';
-  sub cgiapp_prerun {
-	my $self = shift;
-
-	# Get the web user name, if any
-	my $q = $self->query();
-	my $user = $q->remote_user();
-
-	# Redirect to login, if necessary
-	unless ($user) {
-		$self->prerun_mode('login');
-	}
-  }
-
-
-In this example, the web user will be forced into the "login" run mode
-unless they have already logged in.  The prerun_mode() method permits
-a scalar text string to be set which overrides whatever the run mode
-would otherwise be.
-
-The use of prerun_mode() within cgiapp_prerun() differs from setting 
-mode_param() to use a call-back via subroutine reference.  It differs 
-because cgiapp_prerun() allows you to selectively set the run mode based 
-on some logic in your cgiapp_prerun() method.  The call-back facility of 
-mode_param() forces you to entirely replace CGI::Application's mechanism 
-for determining the run mode with your own method.  The prerun_mode()
-method should be used in cases where you want to use CGI::Application's
-normal run mode switching facility, but you want to make selective
-changes to the mode under specific conditions.
-
-B<Note:>  The prerun_mode() method may ONLY be called in the context of
-a cgiapp_prerun() method.  Your application will die() if you call 
-prerun_mode() elsewhere, such as in setup() or a run mode method.
-
-
-
-=item get_current_runmode()
-
-    $webapp->get_current_runmode();
-
-The get_current_runmode() method will return a text scalar containing
-the name of the run mode which is currently being executed.  If the 
-run mode has not yet been determined, such as during setup(), this method
-will return undef.
-
 
 =head2 Testing
                                                                                                                                                              
@@ -1606,7 +1720,65 @@ test it and then print your own message to STDOUT. For example
         } else {
                 print "not ok 11\n";
         }
-                                                                                                                                                             
+
+=head1 PLUG-INS
+
+CGI::Application has a plug-in architecture that is easy to use and easy
+to develop new plug-ins for.
+
+=head2 Existing plug-ins
+
+Here are some plug-ins that have already been developed for
+CGI::Application. For a current complete list, please consult CPAN:
+
+http://search.cpan.org/search?query=CGI%3A%3AApplication%3A%3APlugin&mode=module
+
+=over 4
+
+=item *
+
+L<CGI::Application::Plugin::Config::Simple> - Integration with Config::Simple.
+
+=item *
+
+L<CGI::Application::Plugin::ConfigAuto> - Integration with Config::Auto.
+
+=item *
+
+L<CGI::Application::Plugin::DBH> - Integration with DBI.
+
+=item *
+
+L<CGI::Application::Plugin::Session> - Integration with L<CGI::Session>
+
+=item * 
+
+L<CGI::Application::Plugin::TT> - Use L<Template::Toolkit> as an alternative to HTML::Template.
+
+=item *
+
+L<CGI:::Application::Plugin::ValidateRM> - Integration with Data::FormValidator and HTML::FillInForm
+
+=back
+
+Consult each plug-in for the exact usage syntax. 
+
+
+=head2 Writing Plug-ins
+
+Writing plug-ins is simple. Simply create a new package, and export the
+methods that you want to become part of a CGI::Application project. See
+L<CGI::Application::Plugin::ValidateRM> for an example.
+
+You only need to keep in mind that your extension should "play well with
+others". The method names exported should be unique. Also, additions to
+the CGI::Application object should be designed not to conflict with other
+potentional plug-ins. For that reason, it's recommended that you add a
+a hash key to the CGI::Application which reflects the name of your
+plug-in, such as:
+
+ $self->{'Config::Simple'}
+
 =head1 COMMUNITY
 
 There a couple of primary resources available for those who wish to learn more
@@ -1677,28 +1849,13 @@ HTML::Template module!) for his innumerable contributions
 to this module over the years, and most of all for getting 
 me off my ass to finally get this thing up on CPAN!
 
-
-The following people have contributed specific suggestions or 
-patches which have helped improve CGI::Application --
-
-    Stephen Howard
-    Mark Stosberg
-    Steve Comrie
-    Darin McBride
-    Eric Andreychek
-    Steve Hay
-    Cees Hek
-    Michael Peters
-    podmaster
-    Brian Cassidy
-
+Many other people have contributed specific suggestions or patches,
+which are documented in the C<Changes> file.
 
 Thanks also to all the members of the CGI-App mailing list!
 Your ideas, suggestions, insights (and criticism!) have helped
 shape this module immeasurably.  (To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".)
-
-
 
 =head1 LICENSE
 

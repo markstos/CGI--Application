@@ -2,10 +2,17 @@
 
 Revision history for Perl extension CGI::Application.
 
-3.23 Sat May 08, 2004 
+3.31 Sun Sep 26, 2004
+    - Documentation clean-ups. No code changes. 
+
+3.30  Sun Sep 26, 2004
     - Refactored test suite to use Test::More (Gabor Szabo)
     - Removed warnings being emitted for documented API calls
     - minor code clean-up to load_tmpl() (Emanuele Zeppieri)
+	- Support for passing multiple template paths to HTML::Template (Michael Peters) 
+	- Added error_mode to support trapping runmodes dying (Rob Kinyon)
+	- Added Plug-in related documentation. (Mark Stosberg) 
+	- mode_param() updated to more easily set the run mode from $ENV{PATH_INFO} (Mark Stosberg)
 
 3.22  Fri Feb 13, 2004
     - The nocgicarp flag introduced in 3.2 has now been removed due

@@ -13,27 +13,15 @@ Download site for CGI::Application:
   http://search.cpan.org/dist/CGI-Application/
 
 
-CHANGES SINCE VERSION 3.1:
+CHANGES SINCE VERSION 3.2:
 
-- header_add() has been added to allow setting extra headers, particularly cookies,
-  after header_props has already been called (Cees Hek, Mark Stosberg)
-- CGI::Carp is now optional. See docs for details. (Steve Hay)
-- Avoid 'unitialized value' warning on redirects (Cees Hek)
-- Some tests added (Mark Stosberg)
-- Updated documentation to use term "Run Mode" consistently, versus "Run-Mode" with
-  a dash. Run-mode-with-a-dash is dead. Don't revive it. Also added mentions
-  of the CGI::Application wiki and CGI::Application::ValidateRM
-  (Mark Stosberg)
-- Fixed typo in cgiapp_postrun documentation (Steve Hay)
-- Improved exception handling (Steve Hay)
-- delete() method added to remove items stored using param() (Michael Peters)
-- 'CGI_APP_RETURN_ONLY' environment variable that is used for testing is now 
-    documented (Michael Peters)
-- dump_html() is now properly HTML-escaped (podmaster, Brian Cassidy)
-- Migrated from Makefile.PL to Build.PL. Either can now be used for installation.
-- Updated 'Changes' file to put new releases on top.
-- Support for run modes named '0'. (Josh Glover)
-
+- Refactored test suite to use Test::More (Gabor Szabo)
+- Removed warnings being emitted for documented API calls
+- minor code clean-up to load_tmpl() (Emanuele Zeppieri)
+- Support for passing multiple template paths to HTML::Template (Michael Peters) 
+- Added error_mode to support trapping runmodes dying (Rob Kinyon)
+- Added Plug-in related documentation. (Mark Stosberg) 
+- mode_param() updated to more easily set the run mode from $ENV{PATH_INFO} (Mark Stosberg)
 
 Read the article "Using CGI::Application" on Perl.com for an 
 overview of this module and its usage:
