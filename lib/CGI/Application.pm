@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.36 2004/02/04 16:42:41 mark Exp $
+# $Id: Application.pm,v 1.37 2004/02/12 19:04:38 jesse Exp $
 
 package CGI::Application;
 
@@ -1685,9 +1685,9 @@ engineering and consulting firm in New York City.  If you are looking
 for a company to develop your web site or individual developers to 
 augment your team please contact us:
 
-    The Erlbaum Group
-    1133 Broadway, suite 1321
-    New York, NY 10010
+    The Erlbaum Group, LLC
+    117 West 28th street, 2nd floor
+    New York, NY 10001
 
     Phone: 212-684-6161
     Fax: 212-684-6226
@@ -1714,6 +1714,10 @@ patches which have helped improve CGI::Application --
     Darin McBride
     Eric Andreychek
     Steve Hay
+    Cees Hek
+    Michael Peters
+    podmaster
+    Brian Cassidy
 
 
 Thanks also to all the members of the CGI-App mailing list!
