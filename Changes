@@ -2,10 +2,12 @@
 
 Revision history for Perl extension CGI::Application.
 
-XXX
+4.0_1 Sun Dec 19, 2004
+    - New callback system opens the door for more powerful and easy-to-use
+      plug-ins. (Cees Hek)
     - Document new plug-in available: 
       CGI::Application::Plugin::Stream helps stream files to the browser
-
+    - Documented return value of header_props()
     - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
 
 3.31 Sun Sep 26, 2004
