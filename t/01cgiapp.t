@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.1 2002/05/04 23:50:27 jesse Exp $
+# $Id: 01cgiapp.t,v 1.2 2002/05/05 01:32:13 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..20\n"; }
+BEGIN { $| = 1; print "1..18\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -405,40 +405,6 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 		print "not ok 18\n";
 	}
 }
-
-
-# Test 19: Does CGI::Application::Mailform compile?
-{
-	eval {require Net::SMTP;};
-	if ($@) {
-		print "ok 19  # Skipping test of CGI::Application::Mailform.  Net::SMTP not found.\n";
-	} else {
-		eval {require CGI::Application::Mailform;};
-		unless ($@) {
-			print "ok 19\n";
-		} else {
-			print "not ok 19\n$@";
-		}
-	}
-}
-
-
-# Test 20: Is an instance of CGI::Application::Mailform a CGI::Application?
-{
-	eval {require Net::SMTP;};
-	if ($@) {
-		print "ok 20  # Skipping test of CGI::Application::Mailform.  Net::SMTP not found.\n";
-	} else {
-		require CGI::Application::Mailform;
-		my $mf = CGI::Application::Mailform->new();
-		if ($mf->isa('CGI::Application')) {
-			print "ok 20\n";
-		} else {
-			print "not ok 20\n";
-		}
-	}
-}
-
 
 
 # All done!

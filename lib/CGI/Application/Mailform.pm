@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.2 2002/05/04 23:51:49 jesse Exp $
+# $Id: Mailform.pm,v 1.3 2002/05/05 01:32:13 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -25,7 +25,7 @@ sub setup {
 
 	$self->start_mode('submitform');
 	$self->run_modes(
-		'submitform' => 'sendmail',
+		'submitform' => \&submitform_and_sendmail,  # Using sub-ref instead of name-ref to display more intuitive errors
 	);
 }
 
@@ -35,17 +35,19 @@ sub setup {
 ##  RUN-MODE METHODS
 ##
 
-sub sendmail {
+sub submitform_and_sendmail {
 	my $self = shift;
 
+	# Make sure the instance script is correct
+	$self->validate_runtime();
 
-	# Check run-time settings
-	my @required_params = qw/MAIL_FROM MAIL_TO SUBJECT SUCCESS_REDIRECT_URL FORM_FIELDS/;
-	(defined($self->param('MAIL_FROM')) && $self->param('MAIL_FROM')) || croak ("'MAIL_FROM' not set");
+	# Actually send out the email message
+	$self->sendmail();
 
+	my $redirect_url = $self->param('SUCCESS_REDIRECT_URL');
+	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
 
-
-	return $self->dump_html();
+	return "$redirect_html \n<br><br><hr><br>\n\n" . $self->dump_html();
 }
 
 
@@ -54,6 +56,52 @@ sub sendmail {
 ##  PRIVATE METHODS
 ##
 
+sub validate_runtime {
+	my $self = shift;
+
+	my $req_failed = 0;
+	my @required_params = qw/MAIL_FROM MAIL_TO SUCCESS_REDIRECT_URL FORM_FIELDS/;
+	foreach my $req_param (@required_params) {
+		# Check each req param to verify that it is there
+		unless ( defined($self->param($req_param)) && length($self->param($req_param)) ) {
+			$req_failed++;
+			carp("Required parameter '$req_param' not specified");
+		} else {
+			# Especially check that FORM_FIELDS is an array-ref
+			if (($req_param eq 'FORM_FIELDS') && (ref($self->param('FORM_FIELDS')) ne 'ARRAY')) {
+				$req_failed++;
+				carp("Required parameter 'FORM_FIELDS' is not an array reference");
+			}
+		}
+
+	}
+
+	# Die if we have an invalid run-time configuration
+	croak("Missing or invalid required parameters") if ($req_failed);
+}
+
+
+sub sendmail {
+	my $self = shift;
+
+	my $mailfrom = $self->param('MAIL_FROM');
+	my $mailto = $self->param('MAIL_TO');
+	my $subject = $self->param('SUBJECT');
+
+	# Set default SUBJECT
+	unless (defined($subject) && length($subject)) {
+		$subject = 'Form submission from ' . ($ENV{HTTP_REFERER} || $ENV{SCRIPT_NAME});
+	}
+
+	my $msgbody = '';
+
+	$msgbody .= "The following data has been submitted:\n\n";
+
+	my $form_fields = $self->param('FORM_FIELDS');
+
+	
+
+}
 
 
 
@@ -167,7 +215,7 @@ You may name this file anything you like.
 =head2 Create 'thankyou.html'
 
 The next file you need to create is your 'thankyou.html' file.  This file is the 
-simplist of all.  This is the file to which users will be redirected once they have 
+simplest of all.  This is the file to which users will be redirected once they have 
 successfully submitted their form data.  The purpose of this screen is to inform
 and assure the user that their form data submission has been successfully received
 and processed.
@@ -216,7 +264,7 @@ Your instance script 'mailform.cgi' must start with the following:
 
 These lines invoke the Perl interpreter, include the CGI::Application::Mailform
 module, and instantiate a Mailform object, respectively.  (The
-author assumes your perl binary is located at "/usr/bin/perl".  If it is not, 
+author assumes your Perl binary is located at "/usr/bin/perl".  If it is not, 
 change the first line to refer to the correct location of your Perl binary.)
 
 Once you have a Mailform object ($mf), you have to configure the Mailform for your 
@@ -322,9 +370,7 @@ created by this mailform.  The subject is useful to the mailform recipient
 in easily recognizing (and possibly filtering) form submissions.
 
 This variable is optional.  If not supplied, CGI::Application::Mailform will
-set the subject to the following:
-
-    "Form Submission from " . $ENV{HTTP_REFERER}
+set the subject to a reasonable default.
 
 
 =item ENV_FIELDS
@@ -340,18 +386,25 @@ recipient.
 Any environment variable which is present in the CGI
 environment may be included.  Typical variables might be:
 
-    SERVER_NAME 
-    SERVER_PROTOCOL 
-    SERVER_PORT 
-    REQUEST_METHOD 
-    PATH_INFO 
-    PATH_TRANSLATED 
-    SCRIPT_NAME 
-    REMOTE_HOST 
-    REMOTE_ADDR 
-    CONTENT_LENGTH 
-    HTTP_ACCEPT 
-    HTTP_USER_AGENT
+        AUTH_TYPE
+        CONTENT_LENGTH
+        CONTENT_TYPE
+        GATEWAY_INTERFACE
+        HTTP_ACCEPT
+        HTTP_USER_AGENT
+        PATH_INFO
+        PATH_TRANSLATED
+        QUERY_STRING
+        REMOTE_ADDR
+        REMOTE_HOST
+        REMOTE_IDENT
+        REMOTE_USER
+        REQUEST_METHOD
+        SCRIPT_NAME
+        SERVER_NAME
+        SERVER_PORT
+        SERVER_PROTOCOL
+        SERVER_SOFTWARE
 
 See your web server documentation for a complete list and descriptions 
 of the available environment variables.  The list of environment variables 
