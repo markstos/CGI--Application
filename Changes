@@ -2,6 +2,12 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.0_2 Sat Mar 19, 2005 
+    - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
+    - Clarified Plug-in documentation (Timothy Appnel)
+    - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
+    - removed init stage from callbacks to avoid confusion. (Mark Stosberg
+
 4.0_1 Sun Dec 19, 2004
     - New callback system opens the door for more powerful and easy-to-use
       plug-ins. (Cees Hek)
@@ -9,9 +15,6 @@ Revision history for Perl extension CGI::Application.
       CGI::Application::Plugin::Stream helps stream files to the browser
     - Documented return value of header_props()
     - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
-    - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
-    - Clarified Plug-in documentation (Timothy Appnel)
-    - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
 
 3.31 Sun Sep 26, 2004
     - Documentation clean-ups. No code changes. 
