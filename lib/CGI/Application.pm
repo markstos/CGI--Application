@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.41 2004/05/08 21:06:59 mark Exp $
+# $Id: Application.pm,v 1.42 2004/05/12 17:04:08 jesse Exp $
 
 package CGI::Application;
 use Carp;
@@ -1659,8 +1659,8 @@ for a company to develop your web site or individual developers to
 augment your team please contact us:
 
     The Erlbaum Group, LLC
-    117 West 28th street, 2nd floor
-    New York, NY 10001
+    826 Broadway, Suite 933
+    New York, NY 10003
 
     Phone: 212-684-6161
     Fax: 212-684-6226
