@@ -1,10 +1,200 @@
-# $Id: Application.pm,v 1.2 2000/07/05 11:12:41 jesse Exp $
+# $Id: Application.pm,v 1.3 2000/07/06 12:22:03 jesse Exp $
+
 package CGI::Application;
 
 use strict;
 use vars qw($VERSION);
 
 $VERSION = '1.0';
+
+
+use CGI;
+use CGI::Carp;
+use HTML::Template;
+
+
+
+###################################
+####  INSTANCE SCRIPT METHODS  ####
+###################################
+
+sub new {
+	my $class = shift;
+	my @args = @_;
+
+	if (ref($class)) {
+		# No copy constructor yet!
+		$class = ref($class);
+	}
+
+	# Create our object!
+	my $self = {};
+	bless($self, $class);
+
+	### SET UP DEFAULT VALUES ###
+	#
+	# We set them up here and not in the setup() because a subclass 
+	# which implements setup() still needs default values!
+
+	$self->header_type('header');
+	$self->mode_param('rm');
+	$self->start_mode('start');
+
+	# Process optional new() parameters
+	my $rprops;
+	if (ref($args[0]) eq 'HASH') {
+		my $rthash = %{$args[0]};
+		$rprops = $self->_cap_hash($args[0]);
+	} else {
+		$rprops = $self->_cap_hash({ @args });
+	}
+
+	# Set tmpl_path()
+	if (exists($rprops->{TMPL_PATH})) {
+		$self->tmpl_path($rprops->{TMPL_PATH});
+	} else {
+		$self->tmpl_path('./');
+	}
+
+	# Set up init param() values
+	if (exists($rprops->{PARAMS})) {
+		croak("PARAMS is not a hash ref") unless (ref($rprops->{PARAMS}) eq 'HASH');
+		my $rparams = $rprops->{PARAMS};
+		while (my ($k, $v) = each(%$rparams)) {
+			$self->param($k, $v);
+		}
+	}
+
+	# Call setup() method, which should be implemented in the sub-class!
+	$self->setup();
+
+	return $self;
+}
+
+
+sub run {
+	my $self = shift;
+	my $q = $self->query();
+
+	my $rm_param = $self->mode_param() || croak("No rm_param() specified");
+	my $def_rm = $self->start_mode() || '';
+	my $rm = $q->param($rm_param) || $def_rm;
+
+	my $rmeth = $self->run_modes()->{$rm}
+		|| croak("No function specified for run mode '$rm'");
+
+	my $output = $rmeth->($self);
+
+	$self->_send_headers();
+	print $output;
+
+	# clean up operations
+	$self->teardown();
+}
+
+
+
+
+############################
+####  OVERRIDE METHODS  ####
+############################
+
+sub setup {
+	my $self = shift;
+}
+
+
+sub teardown {}
+
+
+
+
+######################################
+####  APPLICATION MODULE METHODS  ####
+######################################
+
+sub dump {}
+
+
+sub dump_html {}
+
+
+sub header_props {}
+
+
+sub header_type {}
+
+
+sub load_tmpl {}
+
+
+sub mode_param {}
+
+
+sub param {
+	my $self = shift;
+	my ($param, $value) = @_;
+
+	# First use?  Create new __PARAMS!
+	$self->{__PARAMS} = {} unless (exists($self->{__PARAMS}));
+
+	# Return the list of param keys if no param is specified.
+	return (keys(%{$self->{__PARAMS}})) unless(defined($param));
+
+	# If a value is specified, set it!
+	if (defined($value)) {
+		$self->{__PARAMS}->{$param} = $value;
+	}
+
+	# If we've goten this far, return the param value!
+	return $self->{__PARAMS}->{$param};
+}
+
+
+sub query {}
+
+
+sub run_modes {}
+
+
+sub start_mode {}
+
+
+sub tmpl_path {}
+
+
+
+
+###########################
+####  PRIVATE METHODS  ####
+###########################
+
+
+sub _send_headers {
+	my $self = shift;
+	my $q = $self->query();
+
+	if ($self->header_type() =~ /redirect/i) {
+		print $q->redirect(%{$self->header_props()});
+	} else {
+		print $q->header(%{$self->header_props()});
+	}
+}
+
+
+# Make all hash keys CAPITAL
+sub _cap_hash {
+	my $self = shift;
+	my $rhash = shift;
+	my %hash = map {
+		my $k = $_;
+		my $v = $rhash->{$k};
+		$k =~ tr/a-z/A-Z/;
+		$k => $v;
+	} keys(%{$rhash});
+	return \%hash;
+}
+
 
 
 1;
@@ -143,7 +333,7 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $widgetcode = $q->param("widgetcode");
 
 	my $output = '';
-	$output .= $q->start_html(-title => 'Widget Search Form');
+	$output .= $q->start_html(-title => 'List of Matching Widgets');
 
 	## Do a bunch of stuff to select "widgets" from a DBI-connected
 	## database which match the user-supplied value of "widgetcode"
@@ -174,7 +364,7 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $widgetid = $q->param("widgetid");
 
 	my $output = '';
-	$output .= $q->start_html(-title => 'Widget Search Form');
+	$output .= $q->start_html(-title => 'Widget Detail');
 
 	## Do a bunch of things to select all the properties of  
 	## the particular "widget" upon which the user has
@@ -325,7 +515,7 @@ croak().
 =head2 Sub-classing and Override Methods
 
 CGI::Application implements some methods which are expected to be overridden 
-in your sub-class module.  These methods are as follows:
+by implementing them in your sub-class module.  These methods are as follows:
 
 =over 4
 
@@ -569,6 +759,11 @@ L<CGI>, L<HTML::Template>, perl(1)
 
 Jesse Erlbaum <jesse@vm.com>
 
+B<Support Mailing List>
+
+If you have any questions, comments, bug reports or feature suggestions, 
+post them to the support mailing list!  To join the mailing list, simply
+send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 =head1 LICENSE
 
