@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.11 2001/09/02 12:55:52 jesse Exp $
+# $Id: 01cgiapp.t,v 1.1 2002/05/04 23:50:27 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -207,6 +207,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 
 # Test 16: Test "AUTOLOAD" run-mode
 {
+	local($^W) = undef;  # Turn off warnings
 	my $t16_ta_obj = TestApp4->new();
 	$t16_ta_obj->query(CGI->new({'rm' => 'undefined_mode'}));
 	my $t16_output = $t16_ta_obj->run();
@@ -236,7 +237,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	}
 
 	# Mode: BasicTest2
-	my $t17_ta_obj = TestApp5->new();
+	$t17_ta_obj = TestApp5->new();
 	$t17_ta_obj->query(CGI->new({'rm' => 'basic_test2'}));
 	$t17_output = $t17_ta_obj->run();
 	if (($t17_output =~ /^Content\-Type\:\ text\/html/) && ($t17_output =~ /Hello\ World\:\ basic\_test2/)) {
