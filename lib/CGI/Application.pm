@@ -1,15 +1,14 @@
-# $Id: Application.pm,v 1.13 2001/05/28 18:22:00 jesse Exp $
+# $Id: Application.pm,v 1.14 2001/06/21 17:26:11 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '1.31';
+$CGI::Application::VERSION = '1.4';
 
 
 use CGI;
 use CGI::Carp;
-use HTML::Template;
 
 
 
@@ -85,8 +84,21 @@ sub run {
 	my $q = $self->query();
 
 	my $rm_param = $self->mode_param() || croak("No rm_param() specified");
+
+	my $rm;
+
+	# Support call-back instead of CGI mode param
+	if (ref($rm_param) eq 'CODE') {
+		# Get run-mode from subref
+		$rm = $rm_param->($self);
+	} else {
+		# Get run-mode from CGI param
+		$rm = $q->param($rm_param);
+	}
+
+	# If $rm undefined, use default (start) mode
 	my $def_rm = $self->start_mode() || '';
-	my $rm = $q->param($rm_param) || $def_rm;
+	$rm = $def_rm unless (defined($rm));
 
 	my %rmodes = ($self->run_modes());
 	my $rmeth = $rmodes{$rm}
@@ -258,6 +270,7 @@ sub load_tmpl {
 
 	my $fq_tmpl_file = $self->tmpl_path() . $tmpl_file;
 
+	require HTML::Template;
 	my $t = HTML::Template->new_file($fq_tmpl_file, @extra_params);
 
 	return $t;
@@ -933,6 +946,24 @@ This accessor/mutator method is generally called in the setup() method.
 The mode_param() method sets the name of the CGI form parameter which contains the 
 run mode of the application.  If not specified, the default value is 'rm'.  
 This CGI parameter is queried by the run() method to send the program to the correct mode.
+
+Alternatively you can set mode_param() to use a call-back via subref:
+
+    $webapp->mode_param(\&some_method);
+
+This would allow you to create an instance method whose output would
+be used as the value of the current run-mode.  E.g., a "mode param method":
+
+    sub some_method {
+      my $self = shift;
+      return 'run_mode_x';
+    }
+
+This would allow you to programmatically set the run-mode based on something 
+besides the value of a CGI parameter -- $ENV{PATH_INFO}, for example.
+
+(Thanks to Stephen Howard for this idea!)
+
 
 
 =item param()

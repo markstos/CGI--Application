@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.11 2001/05/28 18:22:00 jesse Exp $
+# $Id: Changes,v 1.12 2001/06/21 17:26:11 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -27,3 +27,8 @@ Revision history for Perl extension CGI::Application.
 1.31  Mon May 28 14:06:16 EDT 2001
 	- Updated docs to favor new name-based run-mode method references.
 
+1.4   Thu Jun 21 13:18:41 EDT 2001
+	- Added ability to set mode_param() to use an instance method
+	  (specified by subref) instead of a CGI parameter.
+	- HTML::Template is now only loaded if load_tmpl() is called.
+	  (Thanks to Stephen Howard for these two ideas!)

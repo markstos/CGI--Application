@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.6 2001/05/21 04:03:47 jesse Exp $
+# $Id: MANIFEST,v 1.7 2001/06/21 17:26:11 jesse Exp $
 ANNOUNCE
 Application.pm
 Changes
@@ -8,4 +8,5 @@ README
 test.pl
 test/TestApp.pm
 test/TestApp2.pm
+test/TestApp3.pm
 test/templates/test.tmpl
