@@ -8,12 +8,20 @@ if followed, will make your web software easier to design, easier to
 document, easier to write, and easier to evolve.
 
 
-CHANGES SINCE VERSION 1.2:
-- Enhanced capabilities for creating general superclasses for your projects.
-- All run modes may be referenced by method name, in addition to subref.
-- Created cgiapp_init() hook to allow for inherited common behaviors.
-- Fixed minor bugs in default values.
-- Updated docs to favor new name-based run-mode method references.
+CHANGES SINCE VERSION 1.31:
+- Added ability to set mode_param() to use a call-back instance method
+  (specified by subref) instead of a CGI parameter.
+- HTML::Template is now only loaded if load_tmpl() is called.
+  (Thanks to Stephen Howard for the two preceding ideas!) 
+- Run-modes may now return scalar-refs in addition to scalars.
+- Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
+- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
+
+
+Read the recent "Using CGI::Application" article on Perl.com for an 
+overview of the module and its usage:
+
+  http://www.perl.com/pub/2001/06/05/cgi.html
 
 
 HOW DO I INSTALL IT?
