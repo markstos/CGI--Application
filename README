@@ -24,6 +24,11 @@ CHANGES SINCE VERSION 2.1:
   and functional enough to replace some of the most
   onerous "mailform" scripts which have been floating
   around the Internet for ages.
+- Added cgiapp_prerun() hook, for adding global behaviors
+  before the run-mode method is called.  The cgiapp_prerun()
+  gets the name of the run-mode as a parameter.  This would
+  allow the user to perform some action based on the
+  current run-mode.
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 

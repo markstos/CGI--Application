@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.2 2002/05/05 01:32:13 jesse Exp $
+# $Id: 01cgiapp.t,v 1.3 2002/05/06 03:10:43 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..18\n"; }
+BEGIN { $| = 1; print "1..20\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -26,6 +26,7 @@ use TestApp2;
 use TestApp3;
 use TestApp4;
 use TestApp5;
+use TestApp6;
 
 $ENV{CGI_APP_RETURN_ONLY} = 1;
 
@@ -218,6 +219,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	}
 }
 
+
 # Test 17: Can we incrementally add run-modes?
 {
 	my $t17_ta_obj;
@@ -405,6 +407,29 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 		print "not ok 18\n";
 	}
 }
+
+
+# Test 19-20: Test cgiapp_prerun()
+{
+	my $ta_obj = TestApp6->new();
+	my $output = $ta_obj->run();
+
+	# Did the run-mode work?
+	if (($output =~ /^Content\-Type\:\ text\/html/) && ($output =~ /Hello\ World\:\ prerun\_test\ OK/)) {
+		print "ok 19\n";
+	} else {
+		print "not ok 19\n";
+	}
+
+	# Did the cgiapp_prerun work?
+	if ($ta_obj->param('PRERUN_RUNMODE') eq 'prerun_test') {
+		print "ok 20\n";
+	} else {
+		print "not ok 20\n";
+	}
+}
+
+
 
 
 # All done!

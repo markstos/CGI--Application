@@ -1,39 +1,5 @@
+* Decouple CGI.pm from CGI::Application via encapsulation.
 
-=============
+==============
 
-
-
-EXAMPLE CODE:
-* Number guessing game?
-* Psudo-AI, 20-questions game?
-
-
-
-
-=============
-
-
-ADD TO POD:
-Suggested by: Eric Berg <eberg@nylug.org>
->  In 
-> tracking that
-> down, I found in the CGI::Application docs that you could 
-> pass in a CGI query
-> object, but it didn't specify how, exactly.
-> 
-> I went into the code and found:
-> 
-> From CGI::Application.pm:56-59
-> 
-> 	# Set CGI query object
-> 	if (exists($rprops->{QUERY})) {
-> 		$self->query($rprops->{QUERY});
-> 	}
-> 
-> That seems to incidate that I could 
-> CGI::Application::new('QUERY' => new CGI).
-> I just wanted to confirm that that would be the right way to 
-> do this, and to
-> suggest that it make it into the docs.
-> 
 

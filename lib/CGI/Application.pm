@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.21 2001/09/02 12:55:52 jesse Exp $
+# $Id: Application.pm,v 1.22 2002/05/06 03:10:43 jesse Exp $
 
 package CGI::Application;
 
@@ -100,6 +100,11 @@ sub run {
 	my $def_rm = $self->start_mode() || '';
 	$rm = $def_rm unless (defined($rm) && length($rm));
 
+	# Call PRE-RUN hook, now that we know the run-mode
+	# This hook can be used to provide run-mode specific behaviors
+	# before the run-mode actually runs.
+	$self->cgiapp_prerun($rm);
+
 	my %rmodes = ($self->run_modes());
 
 	my $rmeth;
@@ -164,8 +169,17 @@ sub run {
 
 sub cgiapp_init {
 	my $self = shift;
+	my @args = (@_);
 
 	# Nothing to init, yet!
+}
+
+
+sub cgiapp_prerun {
+	my $self = shift;
+	my $rm = shift;
+
+	# Nothing to prerun, yet!
 }
 
 
@@ -503,6 +517,10 @@ Framework for building reusable web-applications
 	my $self = shift;
 	# Optional Pre-setup initalization behaviors
   }
+  sub cgiapp_prerun {
+	my $self = shift;
+	# Optional Pre-runmode initalization behaviors
+  }
   sub teardown {
 	my $self = shift;
 	# Optional Post-response shutdown behaviors
@@ -772,6 +790,12 @@ You could have multiple instance scripts throughout your site which
 all use this "Mailform.pm" module, but which set different recipients
 or different forms.
 
+QUERY         - This optional parameter allows you to specify an 
+already-created CGI.pm query object.  Under normal use, 
+CGI::Application will instantiate its own CGI.pm query object.
+Under certain conditions, it might be useful to be able to use
+one which has already been created.
+
 
 =item run()
 
@@ -854,7 +878,7 @@ all the arguments which were sent to the new() method.
 
 An example of the benefits provided by utilizing this hook is 
 creating a custom "application super-class" from which which all 
-your CGI applicatons would inherit, instead of CGI::Application.
+your CGI applications would inherit, instead of CGI::Application.
 
 Consider the following:
 
@@ -877,6 +901,45 @@ Consider the following:
 
 
 By using CGI::Application and the cgiapp_init() method as illustrated, 
+a suite of applications could be designed to share certain 
+characteristics.  This has the potential for much cleaner code 
+built on object-oriented inheritance.
+
+
+=item cgiapp_prerun()
+
+If implemented, this method is called automatically right before the
+selected run-mode method is called.  This method provides an optional
+pre-runmode hook, which permits functionality to be added at the point
+right before the run-mode method is called.  To further leverage this
+hook, the value of the run-mode is passed into cgiapp_prerun().
+  
+Another benefit provided by utilizing this hook is
+creating a custom "application super-class" from which all
+your CGI applications would inherit, instead of CGI::Application.
+
+Consider the following:
+
+  # In MySuperclass.pm:
+  package MySuperclass;
+  use base 'CGI::Application';
+  sub cgiapp_prerun {
+	my $self = shift;
+	# Perform some project-specific init behavior
+	# such as to implement run-mode specific
+	# authorization functions.
+  }
+
+
+  # In MyApplication.pm:
+  package MyApplication;
+  use base 'MySuperclass';
+  sub setup { ... }
+  sub teardown { ... }
+  # The rest of your CGI::Application-based follows...  
+
+
+By using CGI::Application and the cgiapp_prerun() method as illustrated, 
 a suite of applications could be designed to share certain 
 characteristics.  This has the potential for much cleaner code 
 built on object-oriented inheritance.
@@ -1061,7 +1124,8 @@ interact with form data.
 
 When the new() method is called, a CGI query object is automatically created.
 If, for some reason, you want to use your own CGI query object, the new()
-method supports passing in your existing query object on construction.
+method supports passing in your existing query object on construction using
+the QUERY attribute.
 
 
 =item run_modes()

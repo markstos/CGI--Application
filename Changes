@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.17 2001/09/02 12:55:52 jesse Exp $
+# $Id: Changes,v 1.18 2002/05/06 03:10:43 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -57,5 +57,9 @@ Revision history for Perl extension CGI::Application.
 	  and functional enough to replace some of the most
 	  onerous "mailform" scripts which have been floating
 	  around the Internet for ages. 
-
+	- Added cgiapp_prerun() hook, for adding global behaviors 
+	  before the run-mode method is called.  The cgiapp_prerun()
+	  gets the name of the run-mode as a parameter.  This would
+	  allow the user to perform some action based on the
+	  current run-mode.
 

@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.6 2002/05/05 22:57:39 jesse Exp $
+# $Id: Mailform.pm,v 1.7 2002/05/06 03:10:43 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -38,6 +38,16 @@ sub setup {
 }
 
 
+# Called when run() is called.
+sub cgiapp_prerun {
+	my $self = shift;
+	my $runmode = shift;
+
+	# Make sure the instance script is correct
+	$self->validate_runtime();
+}
+
+
 
 #############################################
 ##  RUN-MODE METHODS
@@ -48,32 +58,21 @@ sub redirect_to_mailform {
 
 	# Set up the HTTP redirect
 	my $redirect_url = $self->param('HTMLFORM_REDIRECT_URL');
-	$self->header_type( 'redirect' );
-	$self->header_props( -url => $redirect_url );
 
-	# Return HTML to the web browser
-	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
-	return $redirect_html;
+	return $self->do_redirect($redirect_url);
 }
 
 
 sub submitform_and_sendmail {
 	my $self = shift;
 
-	# Make sure the instance script is correct
-	$self->validate_runtime();
-
 	# Actually send out the email message
 	$self->sendmail();
 
 	# Set up the HTTP redirect
 	my $redirect_url = $self->param('SUCCESS_REDIRECT_URL');
-	$self->header_type( 'redirect' );
-	$self->header_props( -url => $redirect_url );
 
-	# Return HTML to the web browser
-	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
-	return $redirect_html;
+	return $self->do_redirect($redirect_url);
 }
 
 
@@ -81,6 +80,20 @@ sub submitform_and_sendmail {
 #############################################
 ##  PRIVATE METHODS
 ##
+
+# Perform an HTTP redirect
+sub do_redirect {
+	my $self = shift;
+	my $redirect_url = shift;
+
+	$self->header_type( 'redirect' );
+	$self->header_props( -url => $redirect_url );
+
+	# Return HTML to the web browser
+	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
+	return $redirect_html;
+}
+
 
 # This method is to verify that the instance script (i.e., "mailform.cgi")
 # contains the correct configuration parameters.
