@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.39 2004/03/20 19:17:16 mark Exp $
+# $Id: Application.pm,v 1.40 2004/04/16 20:04:27 mark Exp $
 
 package CGI::Application;
 use Carp;
@@ -380,19 +380,18 @@ sub load_tmpl {
 	my $self = shift;
 	my ($tmpl_file, @extra_params) = @_;
 
-	# add tmpl_path to path array of one is set, otherwise add a path arg
+	# add tmpl_path to path array if one is set, otherwise add a path arg
 	if (my $tmpl_path = $self->tmpl_path) {
 	        my $found = 0;
 	        for( my $x = 0; $x < @extra_params; $x += 2 ) {
 		        if ($extra_params[$x] eq 'path' and 
-		            ref $extra_params[$x+1]     and
 		            ref $extra_params[$x+1] eq 'ARRAY') {
 		                unshift @{$extra_params[$x+1]}, $tmpl_path;
 		                $found = 1;
 		                last;
 		        }
 		}
-	    push(@extra_params, path => [ $tmpl_path ]) unless $found;
+        push(@extra_params, path => [ $tmpl_path ]) unless $found;
 	}
 
 	require HTML::Template;
