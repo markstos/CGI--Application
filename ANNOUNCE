@@ -7,10 +7,13 @@ Download site for CGI::Application:
 
 
 CHANGES SINCE VERSION 1.31:
-- Added ability to set mode_param() to use an instance method
+- Added ability to set mode_param() to use a call-back instance method
   (specified by subref) instead of a CGI parameter.
-- HTML::Template is now only loaded if load_tmpl() is called.             
-  (Thanks to Stephen Howard for these two ideas!)
+- HTML::Template is now only loaded if load_tmpl() is called.
+  (Thanks to Stephen Howard for the two preceding ideas!) 
+- Run-modes may now return scalar-refs in addition to scalars.
+- Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
+- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
 
 
 CGI::Application is intended to make it easier to create sophisticated,
@@ -42,4 +45,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.8 2001/06/21 17:26:11 jesse Exp $
+# $Id: ANNOUNCE,v 1.9 2001/06/25 03:01:19 jesse Exp $

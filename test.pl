@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.7 2001/06/21 17:26:11 jesse Exp $
+# $Id: test.pl,v 1.8 2001/06/25 03:01:19 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..14\n"; }
+BEGIN { $| = 1; print "1..16\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -24,6 +24,7 @@ use lib './test';
 use TestApp;
 use TestApp2;
 use TestApp3;
+use TestApp4;
 
 $ENV{CGI_APP_RETURN_ONLY} = 1;
 
@@ -163,6 +164,28 @@ if (($t14_output =~ /^Content\-Type\:\ text\/html/) && ($t14_output =~ /Hello\ W
 	print "ok 14\n";
 } else {
 	print "not ok 14\n";
+}
+
+
+
+# Test 15: Test run-modes returning scalar-refs instead of scalars
+my $t15_ta_obj = TestApp4->new();
+my $t15_output = $t15_ta_obj->run();
+if (($t15_output =~ /^Content\-Type\:\ text\/html/) && ($t15_output =~ /Hello\ World\:\ subref\_test\ OK/)) {
+	print "ok 15\n";
+} else {
+	print "not ok 15\n";
+}
+
+
+# Test 16: Test "AUTOLOAD" run-mode
+my $t16_ta_obj = TestApp4->new();
+$t16_ta_obj->query(CGI->new({'rm' => 'undefined_mode'}));
+my $t16_output = $t16_ta_obj->run();
+if (($t16_output =~ /^Content\-Type\:\ text\/html/) && ($t16_output =~ /Hello\ World\:\ undefined\_mode\ OK/)) {
+	print "ok 16\n";
+} else {
+	print "not ok 16\n";
 }
 
 
