@@ -1,4 +1,4 @@
-# $Id: TestApp.pm,v 1.3 2000/07/18 21:04:46 jesse Exp $
+# $Id: TestApp.pm,v 1.4 2001/05/21 03:49:49 jesse Exp $
 
 package TestApp;
 
@@ -17,11 +17,12 @@ sub setup {
 	$self->mode_param('test_rm');
 
 	$self->run_modes(
-		'basic_test'    => \&basic_test,
-		'redirect_test' => \&redirect_test,
-		'cookie_test'   => \&cookie_test,
-		'tmpl_test'     => \&tmpl_test,
-		'tmpl_badparam_test'     => \&tmpl_badparam_test,
+		'basic_test'		=> \&basic_test,
+		'redirect_test'		=> \&redirect_test,
+		'cookie_test'		=> \&cookie_test,
+		'tmpl_test'		=> \&tmpl_test,
+		'tmpl_badparam_test'	=> \&tmpl_badparam_test,
+		'eval_test'		=> 'eval_test'
 	);
 
 	$self->param('last_orm', 'setup');
@@ -34,6 +35,17 @@ sub teardown {
 	$self->param('last_orm', 'teardown');
 }
 
+
+sub cgiapp_init {
+	my $self = shift;
+	$self->param('CGIAPP_INIT', 'true');
+}
+
+
+
+############################
+####  RUN MODE METHODS  ####
+############################
 
 sub basic_test {
 	my $self = shift;
@@ -94,6 +106,15 @@ sub tmpl_badparam_test {
 	$t->param('ping', 'Hello World: tmpl_badparam_test');
 	
 	return $t->output();
+}
+
+
+sub eval_test {
+	my $self = shift;
+
+	die ("No cgi-app object '$self'") unless (ref($self));
+
+	return "Hello World: eval_test OK";
 }
 
 

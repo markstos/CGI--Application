@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.9 2000/07/20 04:46:56 jesse Exp $
+# $Id: Changes,v 1.10 2001/05/21 03:49:49 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -18,5 +18,8 @@ Revision history for Perl extension CGI::Application.
 	- Fixed up the docs a bit.
 	- Minor code clean-up.
 
-1.3
-	- Fixed minor bug in default values for properties.
+1.3   Sun May 20 18:48:36 EDT 2001
+	- Enhanced capabilities for creating general superclasses for your projects.
+	- All run modes may be referenced by method name, in addition to subref.
+	- Created cgiapp_init() hook to allow for inherited common behaviors.
+	- Fixed minor bugs in default values.

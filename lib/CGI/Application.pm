@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.11 2000/07/20 04:46:56 jesse Exp $
+# $Id: Application.pm,v 1.12 2001/05/21 03:49:49 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '1.2';
+$CGI::Application::VERSION = '1.3';
 
 
 use CGI;
@@ -68,6 +68,11 @@ sub new {
 		}
 	}
 
+	# Call cgiapp_init() method, which may be implemented in the sub-class.
+	# Pass all constructor args forward.  This will allow flexible usage 
+	# down the line.
+	$self->cgiapp_init(@args);
+
 	# Call setup() method, which should be implemented in the sub-class!
 	$self->setup();
 
@@ -87,7 +92,17 @@ sub run {
 	my $rmeth = $rmodes{$rm}
 		|| croak("No function specified for run mode '$rm'");
 
-	my $body = $rmeth->($self);
+	# Process run mode!
+	my $body;
+	if (ref($rmeth) eq 'CODE') {
+		$body = $rmeth->($self);
+	} else {
+		my $meth_call = '$self->' . $rmeth;
+		$body = eval($meth_call);
+		die ("Error executing run mode '$rm'.  Eval of code '$meth_call' resulted in error: " . $@) if ($@);
+	}
+
+	# Set up HTTP headers
 	my $headers = $self->_send_headers();
 
 	# Build up total output
@@ -110,6 +125,13 @@ sub run {
 ############################
 ####  OVERRIDE METHODS  ####
 ############################
+
+sub cgiapp_init {
+	my $self = shift;
+
+	# Nothing to init, yet!
+}
+
 
 sub setup {
 	my $self = shift;
@@ -423,17 +445,23 @@ Framework for building reusable web-applications
 	$self->mode_param('rm');
 	$self->run_modes(
 		'mode1' => \&do_stuff,
-		'mode2' => \&do_more_stuff
+		'mode2' => \&do_more_stuff,
+		'mode3' => 'do_something_else'
 	);
+  }
+  sub cgiapp_init {
+	my $self = shift;
+	# Optional Pre-setup initalization behaviors
   }
   sub teardown {
 	my $self = shift;
-	# Post-response shutdown functions
+	# Optional Post-response shutdown behaviors
   }
   sub do_stuff { ... }
   sub do_more_stuff { ... }
- 
- 
+  sub do_something_else { ... }
+
+
   # webapp.cgi
   use WebApp;
   my $webapp = WebApp->new();
@@ -759,12 +787,50 @@ Your setup() method might be implemented something like this:
 
 =item teardown()
 
-This method is called automatically after your application runs.  It 
+If implemented, this method is called automatically after your application runs.  It 
 can be used to clean up after your operations.  A typical use of the 
 teardown() function is to disconnect a database connection which was
 established in the setup() function.  You could also use the teardown()
 method to store state information about the application to the server.
- 
+
+
+=item cgiapp_init()
+
+If implemented, this method is called automatically right before the
+setup() method is called.  This method provides an optional initalization
+hook, which improves the object-oriented characteristics of 
+CGI::Application.  The cgiapp_init() method receives, as its parameters,
+all the arguments which were sent to the new() method.
+
+An example of the benefits provided by utilizing this hook is 
+creating a custom "application super-class" from which which all 
+your CGI applicatons would inherit, instead of CGI::Application.
+
+Consider the following:
+
+  # In MySuperclass.pm:
+  package MySuperclass;
+  use base 'CGI::Application';
+  sub cgiapp_init {
+	my $self = shift;
+	# Perform some project-specific init behavior
+	# such as to load settings from a database or file.
+  }
+
+
+  # In MyApplication.pm:
+  package MyApplication;
+  use base 'MySuperclass';
+  sub setup { ... }
+  sub teardown { ... }
+  # The rest of your CGI::Application-based follows...  
+
+
+By using CGI::Application and the cgiapp_init() method as illustrated, 
+a suite of applications could be designed to share certain 
+characteristics.  This has the potential for much cleaner code 
+built on object-oriented inheritance.
+
 
 =back
 
@@ -925,7 +991,7 @@ method supports passing in your existing query object on construction.
 
 =item run_modes()
 
-    $webapp->run_modes('mode1' => \&some_sub, 'mode2' => \&some_other_sub);
+    $webapp->run_modes('mode1' => 'some_sub_by_name', 'mode2' => \&some_other_sub_by_ref);
 
 This accessor/mutator expects a hash which specifies the dispatch table for the 
 different CGI states.  The run method uses the data in this table 
@@ -934,13 +1000,30 @@ the CGI parameter specified by mode_param() (defaults to 'rm' for "Run
 Mode").
 
 The hash table set by this method is expected to contain the mode 
-name as a key.  The value should be a pointer to the function which 
-you want to be called when the CGI enters the specified mode:
+name as a key.  The value should be either a hard reference to the function which 
+you want to be called when the CGI enters the specified mode, or the 
+name of the function to be called:
 
-    'mode_name' => \&mode_function
+    'mode_name_by_ref' => \&mode_function
+    'mode_name_by_name' => 'mode_function'
 
-The function referenced is expected to return a chunk of text which 
+The function specified is expected to return a block of text which 
 will eventually be sent back to the web browser.
+
+An advantage of specifying your run mode functions by name instead of 
+by reference is that you can more easily create derivative application 
+using inheritance.  For instance, if you have a new application which is
+exactly the same as an existing application with the exception of one
+run mode, you could simply inherit from that other application and override
+the run mode function which is different.  If you specified your run mode 
+functions by reference, your child class would still use the function
+from the parent class.
+
+An advantage of specifying your run modes by reference instead of by name 
+is performance.  Dereferencing a subref is faster than eval()-ing 
+a code block.  If run-time performance is a significant issue, specify
+your run mode functions by reference and not by name.
+
 
 B<IMPORTANT NOTE ABOUT RUN MODE FUNCTIONS>
 

@@ -1,4 +1,4 @@
-# $Id: test.pl,v 1.5 2000/07/18 21:04:46 jesse Exp $
+# $Id: test.pl,v 1.6 2001/05/21 03:49:49 jesse Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..9\n"; }
+BEGIN { $| = 1; print "1..11\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -22,6 +22,7 @@ print "ok 1\n";
 # bring in testing hierarchy
 use lib './test';
 use TestApp;
+use TestApp2;
 
 $ENV{CGI_APP_RETURN_ONLY} = 1;
 
@@ -104,5 +105,29 @@ if (($t9_output =~ /^Content\-Type\:\ text\/html/) && ($t9_output =~ /\-\-\-\-\>
 } else {
 	print "not ok 9\n";
 }
+
+
+# Test 10: Instantiate and call run_mode 'eval_test'.  Expect 'eval_test OK' in output.
+my $t10_ta_obj = TestApp->new();
+$t10_ta_obj->query(CGI->new({'test_rm' => 'eval_test'}));
+my $t10_output = $t10_ta_obj->run();
+if (($t10_output =~ /^Content\-Type\:\ text\/html/) && ($t10_output =~ /Hello\ World\:\ eval\_test\ OK/)) {
+	print "ok 10\n";
+} else {
+	print "not ok 10\n";
+}
+
+
+
+# Test 11: Test to make sure cgiapp_init() was called in inherited class.
+my $t11_ta_obj = TestApp2->new();
+my $t11_cgiapp_init_state = $t11_ta_obj->param('CGIAPP_INIT');
+if (defined($t11_cgiapp_init_state) && ($t11_cgiapp_init_state eq 'true')) {
+	print "ok 11\n";
+} else {
+	print "not ok 11\n";
+}
+
+
 
 # All done!

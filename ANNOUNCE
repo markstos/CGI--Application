@@ -1,4 +1,4 @@
-Version 1.2 of CGI::Application is now available via CPAN!
+Version 1.3 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -7,9 +7,10 @@ Download site for CGI::Application:
 
 
 Changes:
-        - Modified load_tmpl() to pass extra params to HTML::Template->new_file().
-        - Fixed up the docs a bit.
-        - Minor code clean-up.
+	- Enhanced capabilities for creating general superclasses for your projects.
+	- All run modes may be referenced by method name, in addition to subref.
+	- Created cgiapp_init() hook to allow for inherited common behaviors.
+	- Fixed minor bugs in default values.
 
 
 CGI::Application is intended to make it easier to create sophisticated,
@@ -41,4 +42,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.5 2000/07/18 21:16:47 jesse Exp $
+# $Id: ANNOUNCE,v 1.6 2001/05/21 03:49:49 jesse Exp $
