@@ -64,7 +64,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$ENV{PRERUN_IN_SETUP} = 1;
 
 	eval {
-		my $ta_obj = TestApp6->new(QUERY=>CGI->new());
+		my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
 	};
 
 	my $eval_error = $@;
