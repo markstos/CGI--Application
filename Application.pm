@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.33 2003/06/02 12:33:54 jesse Exp $
+# $Id: Application.pm,v 1.34 2003/06/02 12:43:18 jesse Exp $
 
 package CGI::Application;
 
@@ -1535,8 +1535,8 @@ for a company to develop your web site or individual developers to
 augment your team please contact us:
 
     The Erlbaum Group
-    250 East 31st Street, suite 6C
-    New York, NY 10016
+    1133 Broadway, suite 1321
+    New York, NY 10010
 
     Phone: 212-684-6161
     Fax: 212-684-6226
