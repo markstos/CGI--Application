@@ -7,8 +7,8 @@
 * Have any new files been added to cvs?
 * Has the MANIFEST been updated to include any new files?
 * Make announcements!
-	- CGI::Application list:  cgiapp@lists.vm.com
-	- HTML::Template list:    htmltmpl@lists.vm.com
+	- CGI::Application list:  cgiapp@lists.erlbaum.net
+	- HTML::Template list:    htmltmpl@lists.erlbaum.net
 	- mod_perl list:          modperl@apache.org
 	- DBI list:               dbi-users@perl.org
 	- Mason list:             mason-users@lists.sourceforge.net

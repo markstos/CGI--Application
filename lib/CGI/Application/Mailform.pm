@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.8 2002/05/06 11:15:35 jesse Exp $
+# $Id: Mailform.pm,v 1.9 2002/07/18 11:50:20 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -672,13 +672,12 @@ L<CGI::Application>
 
 =head1 AUTHOR
 
-Jesse Erlbaum <jesse@vm.com>
+Jesse Erlbaum <jesse@erlbaum.net>
 
 
 =head1 LICENSE
 
-Copyright (c) 2001, Jesse Erlbaum <jesse@vm.com> and
-Vanguard Media (http://www.vm.com).  All rights reserved.
+Copyright (c) 2001, 2002, Jesse Erlbaum <jesse@erlbaum.net>.
 
 This library is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.

@@ -1,4 +1,4 @@
-# $Id: TestApp.pm,v 1.4 2001/05/21 03:49:49 jesse Exp $
+# $Id: TestApp.pm,v 1.5 2002/07/18 11:50:20 jesse Exp $
 
 package TestApp;
 
@@ -59,7 +59,7 @@ sub redirect_test {
 
 	$self->header_type('redirect');
 	$self->header_props(
-		-url => 'http://www.vm.com/'
+		-url => 'http://www.erlbaum.net/'
 	);
 
 	return "Hello World: redirect_test";

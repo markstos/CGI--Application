@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.21 2002/05/26 23:26:32 jesse Exp $
+# $Id: Changes,v 1.22 2002/07/18 11:50:20 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -66,7 +66,6 @@ Revision history for Perl extension CGI::Application.
 2.3   Mon May  6 07:12:09 EDT 2002
 	- Fixed minor bug in build system for older Perl versions.
 
-
 2.4   Sat May 25 13:32:44 EDT 2002
 	- Modified tmpl_path() to propagate to HTML::Template's PATH
 	  parameter.  This provides much more useful and intuitive 
@@ -79,4 +78,9 @@ Revision history for Perl extension CGI::Application.
 	- Refactored some test cases, general code clean-up.
 	- Refactored POD a bit to make it less intimidating for
 	  new users.
+
+2.5   Thu Jul 18 07:45:47 EDT 2002
+	- Changed mailing list address.  The new mailing list address.
+	  To subscribe: cgiapp-subscribe@lists.erlbaum.net
+	  To post message: cgiapp@lists.erlbaum.net
 

@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.26 2002/05/26 23:18:46 jesse Exp $
+# $Id: Application.pm,v 1.27 2002/07/18 11:50:20 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '2.4';
+$CGI::Application::VERSION = '2.5';
 
 
 use CGI;
@@ -1355,13 +1355,13 @@ L<CGI>, L<HTML::Template>, perl(1)
 
 =head1 AUTHOR
 
-Jesse Erlbaum <jesse@vm.com>
+Jesse Erlbaum <jesse@erlbaum.net>
 
 B<Support Mailing List>
 
 If you have any questions, comments, bug reports or feature suggestions, 
 post them to the support mailing list!  To join the mailing list, simply
-send a blank message to "cgiapp-subscribe@lists.vm.com".
+send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
 B<More Reading>
@@ -1379,10 +1379,24 @@ community!
 
 =head1 CREDITS
 
-Thanks go to my place of work, Vanguard Media (http://www.vm.com),
-for funding the development of this library, and encouraging me to 
-release it to the world.  If you need a web-application for your 
-business, do check us out!
+CGI::Application is developed by The Erlbaum Group, a software
+engineering and consulting firm in New York City.  If you are looking
+for a company to develop your web site or individual developers to 
+augment your team please contact us:
+
+    The Erlbaum Group
+    250 East 31st Street, suite 6C
+    New York, NY 10016
+
+    Phone: 212-684-6161
+    Fax: 212-684-6226
+    Email: info@erlbaum.net
+    Web: http://www.erlbaum.net
+
+
+Thanks to Vanguard Media (http://www.vm.com) for funding the initial 
+development of this library and for encouraging me to release it to 
+the world.
 
 Many thanks to Sam Tregar (author of the most excellent 
 HTML::Template module!) for his innumerable contributions 
@@ -1401,14 +1415,13 @@ patches which have helped improve CGI::Application --
 Thanks also to all the members of the CGI-App mailing list!
 Your ideas, suggestions, insights (and criticism!) have helped
 shape this module immeasurably.  (To join the mailing list, simply
-send a blank message to "cgiapp-subscribe@lists.vm.com".)
+send a blank message to "cgiapp-subscribe@lists.erlbaum.net".)
 
 
 
 =head1 LICENSE
 
-Copyright (c) 2000, Jesse Erlbaum <jesse@vm.com> and 
-Vanguard Media (http://www.vm.com).  All rights reserved.
+Copyright (c) 2000, 2001, 2002, Jesse Erlbaum <jesse@erlbaum.net>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

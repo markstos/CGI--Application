@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.6 2002/05/06 11:15:35 jesse Exp $
+# $Id: Makefile.PL,v 1.7 2002/07/18 11:50:20 jesse Exp $
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
@@ -11,7 +11,7 @@ WriteMakefile(
 		'Test::More' => 0,
 	},   # Packages used by CGI::Application
 	($] ge '5.005') ? (
-		'AUTHOR' => 'Jesse Erlbaum (jesse@vm.com)',
+		'AUTHOR' => 'Jesse Erlbaum (jesse@erlbaum.net)',
 		'ABSTRACT' => 'Framework for building reusable web-applications',
 	) : (),   # For ActivePerl PPM
 );

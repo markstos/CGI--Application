@@ -13,34 +13,10 @@ Download site for CGI::Application:
   http://www.cpan.org/authors/id/J/JE/JERLBAUM/
 
 
-CHANGES SINCE VERSION 2.1:
-- Added new module CGI::Application::Mailform as both an
-  example of how to use CGI::Application and a useful
-  (albeit simple) reusable web-based application.
-- CGI::Application::Mailform allows the contents of
-  data submitted through HTML forms to be easily sent
-  via email to a specified recipient.  This application
-  is intended to be very easy to reuse, yet secure
-  and functional enough to replace some of the most
-  onerous "mailform" scripts which have been floating
-  around the Internet for ages.
-- Added cgiapp_prerun() hook, for adding global behaviors
-  before the run-mode method is called.  The cgiapp_prerun()
-  gets the name of the run-mode as a parameter.  This would
-  allow the user to perform some action based on the
-  current run-mode.
-- Fixed minor bug in build system for older Perl versions.
-- Modified tmpl_path() to propagate to HTML::Template's PATH 
-  parameter.  This provides much more useful and intuitive
-  behavior.  Thanks to Sam Tregar for the patch!
-- Added prerun_mode() method to allow the run-mode to be
-  dynamically changed inside the cgiapp_prerun() method.  
-  Thanks to Steve Comrie for the suggestion of using a 
-  method call for this function.  Thanks to many other list 
-  members for further refining this idea.
-- Refactored some test cases, general code clean-up.
-- Refactored POD a bit to make it less intimidating for
-  new users.
+CHANGES SINCE VERSION 2.4:
+- Changed mailing list address.  The new mailing list address.
+  To subscribe: cgiapp-subscribe@lists.erlbaum.net
+  To post message: cgiapp@lists.erlbaum.net
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 
@@ -81,6 +57,6 @@ implemented as a Sub-Class of CGI::Application.
 
 If you have any questions, comments, bug reports or feature suggestions, 
 post them to the support mailing list!  To join the mailing list, simply
-send a blank message to "cgiapp-subscribe@lists.vm.com".
+send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
