@@ -1,0 +1,10 @@
+The files in this directory are an example of how to use
+CGI::Application::MailForm, which is provided as a part
+of CGI::Application.  The example files are as follows:
+
+    mailform.html  -- The HTML form.
+    mailform.cgi   -- The instance script.
+    thankyou.html  -- The thank-you HTML page.
+
+Please refer to the POD for CGI::Application::MailForm
+for details on its usage.

@@ -1,7 +1,12 @@
-# $Id: MANIFEST,v 1.9 2001/08/11 18:43:47 jesse Exp $
+# $Id: MANIFEST,v 1.10 2001/08/19 16:13:18 jesse Exp $
 ANNOUNCE
 Application.pm
+Application/MailForm.pm
 Changes
+Examples/MailForm/README
+Examples/MailForm/mailform.cgi
+Examples/MailForm/mailform.html
+Examples/MailForm/thankyou.html
 MANIFEST
 Makefile.PL
 README
