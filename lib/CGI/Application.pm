@@ -1,11 +1,10 @@
-# $Id: Application.pm,v 1.8 2000/07/12 03:01:10 jesse Exp $
+# $Id: Application.pm,v 1.9 2000/07/14 05:52:09 jesse Exp $
 
 package CGI::Application;
 
 use strict;
-use vars qw($VERSION);
 
-$VERSION = '1.1';
+$CGI::Application::VERSION = '1.2';
 
 
 use CGI;
@@ -664,9 +663,9 @@ are expected to be called from your Instance Script.
 
 =item new()
 
-The new() method is the constructor for an OOCGI.  It returns a blessed 
-reference to your Application Module package (class).  Optionally, new() 
-may take a set of parameters as key => value pairs:
+The new() method is the constructor for a CGI::Application.  It returns 
+a blessed reference to your Application Module package (class).  Optionally, 
+new() may take a set of parameters as key => value pairs:
 
     my $webapp = App->new(
 		TMPL_PATH => 'App/',

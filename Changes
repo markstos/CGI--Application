@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.6 2000/07/12 15:16:54 jesse Exp $
+# $Id: Changes,v 1.7 2000/07/14 05:52:09 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -13,3 +13,6 @@ Revision history for Perl extension CGI::Application.
           which requires user to hit CTRL-D to continue
 	- Added ANNOUNCE file.
 
+1.2   Fri Jul 14 01:49:30 EDT 2000
+	- Fixed up the docs a bit
+	- Minor code clean-up
