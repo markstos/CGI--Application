@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.8 2004/01/31 23:33:25 mark Exp $
+# $Id: 01cgiapp.t,v 1.9 2004/02/01 00:35:10 mark Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -415,7 +415,8 @@ $t19_ta_obj = TestApp->new();
 $t19_ta_obj->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
 $t19_output = $t19_ta_obj->run();
 
-if (($t19_output =~ /Test:\ 1/) && ($t19_output =~ /Moved/)) {
+
+if (($t19_output =~ /test:\ 1/) && ($t19_output =~ /Moved/)) {
 	print "ok 19\n";
 } else {
 	print "not ok 19\n";
@@ -426,7 +427,7 @@ $t20_ta_obj = TestApp->new();
 $t20_ta_obj->query(CGI->new({'test_rm' => 'header_props_twice_nomerge'}));
 $t20_output = $t20_ta_obj->run();
 
-if (($t20_output =~ /Test:\ Updated/) && ($t20_output !~ /Second-header:\ 1/) && $t20_output !~ /Test2:/) {
+if (($t20_output =~ /test:\ Updated/) && ($t20_output !~ /second-header:\ 1/) && $t20_output !~ /Test2:/) {
 	print "ok 20\n";
 } else {
 	print "not ok 20\n";
@@ -482,7 +483,7 @@ $t25_ta_obj = TestApp->new();
 $t25_ta_obj->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
 $t25_output = $t25_ta_obj->run();
 
-if (($t25_output =~ /Test:\ 1/) && ($t25_output =~ /Moved/)) {
+if (($t25_output =~ /test:\ 1/) && ($t25_output =~ /Moved/)) {
     print "ok 25\n";
 } else {
     print "not ok 25\n";
