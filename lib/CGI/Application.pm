@@ -1,13 +1,24 @@
-# $Id: Application.pm,v 1.34 2003/06/02 12:43:18 jesse Exp $
+# $Id: Application.pm,v 1.35 2004/02/04 04:02:47 mark Exp $
 
 package CGI::Application;
 
 use strict;
 
-$CGI::Application::VERSION = '3.1';
+$CGI::Application::VERSION = '3.2';
 
 
-use CGI::Carp;
+sub import {
+       my $cgicarp = 1;
+       foreach (@_) { $cgicarp = 0 if /^-nocgicarp$/io }
+       if ($cgicarp) {
+               require CGI::Carp;
+               CGI::Carp->import();
+       }
+       else {
+               require Carp;
+               Carp->import();
+       }
+}
 
 
 ###################################
@@ -89,10 +100,10 @@ sub run {
 
 	# Support call-back instead of CGI mode param
 	if (ref($rm_param) eq 'CODE') {
-		# Get run-mode from subref
+		# Get run mode from subref
 		$rm = $rm_param->($self);
 	} else {
-		# Get run-mode from CGI param
+		# Get run mode from CGI param
 		$rm = $q->param($rm_param);
 	}
 
@@ -106,9 +117,9 @@ sub run {
 	# Allow prerun_mode to be changed
 	delete($self->{__PRERUN_MODE_LOCKED});
 
-	# Call PRE-RUN hook, now that we know the run-mode
-	# This hook can be used to provide run-mode specific behaviors
-	# before the run-mode actually runs.
+	# Call PRE-RUN hook, now that we know the run mode
+	# This hook can be used to provide run mode specific behaviors
+	# before the run mode actually runs.
 	$self->cgiapp_prerun($rm);
 
 	# Lock prerun_mode from being changed after cgiapp_prerun()
@@ -117,7 +128,7 @@ sub run {
 	# If prerun_mode has been set, use it!
 	my $prerun_mode = $self->prerun_mode();
 	if (length($prerun_mode)) {
-		carp ("Replacing previous run-mode '$rm' with prerun_mode '$prerun_mode'") if ($^W);
+		carp ("Replacing previous run mode '$rm' with prerun_mode '$prerun_mode'") if ($^W);
 		$rm = $prerun_mode;
 		$self->{__CURRENT_RUNMODE} = $rm;
 	}
@@ -129,30 +140,40 @@ sub run {
 	if (exists($rmodes{$rm})) {
 		$rmeth = $rmodes{$rm};
 	} else {
-		# Look for run-mode "AUTOLOAD" before dieing
+		# Look for run mode "AUTOLOAD" before dieing
 		unless (exists($rmodes{'AUTOLOAD'})) {
-			croak("No such run-mode '$rm'");
+			croak("No such run mode '$rm'");
 		}
-		carp ("No such run-mode '$rm'.  Using run-mode 'AUTOLOAD'") if ($^W);
+		carp ("No such run mode '$rm'.  Using run mode 'AUTOLOAD'") if ($^W);
 		$rmeth = $rmodes{'AUTOLOAD'};
 		$autoload_mode = 1;
 	}
 
 	# Process run mode!
-        my $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() };
-        die "Error executing run mode '$rm': $@" if $@;
+    my $body;                                                                                         
+    if ($self->can($rmeth)) {                                                                         
+        $body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();                                
+    }                                                                                                 
+    else {                                                                                            
+        $body = eval { $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth() }; 
+        die "Error executing run mode '$rm': $@" if $@;                                               
+    }                                                                                                 
 
-        # Support scalar-ref for body return
-        my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
+    # Make sure that $body is not undefined (supress 'uninitialized value' warnings)
+    $body = "" unless defined $body;
 
-        # Call cgiapp_postrun() hook
-        $self->cgiapp_postrun($bodyref);
+    # Support scalar-ref for body return
+    my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
+
+    # Call cgiapp_postrun() hook
+    $self->cgiapp_postrun($bodyref);
 
 	# Set up HTTP headers
 	my $headers = $self->_send_headers();
 
 	# Build up total output
-	my $output = $headers . $$bodyref;
+	my $output  = $headers.$$bodyref;
+
 
 	# Send output to browser (unless we're in serious debug mode!)
 	unless ($ENV{CGI_APP_RETURN_ONLY}) {
@@ -236,10 +257,10 @@ sub dump {
 	my $self = shift;
 	my $output = '';
 
-	# Dump run-mode
+	# Dump run mode
 	my $current_runmode = $self->get_current_runmode();
 	$current_runmode = "" unless (defined($current_runmode));
-	$output .= "Current Run-mode: '$current_runmode'\n";
+	$output .= "Current Run mode: '$current_runmode'\n";
 
 	# Dump Params
 	$output .= "\nQuery Parameters:\n";
@@ -261,59 +282,91 @@ sub dump {
 
 
 sub dump_html {
-	my $self = shift;
-	my $output = '';
+        my $self   = shift;
+        my $query  = $self->query();
+        my $output = '';
 
-	# Dump run-mode
-	my $current_runmode = $self->get_current_runmode();
-	$output .= "<P>\nCurrent Run-mode: '<B>$current_runmode</B>'<BR>\n";
+        # Dump run-mode                                                                                                                                                                  
+        my $current_runmode = $self->get_current_runmode();
+        $output .= "<p>Current Run-mode:
+'<strong>$current_runmode</strong>'</p>\n";
 
-	# Dump Params
-	$output .= "<P>\nQuery Parameters:<BR>\n<OL>\n";
-	my @params = $self->query->param();
-	foreach my $p (sort(@params)) {
-		my @data = $self->query->param($p);
-		my $data_str = "'<B>".join("</B>', '<B>", @data)."</B>'";
-		$output .= "<LI> $p => $data_str\n";
-	}
-	$output .= "</OL>\n";
+        # Dump Params                                                                                                                                                                    
+        $output .= "<p>Query Parameters:</p>\n";
+        $output .= $query->Dump;
 
-	# Dump ENV
-	$output .= "<P>\nQuery Environment:<BR>\n<OL>\n";
-	foreach my $ek (sort(keys(%ENV))) {
-		$output .= "<LI> $ek => '<B>".$ENV{$ek}."</B>'\n";
-	}
-	$output .= "</OL>\n";
+        # Dump ENV                                                                                                                                                                       
+        $output .= "<p>Query Environment:</p>\n<ol>\n";
+        foreach my $ek ( sort( keys( %ENV ) ) ) {
+                $output .= sprintf(
+                        "<li> %s => '<strong>%s</strong>'</li>\n",
+                        $query->escapeHTML( $ek ),
+                        $query->escapeHTML( $ENV{$ek} )
+                );
+        }                                                                                                                                                                                
+        $output .= "</ol>\n";
 
-	return $output;
+        return $output;
 }
 
 
+sub header_add {
+	my $self = shift;
+    return $self->_header_props_update(\@_,add=>1);
+}
+
 sub header_props {
 	my $self = shift;
-	my (@data) = (@_);
+    return $self->_header_props_update(\@_,add=>0);
+}
+
+# used by header_props and header_add to update the headers
+sub _header_props_update {
+    my $self     = shift;
+    my $data_ref = shift;
+    my %in       = @_;
+
+    my @data = @$data_ref;
 
 	# First use?  Create new __HEADER_PROPS!
 	$self->{__HEADER_PROPS} = {} unless (exists($self->{__HEADER_PROPS}));
 
-	my $rh_p = $self->{__HEADER_PROPS};
+	my $props;
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
+		warn("header_props called while header_type set to 'none', headers will NOT be sent!") if $self->header_type eq 'none';
 		# Is it a hash, or hash-ref?
 		if (ref($data[0]) eq 'HASH') {
 			# Make a copy
-			%$rh_p = %{$data[0]};
+			%$props = %{$data[0]};
 		} elsif ((scalar(@data) % 2) == 0) {
 			# It appears to be a possible hash (even # of elements)
-			%$rh_p = @data;
+			%$props = @data;
 		} else {
-			croak("Odd number of elements passed to header_props().  Not a valid hash")
+            my $meth = $in{add} ? 'add' : 'props';
+			croak("Odd number of elements passed to header_$meth().  Not a valid hash")
 		}
+
+        # merge in new headers, appending new values passed as array refs
+        if ($in{add}) {
+            for my $key_set_to_aref (grep { ref $props->{$_} eq 'ARRAY'} keys %$props) {
+                my $existing_val = $self->{__HEADER_PROPS}->{$key_set_to_aref};
+                next unless defined $existing_val;
+                my @existing_val_array = (ref $existing_val eq 'ARRAY') ? @$existing_val : ($existing_val);
+                $props->{$key_set_to_aref}  = [ @existing_val_array, @{ $props->{$key_set_to_aref} } ];
+            }
+            $self->{__HEADER_PROPS} = { %{ $self->{__HEADER_PROPS} }, %$props };
+        }
+        # Set new headers, clobbering existing values
+        else {
+            $self->{__HEADER_PROPS} = $props;
+        }
+
 	}
 
 	# If we've gotten this far, return the value!
-	return (%$rh_p);
+	return (%{ $self->{__HEADER_PROPS}});
 }
 
 
@@ -321,7 +374,7 @@ sub header_type {
 	my $self = shift;
 	my ($header_type) = @_;
 
-        my @allowed_header_types = qw(header redirect none);
+    my @allowed_header_types = qw(header redirect none);
 
 	# First use?  Create new __HEADER_TYPE!
 	$self->{__HEADER_TYPE} = 'header' unless (exists($self->{__HEADER_TYPE}));
@@ -416,6 +469,17 @@ sub param {
 	return;  # Otherwise, return undef
 }
 
+
+sub delete {
+        my $self = shift;
+        my ($param) = @_;
+        #return undef it it isn't defined
+        return undef if(!defined($param));
+                                                                                                                                                             
+        #simply delete this param from $self->{__PARAMS}
+        delete $self->{__PARAMS}->{$param};
+}
+                                                                                                                                                             
 
 sub query {
 	my $self = shift;
@@ -784,9 +848,9 @@ the form submission.  This is the key to CGI::Application.
 =head1 ABSTRACT
 
 The guiding philosophy behind CGI::Application is that a web-based 
-application can be organized into a specific set of "Run-Modes."
-Each Run-Mode is roughly analogous to a single screen (a form, some 
-output, etc.).  All the Run-Modes are managed by a single "Application 
+application can be organized into a specific set of "Run Modes."
+Each Run Mode is roughly analogous to a single screen (a form, some 
+output, etc.).  All the Run Modes are managed by a single "Application 
 Module" which is a Perl module.  In your web server's document space
 there is an "Instance Script" which is called by the web server as a 
 CGI (or an Apache::Registry script if you're using Apache + mod_perl).
@@ -995,10 +1059,10 @@ built on object-oriented inheritance.
 =item cgiapp_prerun()
 
 If implemented, this method is called automatically right before the
-selected run-mode method is called.  This method provides an optional
+selected run mode method is called.  This method provides an optional
 pre-runmode hook, which permits functionality to be added at the point
-right before the run-mode method is called.  To further leverage this
-hook, the value of the run-mode is passed into cgiapp_prerun().
+right before the run mode method is called.  To further leverage this
+hook, the value of the run mode is passed into cgiapp_prerun().
   
 Another benefit provided by utilizing this hook is
 creating a custom "application super-class" from which all
@@ -1012,7 +1076,7 @@ Consider the following:
   sub cgiapp_prerun {
 	my $self = shift;
 	# Perform some project-specific init behavior
-	# such as to implement run-mode specific
+	# such as to implement run mode specific
 	# authorization functions.
   }
 
@@ -1031,14 +1095,14 @@ characteristics.  This has the potential for much cleaner code
 built on object-oriented inheritance.
 
 It is also possible, within your cgiapp_prerun() method, to change the
-run-mode of your application.  This can be done via the prerun_mode()
+run mode of your application.  This can be done via the prerun_mode()
 method, which is discussed elsewhere in this POD.
 
 
 
 =item cgiapp_postrun()
 
-If implemented, this hook will be called after the run-mode method
+If implemented, this hook will be called after the run mode method
 has returned its output, but before HTTP headers are generated.  This
 will give you an opportunity to modify the body and headers before they 
 are returned to the web browser.
@@ -1049,17 +1113,17 @@ through a series of "filter" processors.  For example:
   * You want to enclose the output of all your CGI-Applications in 
     an HTML table in a larger page.
 
-  * Your run-modes return structured data (such as XML), which you
+  * Your run modes return structured data (such as XML), which you
     want to transform using a standard mechanism (such as XSLT).
 
   * You want to post-process CGI-App output through another system,
     such as HTML::Mason.
 
   * You want to modify HTTP headers in a particular way across all
-    run-modes, based on particular criteria.
+    run modes, based on particular criteria.
 
 The cgiapp_postrun() hook receives a reference to the output from
-your run-mode method, in addition to the CGI-App object.  A typical
+your run mode method, in addition to the CGI-App object.  A typical
 cgiapp_postrun() method might be implemented as follows:
 
   sub cgiapp_postrun {
@@ -1073,18 +1137,17 @@ cgiapp_postrun() method might be implemented as follows:
     $new_output .= "</table>";
 
     # Replace old output with new output
-    $output_ref = \$new_output;
+    $$output_ref = $new_output;
   }
 
 
-Obviously, with access to the CGI-App object you have full access to
-use all the methods normally available in a run-mode.  You could, for 
-example, use load_tmpl() to replace the static HTML in this example
-with HTML::Template.  You could change the HTTP headers (via 
-header_type() and header_props() methods) to set up a redirect.
-You could also use the objects properties to 
-apply changes only under certain circumstance, such as a in only 
-certain run-modes, and when a param() is a particular value.
+Obviously, with access to the CGI-App object you have full access to use all
+the methods normally available in a run mode.  You could, for example, use
+load_tmpl() to replace the static HTML in this example with HTML::Template.
+You could change the HTTP headers (via header_type() and header_props()
+methods) to set up a redirect.  You could also use the objects properties
+to apply changes only under certain circumstance, such as a in only certain run
+modes, and when a param() is a particular value.
 
 
 =item cgiapp_get_query()
@@ -1124,6 +1187,19 @@ Module.  These functions are listed in alphabetical order.
 
 =over 4
 
+=item delete()
+                                                                                                                                                             
+    $webapp->delete('my_param');
+                                                                                                                                                             
+The delete() method is used to delete a parameter that was previously
+stored inside of your application either by using the PARAMS hash that
+was passed in your call to new() or by a call to the param() method.
+This is similar to the delete() method of CGI.pm. It is useful if your
+application makes decisions based on the existence of certain params that
+may have been removed in previous sections of your app or simply to
+clean-up your param()s.
+                                                                                                                                                             
+
 =item dump()
 
     print STDERR $webapp->dump();
@@ -1143,6 +1219,28 @@ a chunk of text which contains all the environment and CGI form
 data of the request, formatted nicely for human readability via 
 a web browser.  Useful for outputting to a browser.
 
+=item header_add()
+
+    # add or replace the 'type' header
+    $webapp->header_add( -type => 'image/png' );
+
+    - or -
+
+    # add an additional cookie
+    $webapp->header_add(-cookie=>[$extra_cookie]);
+
+The header_add() method is used to add one or more headers to the outgoing
+response headers.  The parameters will eventuallly be passed on to the CGI.pm
+header() method, so refer to the L<CGI> docs for exact usage details.  
+
+Unlike calling header_props(), header_add() will preserve any existing
+headers. If a scalar value is passed to header_add() it will replace
+the existing value for that key.
+
+If an array reference is passed as a value to header_add(), values in
+that array ref will be appended to any existing values values for that key.
+This is primarily useful for setting an additional cookie after one has already
+been set.
 
 =item header_props()
 
@@ -1151,12 +1249,18 @@ a web browser.  Useful for outputting to a browser.
 The header_props() method expects a hash of CGI.pm-compatible 
 HTTP header properties.  These properties will be passed directly 
 to CGI.pm's header() or redirect() methods.  Refer to L<CGI> 
-for usage details.
+for exact usage details.  
+
+Calling header_props will clobber any existing headers that have
+previously set. 
+
+To add additional headers later without clobbering the old ones,
+see L<header_add()>.
 
 
 B<IMPORTANT NOTE REGARDING HTTP HEADERS>
 
-It is through the header_props() method that you may modify the outgoing 
+It is through the header_props() and header_add() method that you may modify the outgoing 
 HTTP headers.  This is necessary when you want to set a cookie, set the mime 
 type to something other than "text/html", or perform a redirect.  The 
 header_props() method works in conjunction with the header_type() method.  
@@ -1234,14 +1338,14 @@ Alternatively you can set mode_param() to use a call-back via subroutine referen
     $webapp->mode_param(\&some_method);
 
 This would allow you to create an instance method whose output would
-be used as the value of the current run-mode.  E.g., a "mode param method":
+be used as the value of the current run mode.  E.g., a "mode param method":
 
     sub some_method {
       my $self = shift;
       return 'run_mode_x';
     }
 
-This would allow you to programmatically set the run-mode based on something 
+This would allow you to programmatically set the run mode based on something 
 besides the value of a CGI parameter -- $ENV{PATH_INFO}, for example.
 
 
@@ -1317,46 +1421,46 @@ the QUERY attribute.
 This accessor/mutator expects a hash which specifies the dispatch table for the 
 different CGI states.  The run() method uses the data in this table 
 to send the CGI to the correct function as determined by reading 
-the CGI parameter specified by mode_param() (defaults to 'rm' for "Run-Mode").  
-These functions are referred to as "run-mode methods".
+the CGI parameter specified by mode_param() (defaults to 'rm' for "Run Mode").  
+These functions are referred to as "run mode methods".
 
 The hash table set by this method is expected to contain the mode 
 name as a key.  The value should be either a hard reference (a subref) 
-to the run-mode method which you want to be called when the CGI enters 
-the specified run-mode, or the name of the run-mode method to be called:
+to the run mode method which you want to be called when the CGI enters 
+the specified run mode, or the name of the run mode method to be called:
 
     'mode_name_by_ref'  => \&mode_function
     'mode_name_by_name' => 'mode_function'
 
-The run-mode method specified is expected to return a block of text 
+The run mode method specified is expected to return a block of text 
 (e.g.: HTML) which will eventually be sent back to the web browser.  
-The your run-mode method may return its block of text as a scalar 
+The your run mode method may return its block of text as a scalar 
 or a scalar-ref.
 
-An advantage of specifying your run-mode methods by name instead of 
+An advantage of specifying your run mode methods by name instead of 
 by reference is that you can more easily create derivative application 
 using inheritance.  For instance, if you have a new application which is
 exactly the same as an existing application with the exception of one
-run-mode, you could simply inherit from that other application and override
-the run-mode method which is different.  If you specified your run-mode 
+run mode, you could simply inherit from that other application and override
+the run mode method which is different.  If you specified your run mode 
 method by reference, your child class would still use the function
 from the parent class.
 
-An advantage of specifying your run-mode methods by reference instead of by name 
+An advantage of specifying your run mode methods by reference instead of by name 
 is performance.  Dereferencing a subref is faster than eval()-ing 
 a code block.  If run-time performance is a critical issue, specify
-your run-mode methods by reference and not by name.  The speed differences
+your run mode methods by reference and not by name.  The speed differences
 are generally small, however, so specifying by name is preferred.
 
 The run_modes() method may be called more than once.  Additional values passed 
-into run_modes() will be added to the run-modes table.  In the case that an 
-existing run-mode is re-defined, the new value will override the existing value.
+into run_modes() will be added to the run modes table.  In the case that an 
+existing run mode is re-defined, the new value will override the existing value.
 This behavior might be useful for applications which are created via inheritance 
 from another application, or some advanced application which modifies its
 own capabilities based on user input.
 
 The run_modes() method also supports a second interface for designating 
-run-modes and their methods:  Via array reference:
+run modes and their methods:  Via array reference:
 
     $webapp->run_modes([ 'mode1', 'mode2', 'mode3' ]);
 
@@ -1368,11 +1472,11 @@ This is the same as the following, via hash:
         'mode3' => 'mode3'
     );
 
-Often, it makes good organizational sense to have your run-modes map to
+Often, it makes good organizational sense to have your run modes map to
 methods of the same name.  The array-ref interface provides a shortcut 
 to that behavior while reducing verbosity of your code.
 
-Note that another importance of specifying your run-modes in either a 
+Note that another importance of specifying your run modes in either a 
 hash or array-ref is to assure that only those Perl methods which are 
 specifically designated may be called via your application.  Application
 environments which don't specify allowed methods and disallow all others
@@ -1383,7 +1487,7 @@ to be built upon it.
 
 
 
-B<IMPORTANT NOTE ABOUT RUN-MODE METHODS>
+B<IMPORTANT NOTE ABOUT RUN MODE METHODS>
 
 Your application should *NEVER* print() to STDOUT.
 Using print() to send output to STDOUT (including HTTP headers) is 
@@ -1392,21 +1496,21 @@ rule is a common source of errors.  If your program is erroneously
 sending content before your HTTP header, you are probably breaking this rule.
 
 
-B<THE RUN-MODE OF LAST RESORT: "AUTOLOAD">
+B<THE RUN MODE OF LAST RESORT: "AUTOLOAD">
 
-If CGI::Application is asked to go to a run-mode which doesn't exist
+If CGI::Application is asked to go to a run mode which doesn't exist
 it will usually croak() with errors.  If this is not your desired 
 behavior, it is possible to catch this exception by implementing 
-a run-mode with the reserved name "AUTOLOAD":
+a run mode with the reserved name "AUTOLOAD":
 
   $self->run_modes(
 	"AUTOLOAD" => \&catch_my_exception
   );
 
 Before CGI::Application calls croak() it will check for the existence 
-of a run-mode called "AUTOLOAD".  If specified, this run-mode will in 
-invoked just like a regular run-mode, with one exception:  It will 
-receive, as an argument, the name of the run-mode which invoked it:
+of a run mode called "AUTOLOAD".  If specified, this run mode will in 
+invoked just like a regular run mode, with one exception:  It will 
+receive, as an argument, the name of the run mode which invoked it:
 
   sub catch_my_exception {
 	my $self = shift;
@@ -1446,7 +1550,7 @@ template files, using HTML::Template's C<path> option.
     $webapp->prerun_mode('new_run_mode');
 
 The prerun_mode() method is an accessor/mutator which can be used within 
-your cgiapp_prerun() method to change the run-mode which is about to be executed.
+your cgiapp_prerun() method to change the run mode which is about to be executed.
 For example, consider:
 
   # In WebApp.pm:
@@ -1466,24 +1570,24 @@ For example, consider:
   }
 
 
-In this example, the web user will be forced into the "login" run-mode
+In this example, the web user will be forced into the "login" run mode
 unless they have already logged in.  The prerun_mode() method permits
-a scalar text string to be set which overrides whatever the run-mode
+a scalar text string to be set which overrides whatever the run mode
 would otherwise be.
 
 The use of prerun_mode() within cgiapp_prerun() differs from setting 
 mode_param() to use a call-back via subroutine reference.  It differs 
-because cgiapp_prerun() allows you to selectively set the run-mode based 
+because cgiapp_prerun() allows you to selectively set the run mode based 
 on some logic in your cgiapp_prerun() method.  The call-back facility of 
 mode_param() forces you to entirely replace CGI::Application's mechanism 
-for determining the run-mode with your own method.  The prerun_mode()
+for determining the run mode with your own method.  The prerun_mode()
 method should be used in cases where you want to use CGI::Application's
-normal run-mode switching facility, but you want to make selective
+normal run mode switching facility, but you want to make selective
 changes to the mode under specific conditions.
 
 B<Note:>  The prerun_mode() method may ONLY be called in the context of
 a cgiapp_prerun() method.  Your application will die() if you call 
-prerun_mode() elsewhere, such as in setup() or a run-mode method.
+prerun_mode() elsewhere, such as in setup() or a run mode method.
 
 
 
@@ -1492,20 +1596,59 @@ prerun_mode() elsewhere, such as in setup() or a run-mode method.
     $webapp->get_current_runmode();
 
 The get_current_runmode() method will return a text scalar containing
-the name of the run-mode which is currently being executed.  If the 
-run-mode has not yet been determined, such as during setup(), this method
+the name of the run mode which is currently being executed.  If the 
+run mode has not yet been determined, such as during setup(), this method
 will return undef.
 
 
+=head2 Testing
+                                                                                                                                                             
+CGI::Application currently has no built-in testing methodology but we leave that
+up to you. There are many testing structures and frameworks that are available for
+testing Perl modules (ie, Test::Harness, Test::More). There are large numbers
+of tools and frameworks for testing live web applications (WWW::Mechanize, HTTP::Test,
+Apache::Test). We encourage you to look around CPAN and find the one that
+best meets your needs.
+                                                                                                                                                             
+Since most of the module level testing frameworks require the output that is sent to
+STDOUT be of a certain format, and since CGI::Application will print the output of it's
+run modes directly to STDOUT this could cause problems. To avoid this simple set the
+environment variable 'CGI_APP_RETURN_ONLY' to true and you can catch your output and
+test it and then print your own message to STDOUT. For example
+                                                                                                                                                             
+        $ENV{CGI_APP_RETURN_ONLY} = 1;
+        $output = $webapp->run();
+                                                                                                                                                             
+        #perform whatever test on the output that you want and then print to STDOUT
+        if($output =~ /GOOD/){
+                print "ok 11\n";
+        } else {
+                print "not ok 11\n";
+        }
+                                                                                                                                                             
 
-=head1 SEE ALSO
+=head2 A Note on CGI::Carp
 
-L<CGI>, L<HTML::Template>, perl(1)
+By default CGI::Application uses CGI::Carp to produce more useful error and
+warning messages. An option is provided to use "Carp" instead, for
+cases where using CGI::Carp might be problematic or undesirable.
 
+To use Carp instead of CGI::Carp, load CGI::Application with this syntax:
 
-=head1 AUTHOR
+  use CGI::Application qw(-nocgicarp);
 
-Jesse Erlbaum <jesse@erlbaum.net>
+=head1 COMMUNITY
+
+There a couple of primary resources available for those who wish to learn more
+about CGI::Application and discuss it with others.
+
+B<Wiki>
+
+This is a community built and maintained resource that anyone is welcome to
+contribute to. It contains a number of articles of its own and links
+to many other CGI::Application related pages:
+
+L<http://twiki.med.yale.edu/twiki2/bin/view/CGIapp/WebHome>
 
 B<Support Mailing List>
 
@@ -1513,6 +1656,14 @@ If you have any questions, comments, bug reports or feature suggestions,
 post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
+=head1 SEE ALSO
+
+L<CGI>, L<HTML::Template>, L<CGI::Application::ValidateRM> perl(1)
+
+
+=head1 AUTHOR
+
+Jesse Erlbaum <jesse@erlbaum.net>
 
 B<More Reading>
 
