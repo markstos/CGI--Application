@@ -1,4 +1,4 @@
-# $Id: TestApp7.pm,v 1.1 2003/01/21 20:45:20 jesse Exp $
+# $Id: TestApp7.pm,v 1.2 2004/01/31 23:33:28 mark Exp $
 
 package TestApp7;
 
@@ -29,7 +29,7 @@ sub cgiapp_get_query {
 }
 
 
-####  Run-Mode Methods
+####  Run Mode Methods
 
 sub testcgi_mode {
 	my $self = shift;

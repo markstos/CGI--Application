@@ -17,7 +17,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
 	my $output = $ta_obj->run();
 
-	# Did the run-mode work?
+	# Did the run mode work?
 	like($output, qr/^Content\-Type\:\ text\/html/);
 	like($output, qr/Hello\ World\:\ prerun\_test\ OK/);
 
@@ -36,7 +36,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $ta_obj = TestApp6->new(QUERY=>CGI->new('rm=prerun_mode_test'));
 	my $output = $ta_obj->run();
 
-	# Did the run-mode work?
+	# Did the run mode work?
 	like($output, qr/^Content\-Type\:\ text\/html/);
 
 	# We will be in mode 'new_prerun_mode_test' if everything is working

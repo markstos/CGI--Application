@@ -1,88 +1,51 @@
-# $Id: Changes,v 1.30 2003/06/03 12:17:23 jesse Exp $
+# $Id: Changes,v 1.31 2004/01/31 23:33:10 mark Exp $
 
 Revision history for Perl extension CGI::Application.
 
-0.01  Mon Jul  3 20:40:30 2000
-	- original version; created by h2xs 1.19
+3.2   Sat Jan 31, 2003  
+    - header_add() has been added to allow setting extra headers, particularly cookies,
+      after header_props has already been called (Cees Hek, Mark Stosberg)
+    - CGI::Carp is now optional. See docs for details. (Steve Hay)
+    - Avoid 'unitialized value' warning on redirects (Cees Hek)
+    - Some tests added (Mark Stosberg)
+    - Updated documentation to use term "Run Mode" consistently, versus "Run-Mode" with
+      a dash. Run-mode-with-a-dash is dead. Don't revive it. Also added mentions
+      of the CGI::Application wiki and CGI::Application::ValidateRM
+      (Mark Stosberg)
+    - Fixed typo in cgiapp_postrun documentation (Steve Hay)
+    - Improved exception handling (Steve Hay)
+    - delete() method added to remove items stored using param() (Michael Peters)
+    - 'CGI_APP_RETURN_ONLY' environment variable that is used for testing is now 
+	documented (Michael Peters)
+    - dump_html() is now properly HTML-escaped (podmaster, Brian Cassidy)
+    - Migrated from Makefile.PL to Build.PL. Either can now be used for installation.
+    - Updated 'Changes' file to put new releases on top.
 
-1.0   Mon Jul  10 23:47:30 2000
-	- Release 1.0 complete.  Woohoo!
+3.1   Mon Jun  2 07:54:31 EDT 2003
+    - Changed dump_html default run mode to be referenced by name 
+      instead of sub-ref.  This allows dump_html() to be overridden 
+      in sub-class.
+	- Added current run mode to output of dump() and dump_html().
+	  (Thanks to Mark Stosberg for the suggestion.)
+	- Added example of doing an HTTP redirect (suggested by Sam Tregar)
+	- Fixed bug where non-CGI.pm query objects couldn't be set
+	  at initialization time via the new() method.  (Thanks to Steve 
+	  Hay for the catch.)
+    - Added header_type("none") to surpress HTTP header output.
+      (Thanks to Steve Comrie for the suggestion.)
+    - Numerous typos corrected in POD.
+    - Added cgiapp_postrun() hook.  This hook allows run mode output
+      to be "pipelined" through optional filters, modifying the
+      content and HTTP headers if so desired.
 
-1.1   Tue Jul 11 22:59:17 EDT 2000
-	- Tweaked test.pl to avoid CGI.pm command line debugging interface 
-          which requires user to hit CTRL-D to continue
-	- Added ANNOUNCE file.
-
-1.2   Fri Jul 14 01:49:30 EDT 2000
-	- Modified load_tmpl() to pass extra params to HTML::Template->new_file().
-	- Fixed up the docs a bit.
-	- Minor code clean-up.
-
-1.3   Sun May 20 18:48:36 EDT 2001
-	- Enhanced capabilities for creating general superclasses for your projects.
-	- All run modes may be referenced by method name, in addition to subref.
-	- Created cgiapp_init() hook to allow for inherited common behaviors.
-	- Fixed minor bugs in default values.
-
-1.31  Mon May 28 14:06:16 EDT 2001
-	- Updated docs to favor new name-based run-mode method references.
-
-2.0   Sun Jun 24 23:01:58 EDT 2001
-	- Added ability to set mode_param() to use a call-back instance method
-	  (specified by subref) instead of a CGI parameter.
-	- HTML::Template is now only loaded if load_tmpl() is called.
-	  (Thanks to Stephen Howard for the two preceding ideas!)
-	- Run-modes may now return scalar-refs in addition to scalars.
-	- Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
-	- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
-
-2.1   Sat Aug 11 12:57:49 EDT 2001
-	- The param() method has been extended to allow multiple parameters
-	  to be set at one time, via a hash (or hashref).
-	- Fixed bug in run() method where a null-string run-mode would be
-	  considered valid.  A zero-length run-mode will now result in the 
-	  start_mode() being called.
-	  (Thanks to Mark Stosberg for the two preceding ideas!)
-	- The run_mode() method now may be called a subsequent time to 
-	  amend the list of run-modes.
-
-2.2   Sun Aug 19 12:20:21 EDT 2001
-	- Added new module CGI::Application::Mailform as both an 
-	  example of how to use CGI::Application and a useful
-	  (albeit simple) reusable web-based application.
-	- CGI::Application::Mailform allows the contents of 
-	  data submitted through HTML forms to be easily sent
-	  via email to a specified recipient.  This application 
-	  is intended to be very easy to reuse, yet secure
-	  and functional enough to replace some of the most
-	  onerous "mailform" scripts which have been floating
-	  around the Internet for ages. 
-	- Added cgiapp_prerun() hook, for adding global behaviors 
-	  before the run-mode method is called.  The cgiapp_prerun()
-	  gets the name of the run-mode as a parameter.  This would
-	  allow the user to perform some action based on the
-	  current run-mode.
-
-2.3   Mon May  6 07:12:09 EDT 2002
-	- Fixed minor bug in build system for older Perl versions.
-
-2.4   Sat May 25 13:32:44 EDT 2002
-	- Modified tmpl_path() to propagate to HTML::Template's PATH
-	  parameter.  This provides much more useful and intuitive 
-	  behavior.  Thanks to Sam Tregar for the patch!
-	- Added prerun_mode() method to allow the run-mode to be
-	  dynamically changed inside the cgiapp_prerun() method.  
-	  Thanks to Steve Comrie for the suggestion of using a 
-	  method call for this function.  Thanks to many other list 
-	  members for further refining this idea.
-	- Refactored some test cases, general code clean-up.
-	- Refactored POD a bit to make it less intimidating for
-	  new users.
-
-2.5   Thu Jul 18 07:45:47 EDT 2002
-	- Changed mailing list address.  The new mailing list address.
-	  To subscribe: cgiapp-subscribe@lists.erlbaum.net
-	  To post message: cgiapp@lists.erlbaum.net
+3.0   Sat Feb  1 02:27:19 EST 2003
+	- Changed run_modes() method to allow list of run modes to be 
+	  designated via an array reference.  This will automatically
+	  create a run modes table which maps from a run mode to a 
+	  run mode method of the same name.  Bumped major revision
+	  number to reflect this significant change in functionality.
+	- Clarified license for module (GPL or Artistic).  Included
+	  licenses in distribution package.
 
 2.6   Mon Oct  7 07:34:35 EDT 2002
 	- Changed the run() method to use Perl's built-in dynamic method
@@ -97,28 +60,84 @@ Revision history for Perl extension CGI::Application.
 	  that it is sufficiently compatible.  Thanks to Eric Andreychek
 	  for the suggestion and his help troubleshooting the code.
 
-3.0   Sat Feb  1 02:27:19 EST 2003
-	- Changed run_modes() method to allow list of run-modes to be 
-	  designated via an array reference.  This will automatically
-	  create a run-modes table which maps from a run-mode to a 
-	  run-mode method of the same name.  Bumped major revision
-	  number to reflect this significant change in functionality.
-	- Clarified license for module (GPL or Artistic).  Included
-	  licenses in distribution package.
+2.5   Thu Jul 18 07:45:47 EDT 2002
+	- Changed mailing list address.  The new mailing list address.
+	  To subscribe: cgiapp-subscribe@lists.erlbaum.net
+	  To post message: cgiapp@lists.erlbaum.net
 
-3.1   Mon Jun  2 07:54:31 EDT 2003
-        - Changed dump_html default run-mode to be referenced by name 
-          instead of sub-ref.  This allows dump_html() to be overridden 
-          in sub-class.
-	- Added current run-mode to output of dump() and dump_html().
-	  (Thanks to Mark Stosberg for the suggestion.)
-	- Added example of doing an HTTP redirect (suggested by Sam Tregar)
-	- Fixed bug where non-CGI.pm query objects couldn't be set
-	  at initialization time via the new() method.  (Thanks to Steve 
-	  Hay for the catch.)
-        - Added header_type("none") to suppress HTTP header output.
-          (Thanks to Steve Comrie for the suggestion.)
-        - Numerous typos corrected in POD.
-        - Added cgiapp_postrun() hook.  This hook allows run-mode output
-          to be "pipelined" through optional filters, modifying the
-          content and HTTP headers if so desired.
+2.4   Sat May 25 13:32:44 EDT 2002
+	- Modified tmpl_path() to propagate to HTML::Template's PATH
+	  parameter.  This provides much more useful and intuitive 
+	  behavior.  Thanks to Sam Tregar for the patch!
+	- Added prerun_mode() method to allow the run mode to be
+	  dynamically changed inside the cgiapp_prerun() method.  
+	  Thanks to Steve Comrie for the suggestion of using a 
+	  method call for this function.  Thanks to many other list 
+	  members for further refining this idea.
+	- Refactored some test cases, general code clean-up.
+	- Refactored POD a bit to make it less intimidating for
+	  new users.
+
+2.3   Mon May  6 07:12:09 EDT 2002
+	- Fixed minor bug in build system for older Perl versions.
+
+2.2   Sun Aug 19 12:20:21 EDT 2001
+	- Added new module CGI::Application::Mailform as both an 
+	  example of how to use CGI::Application and a useful
+	  (albeit simple) reusable web-based application.
+	- CGI::Application::Mailform allows the contents of 
+	  data submitted through HTML forms to be easily sent
+	  via email to a specified recipient.  This application 
+	  is intended to be very easy to reuse, yet secure
+	  and functional enough to replace some of the most
+	  onerous "mailform" scripts which have been floating
+	  around the Internet for ages. 
+	- Added cgiapp_prerun() hook, for adding global behaviors 
+	  before the run mode method is called.  The cgiapp_prerun()
+	  gets the name of the run mode as a parameter.  This would
+	  allow the user to perform some action based on the
+	  current run mode.
+
+2.1   Sat Aug 11 12:57:49 EDT 2001
+	- The param() method has been extended to allow multiple parameters
+	  to be set at one time, via a hash (or hashref).
+	- Fixed bug in run() method where a null-string run mode would be
+	  considered valid.  A zero-length run mode will now result in the 
+	  start_mode() being called.
+	  (Thanks to Mark Stosberg for the two preceding ideas!)
+	- The run_mode() method now may be called a subsequent time to 
+	  amend the list of run modes.
+
+2.0   Sun Jun 24 23:01:58 EDT 2001
+	- Added ability to set mode_param() to use a call-back instance method
+	  (specified by subref) instead of a CGI parameter.
+	- HTML::Template is now only loaded if load_tmpl() is called.
+	  (Thanks to Stephen Howard for the two preceding ideas!)
+	- Run modes may now return scalar-refs in addition to scalars.
+	- Added new run mode of last resort: "AUTOLOAD".  See POD for usage.
+	- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
+
+1.31  Mon May 28 14:06:16 EDT 2001
+	- Updated docs to favor new name-based run mode method references.
+
+1.3   Sun May 20 18:48:36 EDT 2001
+	- Enhanced capabilities for creating general superclasses for your projects.
+	- All run modes may be referenced by method name, in addition to subref.
+	- Created cgiapp_init() hook to allow for inherited common behaviors.
+	- Fixed minor bugs in default values.
+
+1.2   Fri Jul 14 01:49:30 EDT 2000
+	- Modified load_tmpl() to pass extra params to HTML::Template->new_file().
+	- Fixed up the docs a bit.
+	- Minor code clean-up.
+
+1.1   Tue Jul 11 22:59:17 EDT 2000
+	- Tweaked test.pl to avoid CGI.pm command line debugging interface 
+          which requires user to hit CTRL-D to continue
+	- Added ANNOUNCE file.
+
+1.0   Mon Jul  10 23:47:30 2000
+	- Release 1.0 complete.  Woohoo!
+
+0.01  Mon Jul  3 20:40:30 2000
+	- original version; created by h2xs 1.19

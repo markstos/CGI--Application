@@ -1,27 +1,29 @@
-Version 3.1 of CGI::Application is now available via CPAN!
+Version 3.2 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
 
   http://search.cpan.org/dist/CGI-Application/
 
+CHANGES SINCE VERSION 3.1:
 
-CHANGES SINCE VERSION 3.0:
-- Changed dump_html default run-mode to be referenced by name 
-  instead of sub-ref.  This allows dump_html() to be overridden 
-  in sub-class.
-- Added current run-mode to output of dump() and dump_html().
-  (Thanks to Mark Stosberg for the suggestion.)
-- Added example of doing an HTTP redirect (suggested by Sam Tregar)
-- Fixed bug where non-CGI.pm query objects couldn't be set
-  at initialization time via the new() method.  (Thanks to Steve 
-  Hay for the catch.)
-- Added header_type("none") to suppress HTTP header output.
-  (Thanks to Steve Comrie for the suggestion.)
-- Numerous typos corrected in POD.
-- Added cgiapp_postrun() hook.  This hook allows run-mode output
-  to be "pipelined" through optional filters, modifying the
-  content and HTTP headers if so desired.
+- header_add() has been added to allow setting extra headers, particularly cookies,
+  after header_props has already been called (Cees Hek, Mark Stosberg)
+- CGI::Carp is now optional. See docs for details. (Steve Hay)
+- Avoid 'unitialized value' warning on redirects (Cees Hek)
+- Some tests added (Mark Stosberg)
+- Updated documentation to use term "Run Mode" consistently, versus "Run-Mode" with
+  a dash. Run-mode-with-a-dash is dead. Don't revive it. Also added mentions
+  of the CGI::Application wiki and CGI::Application::ValidateRM
+  (Mark Stosberg)
+- Fixed typo in cgiapp_postrun documentation (Steve Hay)
+- Improved exception handling (Steve Hay)
+- delete() method added to remove items stored using param() (Michael Peters)
+- 'CGI_APP_RETURN_ONLY' environment variable that is used for testing is now 
+    documented (Michael Peters)
+- dump_html() is now properly HTML-escaped (podmaster, Brian Cassidy)
+- Migrated from Makefile.PL to Build.PL. Either can now be used for installation.
+- Updated 'Changes' file to put new releases on top.
 
 
 Read the article "Using CGI::Application" on Perl.com for an 
@@ -42,9 +44,9 @@ technologies and techniques which would bind a developer to any one set
 of tools, operating system or web server.
 
 The guiding philosophy behind CGI::Application is that a web-based
-application can be organized into a specific set of "Run-Modes." Each
-Run-Mode is roughly analogous to a single screen (a form, some output, etc).
-All the Run-Modes are managed by a single "Application Module" which is a
+application can be organized into a specific set of "Run Modes." Each
+Run Mode is roughly analogous to a single screen (a form, some output, etc).
+All the Run Modes are managed by a single "Application Module" which is a
 Perl module. In your web server's document space there is an "Instance
 Script" which is called by the web server as a CGI (or an Apache::Registry
 script if you're using Apache + mod_perl).
@@ -59,4 +61,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
-# $Id: ANNOUNCE,v 1.26 2003/06/03 12:17:23 jesse Exp $
+# $Id: ANNOUNCE,v 1.27 2004/01/31 23:33:10 mark Exp $

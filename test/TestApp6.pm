@@ -1,4 +1,4 @@
-# $Id: TestApp6.pm,v 1.2 2002/05/26 23:18:47 jesse Exp $
+# $Id: TestApp6.pm,v 1.3 2004/01/31 23:33:28 mark Exp $
 
 package TestApp6;
 
@@ -40,7 +40,7 @@ sub cgiapp_prerun {
 	$self->param('PRERUN_RUNMODE', $rm);
 
 	if ($self->get_current_runmode() eq 'prerun_mode_test') {
-		# Override the current run-mode
+		# Override the current run mode
 		$self->prerun_mode('new_prerun_mode_test');
 	}
 

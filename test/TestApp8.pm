@@ -1,4 +1,4 @@
-# $Id: TestApp8.pm,v 1.1 2003/02/01 07:48:09 jesse Exp $
+# $Id: TestApp8.pm,v 1.2 2004/01/31 23:33:28 mark Exp $
 
 package TestApp8;
 
@@ -21,7 +21,7 @@ sub setup {
 }
 
 
-####  Run-Mode Methods
+####  Run Mode Methods
 
 sub testcgi1_mode {
 	my $self = shift;

@@ -14,7 +14,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $ta_obj = TestApp7->new();
 	my $output = $ta_obj->run();
 
-	# Did the run-mode work?
+	# Did the run mode work?
 	like($output, qr/^Content\-Type\:\ text\/html/);
 	like($output, qr/Hello\ World\:\ testcgi\_mode\ OK/);
 }

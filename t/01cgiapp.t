@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.7 2002/10/07 00:09:18 jesse Exp $
+# $Id: 01cgiapp.t,v 1.8 2004/01/31 23:33:25 mark Exp $
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
@@ -7,7 +7,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..19\n"; }
+BEGIN { $| = 1; print "1..26\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use CGI::Application;
 $loaded = 1;
@@ -79,7 +79,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 6: run() CGI::Application sub-class, in run-mode 'redirect_test'.  Expect HTTP redirect header + 'Hello World: redirect_test'.
+# Test 6: run() CGI::Application sub-class, in run mode 'redirect_test'.  Expect HTTP redirect header + 'Hello World: redirect_test'.
 {
 	my $t6_ta_obj = TestApp->new();
 	$t6_ta_obj->query(CGI->new({'test_rm' => 'redirect_test'}));
@@ -92,7 +92,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 7: run() CGI::Application sub-class, in run-mode 'cookie_test'.  Expect HTTP header w/ cookie 'c_name' => 'c_value' + 'Hello World: cookie_test'.
+# Test 7: run() CGI::Application sub-class, in run mode 'cookie_test'.  Expect HTTP header w/ cookie 'c_name' => 'c_value' + 'Hello World: cookie_test'.
 {
 	my $t7_ta_obj = TestApp->new();
 	$t7_ta_obj->query(CGI->new({'test_rm' => 'cookie_test'}));
@@ -105,7 +105,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 8: run() CGI::Application sub-class, in run-mode 'tmpl_test'.  Expect HTTP header + 'Hello World: tmpl_test'.
+# Test 8: run() CGI::Application sub-class, in run mode 'tmpl_test'.  Expect HTTP header + 'Hello World: tmpl_test'.
 {
 	my $t8_ta_obj = TestApp->new(TMPL_PATH=>'test/templates/');
 	$t8_ta_obj->query(CGI->new({'test_rm' => 'tmpl_test'}));
@@ -118,7 +118,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 9: run() CGI::Application sub-class, in run-mode 'tmpl_badparam_test'.  Expect HTTP header + 'Hello World: tmpl_badparam_test'.
+# Test 9: run() CGI::Application sub-class, in run mode 'tmpl_badparam_test'.  Expect HTTP header + 'Hello World: tmpl_badparam_test'.
 {
 	my $t9_ta_obj = TestApp->new(TMPL_PATH=>'test/templates/');
 	$t9_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
@@ -169,7 +169,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 13: Test to make sure that "false" run-modes are valid -- won't default to start_mode()
+# Test 13: Test to make sure that "false" run modes are valid -- won't default to start_mode()
 {
 	my $t13_ta_obj = TestApp3->new();
 	$t13_ta_obj->query(CGI->new({'go_to_mode' => '0'}));
@@ -183,7 +183,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 14: Test to make sure that undef run-modes will default to start_mode()
+# Test 14: Test to make sure that undef run modes will default to start_mode()
 {
 	my $t14_ta_obj = TestApp3->new();
 	$t14_ta_obj->query(CGI->new({'go_to_mode' => 'undef_rm'}));
@@ -196,7 +196,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 15: Test run-modes returning scalar-refs instead of scalars
+# Test 15: Test run modes returning scalar-refs instead of scalars
 {
 	my $t15_ta_obj = TestApp4->new(QUERY=>CGI->new(""));
 	my $t15_output = $t15_ta_obj->run();
@@ -208,7 +208,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 16: Test "AUTOLOAD" run-mode
+# Test 16: Test "AUTOLOAD" run mode
 {
 	local($^W) = undef;  # Turn off warnings
 	my $t16_ta_obj = TestApp4->new();
@@ -222,7 +222,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 
-# Test 17: Can we incrementally add run-modes?
+# Test 17: Can we incrementally add run modes?
 {
 	my $t17_ta_obj;
 	my $t17_output;
@@ -410,18 +410,119 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	}
 }
 
+# Test 19: test setting header_props before header_type 
+$t19_ta_obj = TestApp->new();
+$t19_ta_obj->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
+$t19_output = $t19_ta_obj->run();
 
-# Test 19: test use of TMPL_PATH without trailing slash
+if (($t19_output =~ /Test:\ 1/) && ($t19_output =~ /Moved/)) {
+	print "ok 19\n";
+} else {
+	print "not ok 19\n";
+}
+
+# Test 20: testing setting header_props more than once
+$t20_ta_obj = TestApp->new();
+$t20_ta_obj->query(CGI->new({'test_rm' => 'header_props_twice_nomerge'}));
+$t20_output = $t20_ta_obj->run();
+
+if (($t20_output =~ /Test:\ Updated/) && ($t20_output !~ /Second-header:\ 1/) && $t20_output !~ /Test2:/) {
+	print "ok 20\n";
+} else {
+	print "not ok 20\n";
+}
+
+# Test 21: testing header_add with arrayref
+$t21_ta_obj = TestApp->new();
+$t21_ta_obj->query(CGI->new({'test_rm' => 'header_add_arrayref_test'}));
+$t21_output = $t21_ta_obj->run();
+
+if (($t21_output =~ /Set-Cookie:\ cookie1=header_add/) && ($t21_output =~ /Set-Cookie:\ cookie2=header_add/)) {
+	print "ok 21\n";
+} else {
+	print "not ok 21\n";
+}
+
+# Test 22: make sure header_add does not clobber earlier headers
+$t22_ta_obj = TestApp->new();
+$t22_ta_obj->query(CGI->new({'test_rm' => 'header_props_before_header_add'}));
+$t22_output = $t22_ta_obj->run();
+
+if (($t22_output =~ /Set-Cookie:\ cookie1=header_props/) && ($t22_output =~ /Set-Cookie:\ cookie2=header_add/)) {
+	print "ok 22\n";
+} else {
+	print "not ok 22\n";
+}
+
+# Test 23: make sure header_add works after header_props is called
+$t23_ta_obj = TestApp->new();
+$t23_ta_obj->query(CGI->new({'test_rm' => 'header_add_after_header_props'}));
+$t23_output = $t23_ta_obj->run();
+
+if (($t23_output =~ /Set-Cookie:\ cookie2=header_add/)) {
+	print "ok 23\n";
+} else {
+	print "not ok 23\n";
+}
+
+# Test 24: test use of TMPL_PATH without trailing slash
 {
-	my $t19_ta_obj = TestApp->new(TMPL_PATH=>'test/templates');
-	$t19_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
-	my $t19_output = $t19_ta_obj->run();
-	if (($t19_output =~ /^Content\-Type\:\ text\/html/) && ($t19_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
-		print "ok 19\n";
+	my $t24_ta_obj = TestApp->new(TMPL_PATH=>'test/templates');
+	$t24_ta_obj->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
+	my $t24_output = $t24_ta_obj->run();
+	if (($t24_output =~ /^Content\-Type\:\ text\/html/) && ($t24_output =~ /\-\-\-\-\>Hello\ World\:\ tmpl\_badparam\_test\<\-\-\-\-/)) {
+		print "ok 24\n";
 	} else {
-		print "not ok 19\n";
+		print "not ok 24\n";
 	}
 }
+
+# Test 25: test setting header_props before header_type 
+$t25_ta_obj = TestApp->new();
+$t25_ta_obj->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
+$t25_output = $t25_ta_obj->run();
+
+if (($t25_output =~ /Test:\ 1/) && ($t25_output =~ /Moved/)) {
+    print "ok 25\n";
+} else {
+    print "not ok 25\n";
+}
+
+
+# Test 26: test delete() method by first setting some params and then deleting them
+{
+$t26_ta_obj = TestApp5->new();
+$t26_ta_obj->param(
+        P1 => 'one',
+        P2 => 'two',
+        P3 => 'three');
+#a valid delete
+$t26_ta_obj->delete('P2');
+                                                                                                                                                             
+my $t1 = 0;
+$t1 = 1 if(
+        scalar($t26_ta_obj->param()) == 2
+        && ($t26_ta_obj->param('P1') eq 'one')
+        && (!defined($t26_ta_obj->param('P2')))
+        && ($t26_ta_obj->param('P3') eq 'three')
+        );
+                                                                                                                                                             
+#an invalid delete
+my $result = $t26_ta_obj->delete('P4');
+my $t2 = 0;
+$t2 = 1 if(!defined($result)
+        && ($t26_ta_obj->param('P1') eq 'one')
+        && (!defined($t26_ta_obj->param('P4')))
+        && ($t26_ta_obj->param('P3') eq 'three')
+        );
+                                                                                                                                                             
+if($t1 && $t2){
+        print "ok 26\n";
+} else {
+        print "not ok 26\n";
+}
+}
+                                                                                                                                                             
 
 
 # All done!

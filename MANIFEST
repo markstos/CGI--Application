@@ -1,7 +1,7 @@
-# $Id: MANIFEST,v 1.19 2003/06/02 12:33:54 jesse Exp $
+# $Id: MANIFEST,v 1.20 2004/01/31 23:33:10 mark Exp $
 ANNOUNCE
-Application.pm
-Application/Mailform.pm
+lib/CGI/Application.pm
+lib/CGI/Application/Mailform.pm
 ARTISTIC
 Changes
 Examples/Mailform/README
@@ -10,6 +10,8 @@ Examples/Mailform/mailform.html
 Examples/Mailform/thankyou.html
 GPL
 MANIFEST
+META.yml
+Build.PL
 Makefile.PL
 README
 t/01cgiapp.t
@@ -19,6 +21,7 @@ t/04getquery.t
 t/05arrayrefmodes.t
 t/06enhancement31.t
 t/07postrun.t
+t/08cgicarp.t
 test/TestApp.pm
 test/TestApp2.pm
 test/TestApp3.pm

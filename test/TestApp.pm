@@ -1,4 +1,4 @@
-# $Id: TestApp.pm,v 1.5 2002/07/18 11:50:20 jesse Exp $
+# $Id: TestApp.pm,v 1.6 2004/01/31 23:33:28 mark Exp $
 
 package TestApp;
 
@@ -17,11 +17,17 @@ sub setup {
 	$self->mode_param('test_rm');
 
 	$self->run_modes(
-		'basic_test'		=> \&basic_test,
-		'redirect_test'		=> \&redirect_test,
-		'cookie_test'		=> \&cookie_test,
-		'tmpl_test'		=> \&tmpl_test,
-		'tmpl_badparam_test'	=> \&tmpl_badparam_test,
+		'basic_test'		         => \&basic_test,
+		'redirect_test'		         => \&redirect_test,
+		'cookie_test'		         => \&cookie_test,
+		'tmpl_test'		             => \&tmpl_test,
+		'tmpl_badparam_test'	     => \&tmpl_badparam_test,
+        'props_before_redirect_test' => \&props_before_redirect_test,
+        'header_props_twice_nomerge'    => \&header_props_twice_nomerge,
+ 		'header_add_arrayref_test'		=> \&header_add_arrayref_test,
+ 		'header_props_before_header_add'		=> \&header_props_before_header_add,
+ 		'header_add_after_header_props'		=> \&header_add_after_header_props,
+
 		'eval_test'		=> 'eval_test'
 	);
 
@@ -117,6 +123,60 @@ sub eval_test {
 	return "Hello World: eval_test OK";
 }
 
+sub props_before_redirect_test {
+    my $self = shift;
+
+    $self->header_props(
+        '-Test'  => 1,
+        '-url'   => 'othersite.com',
+    );
+    $self->header_type('redirect');
+	return;
+}
+
+sub header_props_twice_nomerge {
+    my $self = shift;
+    $self->header_props(
+        '-Test'  => 1,
+        '-Second-header' => 1,
+    );
+
+    $self->header_props(
+        '-Test'          => 'Updated',
+    );
+    return 1;
+}
+
+sub header_add_arrayref_test {
+    my $self = shift;
+    $self->header_add(-cookie => ['cookie1=header_add; path=/', 'cookie2=header_add; path=/']);
+
+    return 1;
+}
+
+sub header_props_before_header_add {
+    my $self = shift;
+    $self->header_props(-cookie => 'cookie1=header_props; path=/');
+    $self->header_add(-cookie => ['cookie2=header_add; path=/']);
+
+    return 1;
+}
+
+sub header_props_after_header_add {
+    my $self = shift;
+    $self->header_add(-cookie => 'cookie1=header_add; path=/');
+    $self->header_props(-cookie => 'cookie2=header_props; path=/');
+
+    return 1;
+}
+
+sub header_add_after_header_props {
+    my $self = shift;
+    $self->header_props(-cookie => 'cookie1=header_props; path=/');
+    $self->header_add(-cookie => 'cookie2=header_add; path=/');
+
+    return 1;
+}
 
 1;
 

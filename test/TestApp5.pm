@@ -1,4 +1,4 @@
-# $Id: TestApp5.pm,v 1.1 2001/08/11 18:43:47 jesse Exp $
+# $Id: TestApp5.pm,v 1.2 2004/01/31 23:33:28 mark Exp $
 
 package TestApp5;
 
@@ -21,7 +21,7 @@ sub setup {
 		'basic_test2'		=> 'badmode',
 	);
 
-	# Add more run-modes.  All should work now
+	# Add more run modes.  All should work now
 	$self->run_modes(
 		'basic_test2'		=> 'basic_test2',
 		'basic_test3'		=> 'basic_test3',
