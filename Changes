@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.29 2003/06/02 12:33:54 jesse Exp $
+# $Id: Changes,v 1.30 2003/06/03 12:17:23 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -116,7 +116,7 @@ Revision history for Perl extension CGI::Application.
 	- Fixed bug where non-CGI.pm query objects couldn't be set
 	  at initialization time via the new() method.  (Thanks to Steve 
 	  Hay for the catch.)
-        - Added header_type("none") to surpress HTTP header output.
+        - Added header_type("none") to suppress HTTP header output.
           (Thanks to Steve Comrie for the suggestion.)
         - Numerous typos corrected in POD.
         - Added cgiapp_postrun() hook.  This hook allows run-mode output
