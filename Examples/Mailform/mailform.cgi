@@ -13,10 +13,10 @@ my $mf = CGI::Application::Mailform->new();
 
 ####  SET REQUIRED VARIABLES  ############################################
 #
+$mf->param( 'MAIL_TO'     => 'jesse@VM.COM' );
 $mf->param( 'MAIL_FROM'   => 
 	$ENV{SERVER_ADMIN} || 
 	($ENV{USER} || 'webmaster') . '@' . ($ENV{HOSTNAME} || $ENV{SERVER_NAME})   );
-$mf->param( 'MAIL_TO'     => 'jesse@VM.COM' );
 $mf->param( 'SUCCESS_REDIRECT_URL' => 'thankyou.html' );
 $mf->param( 'FORM_FIELDS' => [qw/
 	company_name 
