@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.3 2002/05/05 01:32:13 jesse Exp $
+# $Id: Mailform.pm,v 1.4 2002/05/05 16:25:30 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -20,10 +20,15 @@ use Carp;
 ##  OVERRIDE METHODS
 ##
 
+# Run when new() is called
 sub setup {
 	my $self = shift;
 
+	$self->mode_param('rm');
 	$self->start_mode('submitform');
+
+	# Set up run-mode table.  In a typical CGI::Application module, 
+	# this would contain multiple run-modes.
 	$self->run_modes(
 		'submitform' => \&submitform_and_sendmail,  # Using sub-ref instead of name-ref to display more intuitive errors
 	);
@@ -44,8 +49,11 @@ sub submitform_and_sendmail {
 	# Actually send out the email message
 	$self->sendmail();
 
+	# Get the message body
+	my $msgbody = $self->build_msgbody();
+
 	my $redirect_url = $self->param('SUCCESS_REDIRECT_URL');
-	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
+	my $redirect_html = "<pre>$msgbody</pre>\n<br><br><hr><br>\nContinue: <a href=\"$redirect_url\">$redirect_url</a>";
 
 	return "$redirect_html \n<br><br><hr><br>\n\n" . $self->dump_html();
 }
@@ -56,10 +64,15 @@ sub submitform_and_sendmail {
 ##  PRIVATE METHODS
 ##
 
+# This method is to verify that the instance script (i.e., "mailform.cgi")
+# contains the correct configuration parameters.
 sub validate_runtime {
 	my $self = shift;
 
+	## CHECK REQUIRED PARAMETERS
+	#
 	my $req_failed = 0;
+
 	my @required_params = qw/MAIL_FROM MAIL_TO SUCCESS_REDIRECT_URL FORM_FIELDS/;
 	foreach my $req_param (@required_params) {
 		# Check each req param to verify that it is there
@@ -78,30 +91,166 @@ sub validate_runtime {
 
 	# Die if we have an invalid run-time configuration
 	croak("Missing or invalid required parameters") if ($req_failed);
+
+
+	## CHECK OPTIONAL PARAMETERS / SET DEFAULT VALUES
+	#
+	my $opt_failed = 0;
+
+	## ENV_FIELDS
+	# If undefined, define as null
+	$self->param('ENV_FIELDS', []) unless (defined($self->param('ENV_FIELDS')));
+
+	# Now, check for validity
+	unless (ref($self->param('ENV_FIELDS')) eq 'ARRAY') {
+		$opt_failed++;
+		carp("Parameter 'ENV_FIELDS' is not an array reference");
+	}
+
+	## SUBJECT
+	my $subject = $self->param('SUBJECT');
+	unless (defined($subject) && length($subject)) {
+		$subject = 'Form submission from ' . ($ENV{HTTP_REFERER} || $ENV{SCRIPT_NAME});
+		$self->param('SUBJECT', $subject);
+	}
+
+	## SMTP_HOST
+	$self->param('SMTP_HOST', '') unless (defined($self->param('SMTP_HOST')));
+	unless (ref($self->param('SMTP_HOST')) eq '') {  # Expect scalar
+		$opt_failed++;
+		carp("Parameter 'SMTP_HOST' is not a scalar");
+	}
+
+	# Die if we have an invalid run-time configuration
+	croak("Invalid optional parameters") if ($opt_failed);
 }
 
 
+# Establish SMTP connection
+sub connect_smtp {
+	my $self = shift;
+
+	my $smtp_host = $self->param('SMTP_HOST');
+
+	my $smtp_connection;
+
+	if (length($smtp_host)) {
+		# Use provided host
+		$smtp_connection = Net::SMTP->new($smtp_host);
+		croak("Unable to connect to '$smtp_host'")
+			unless (defined($smtp_connection));
+	} else {
+		# Use default host
+		$smtp_connection = Net::SMTP->new();
+		croak("Unable to establish SMTP connection")
+			unless (defined($smtp_connection));
+	}
+
+	return $smtp_connection;
+}
+
+
+# This method actually generates and sends the email message via 
+# SMTP, or die()s  trying.
 sub sendmail {
 	my $self = shift;
+
+	# Get the CGI query object
+	my $q = $self->query();
 
 	my $mailfrom = $self->param('MAIL_FROM');
 	my $mailto = $self->param('MAIL_TO');
 	my $subject = $self->param('SUBJECT');
 
-	# Set default SUBJECT
-	unless (defined($subject) && length($subject)) {
-		$subject = 'Form submission from ' . ($ENV{HTTP_REFERER} || $ENV{SCRIPT_NAME});
-	}
+	# Get the message body
+	my $msgbody = $self->build_msgbody();
 
+	# Connect to SMTP server
+	my $smtp_connection = $self->connect_smtp();
+
+	# Here's where we "do the deed"...
+	$smtp_connection->mail($mailfrom);
+	$smtp_connection->to($mailto);
+
+	# Enter data mode
+	$smtp_connection->data();
+
+	# Send the message content (header + body)
+	$smtp_connection->datasend("From: $mailfrom\n");
+	$smtp_connection->datasend("To: $mailto\n");
+	$smtp_connection->datasend("Subject: $subject\n");
+	$smtp_connection->datasend("\n");
+	$smtp_connection->datasend($msgbody);
+	$smtp_connection->datasend("\n");
+
+	# Exit data mode
+	$smtp_connection->dataend();
+
+
+	# Be polite -- disconnect from the server!
+	$smtp_connection->quit();
+}
+
+
+# Here's where the majority of the work gets done.
+# Based on the settings in the instance script and
+# the CGI form data, an email message body is created.
+sub build_msgbody {
+	my $self = shift;
+
+	# Get the CGI query object
+	my $q = $self->query();
+
+	# The longest journey begins with a single step...
 	my $msgbody = '';
 
-	$msgbody .= "The following data has been submitted:\n\n";
-
+	## Populate message body with form data
+	#
 	my $form_fields = $self->param('FORM_FIELDS');
+	my $ff_count = 1;
+	$msgbody .= "The following data has been submitted:\n\n";
+	foreach my $field (@$form_fields) {
+		$msgbody .= "$ff_count\. $field\:\n" . $self->clean_data($q->param($field)). "\n\n\n";
+		$ff_count++;
+	}
+	$msgbody .= "\n";
 
-	
+	## Populate message body with environment data
+	#
+	my $env_fields = $self->param('ENV_FIELDS');
+	# Do we actually have any env data requested?
+	if (@$env_fields) {
+		my $ef_count = 1;
+		$msgbody .= "Form environment data:\n\n";
+		foreach my $field (@$env_fields) {
+			$msgbody .= "$ef_count\. $field\:\n" . $self->clean_data($ENV{$field}). "\n\n\n";
+			$ef_count++;
+		}
+	}
 
+	# Send back the complete message body
+	return $msgbody;
 }
+
+
+# This method cleans up data for inclusion into the email message
+sub clean_data {
+	my $self = shift;
+	my $field_data = shift;
+
+	# Set undef strings to a null string
+	$field_data = '' unless (defined($field_data));
+
+	# Strip leading & trailing white space
+	$field_data =~ s/^\s*//;
+	$field_data =~ s/\s$//;
+
+	# If we have no answer, put "[n/a]" in there.
+	$field_data = '[n/a]' unless (length($field_data));
+
+	return $field_data;
+}
+
 
 
 
@@ -120,19 +269,21 @@ A simple HTML form to email system
 
 =head1 SYNOPSIS
 
-  # In "mailform.cgi" --
+  ## In "mailform.cgi" --
   use CGI::Application::Mailform;
 
   # Create a new Mailform instance...
   my $mf = CGI::Application::Mailform->new();
 
   # Configure your mailform
-  $mf->param('SMTP_HOST'   => 'mail.your.domain');
   $mf->param('MAIL_FROM'   => 'webmaster@your.domain');
   $mf->param('MAIL_TO'     => 'form_recipient@your.domain');
-  $mf->param('SUBJECT'     => 'New form submission');
   $mf->param('SUCCESS_REDIRECT_URL' => '/uri/or/url/to/thankyou.html');
   $mf->param('FORM_FIELDS' => [qw/name address comments etc/]);
+
+  # Optional variables
+  $mf->param('SMTP_HOST'   => 'mail.your.domain');
+  $mf->param('SUBJECT'     => 'New form submission');
   $mf->param('ENV_FIELDS'  => [qw/REMOTE_ADDR HTTP_USER_AGENT/]);
 
   # Now run...
@@ -141,11 +292,19 @@ A simple HTML form to email system
 
 
  
-  # In "mailform.html" --
+  ## In "mailform.html" --
   <form action="mailform.cgi">
   <!-- Your HTML form input fields here -->
   <input type="submit" name="submit">
   </form>
+
+
+
+  ## In "thankyou.html" --
+  <html><body>
+    <h1>Thanks for your submission!  It has been sent.</h1>
+  </body></html>
+
 
 
 =head1 DESCRIPTION
