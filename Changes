@@ -1,6 +1,10 @@
-# $Id: Changes,v 1.31 2004/01/31 23:33:10 mark Exp $
+# $Id: Changes,v 1.32 2004/02/04 16:42:12 mark Exp $
 
 Revision history for Perl extension CGI::Application.
+
+3.21  Wed Feb 4, 2003
+    - Updated some header tests to be compatible with old and new versions of CGI.pm, which
+      handled the capitalization of the header differently. (Mark Stosberg) 
 
 3.2   Sat Jan 31, 2003  
     - header_add() has been added to allow setting extra headers, particularly cookies,
