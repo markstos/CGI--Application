@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.15 2001/06/25 03:01:19 jesse Exp $
+# $Id: Application.pm,v 1.16 2001/06/25 03:29:12 jesse Exp $
 
 package CGI::Application;
 
@@ -1094,7 +1094,7 @@ sending content before your HTTP header, you are probably breaking this rule.
 B<THE RUN-MODE OF LAST RESORT: "AUTOLOAD">
 
 If CGI::Application is asked to go to a run-mode which doesn't exist
-if will usually croak() with errors.  If this is not your desired 
+it will usually croak() with errors.  If this is not your desired 
 behavior, it is possible to catch this exception by implementing 
 a run-mode with the reserved name "AUTOLOAD":
 
