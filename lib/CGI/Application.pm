@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.6 2000/07/11 03:15:07 jesse Exp $
+# $Id: Application.pm,v 1.7 2000/07/12 02:54:52 jesse Exp $
 
 package CGI::Application;
 
@@ -447,6 +447,13 @@ CGI::Application is intended to make it easier to create sophisticated,
 reusable web-based applications.  This module implements a methodology 
 which, if followed, will make your web software easier to design, 
 easier to document, easier to write, and easier to evolve.
+
+CGI::Application builds on standard, non-proprietary technologies
+and techniques, such as the Common Gateway Interface and 
+Lincoln D. Stein's excellent CGI.pm module.  CGI::Application 
+judiciously avoids employing technologies and techniques which would
+bind a developer to any one set of tools, operating system or 
+web server.
 
 Following is an example of the typical usage of CGI::Application.
 
@@ -962,6 +969,7 @@ it simply prepends tmpl_path() to the file name passed to load_tmpl().
 
 L<CGI>, L<HTML::Template>, perl(1)
 
+
 =head1 AUTHOR
 
 Jesse Erlbaum <jesse@vm.com>
@@ -971,6 +979,20 @@ B<Support Mailing List>
 If you have any questions, comments, bug reports or feature suggestions, 
 post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
+
+
+=head1 CREDITS
+
+Thanks go to my place of work, Vanguard Media (http://www.vm.com),
+for funding the development of this library, and encouraging me to 
+release it to the world.  If you need a web-application for your 
+business, do check us out!
+
+Many thanks to Sam Tregar (author of the most excellent 
+HTML::Template module!) for his innumerable contributions 
+to this module over the past year, and most of all for getting 
+me off my ass to finally get this thing up on CPAN!
+
 
 =head1 LICENSE
 

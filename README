@@ -1,9 +1,29 @@
-# $Id: README,v 1.1 2000/07/06 11:33:18 jesse Exp $
+#########################################################################
+## CGI::Application - Framework for building reusable web-applications ##
+#########################################################################
 
 CGI::Application is intended to make it easier to create sophisticated,
 reusable web-based applications. This module implements a methodology which,
 if followed, will make your web software easier to design, easier to
 document, easier to write, and easier to evolve.
+
+
+HOW DO I INSTALL IT?
+
+To install this module, cd to the directory that contains this README
+file and type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+
+CGI::Application builds on standard, non-proprietary technologies and 
+techniques, such as the Common Gateway Interface and Lincoln D. Stein's 
+excellent CGI.pm module.  CGI::Application judiciously avoids employing 
+technologies and techniques which would bind a developer to any one set 
+of tools, operating system or web server.
 
 The guiding philosophy behind CGI::Application is that a web-based
 application can be organized into a specific set of "Run-Modes." Each
@@ -18,20 +38,8 @@ Abstract Class. It is not intended that this package be instantiated
 directly. Instead, it is intended that your Application Module will be
 implemented as a Sub-Class of CGI::Application.
 
-
-To Install:
-
-> perl Makefile.PL
-> make
-> make test
-> make install
-
-
 If you have any questions, comments, bug reports or feature suggestions, 
 post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
-Jesse Erlbaum
-jesse@vm.com
-July 6, 2000
 
