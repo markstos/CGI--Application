@@ -1,4 +1,4 @@
-# $Id: 01cgiapp.t,v 1.11 2004/05/08 21:07:54 mark Exp $
+# $Id: 01cgiapp.t,v 1.12 2004/05/08 21:08:18 mark Exp $
 
 use strict;
 use Test::More tests => 92;
