@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.20 2001/08/19 16:38:08 jesse Exp $
+# $Id: Application.pm,v 1.21 2001/09/02 12:55:52 jesse Exp $
 
 package CGI::Application;
 
@@ -766,10 +766,10 @@ PARAMS        - This parameter, if used, allows you to set a number
 of custom parameters at run-time.  By passing in different 
 values in different instance scripts which use the same application 
 module you can achieve a higher level of reusability.  For instance, 
-imagine an application module, "MailForm.pm".  The application takes 
+imagine an application module, "Mailform.pm".  The application takes 
 the contents of a HTML form and emails it to a specified recipient.
 You could have multiple instance scripts throughout your site which 
-all use this "MailForm.pm" module, but which set different recipients
+all use this "Mailform.pm" module, but which set different recipients
 or different forms.
 
 

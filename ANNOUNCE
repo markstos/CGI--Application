@@ -7,10 +7,10 @@ Download site for CGI::Application:
 
 
 CHANGES SINCE VERSION 2.1:
-- Added new module CGI::Application::MailForm as both an
+- Added new module CGI::Application::Mailform as both an
   example of how to use CGI::Application and a useful
   (albeit simple) reusable web-based application.     
-- CGI::Application::MailForm allows the contents of      
+- CGI::Application::Mailform allows the contents of      
   data submitted through HTML forms to be easily sent
   via email to a specified recipient.  This application
   is intended to be very easy to reuse, yet secure
@@ -54,4 +54,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.12 2001/08/19 16:38:08 jesse Exp $
+# $Id: ANNOUNCE,v 1.13 2001/09/02 12:55:52 jesse Exp $
