@@ -1,4 +1,4 @@
-Version 2.3 of CGI::Application is now available via CPAN!
+Version 2.4 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -71,4 +71,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.17 2002/05/26 23:26:32 jesse Exp $
+# $Id: ANNOUNCE,v 1.18 2002/05/27 16:16:28 jesse Exp $
