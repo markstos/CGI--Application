@@ -1,6 +1,43 @@
 TO-DO: Future additions to CGI::Application
 ===============================================
 
+> -----Original Message-----
+> From: Arkady Grudzinsky [mailto:grudziar@linuxhightech.com] 
+> Sent: Wednesday, June 04, 2003 6:28 PM
+> To: Jesse Erlbaum
+> Cc: cgiapp@lists.erlbaum.net
+> Subject: [cgiapp] Error in CGI::App V 3.1 documentation
+> 
+> 
+> Hi, Jesse.
+> 
+> The example of cgiapp_postrun() usage in V 3.1 documentation does not
+> work.  Namely, the old output should be replaced with
+> 
+>               $$output_ref = $new_output;
+> 
+> rather than
+> 
+>                $output_ref = \$new_output;
+> 
+> 
+> $$output_ref = $new_output replaces the contents of $output_ref rather
+> than pointing $output_ref to a different address and forgetting it,
+> because $output_ref is local to cgiapp_postrun and is not 
+> used by run().
+> 
+>               $_[1] = \$new_output;
+> 
+> also works.
+> 
+> Otherwise I am very happy with cgiapp_postrun.
+> 
+> Thanks.
+> 
+> Arkady.
+
+---
+
 > From: Steve Hay [mailto:steve.hay@uk.radan.com] 
 > Sent: Monday, April 28, 2003 4:23 AM
 > To: cgiapp@lists.erlbaum.net
