@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: CGI-Application
-version: 3.2_mls7
+version: 3.2
 license: perl
 distribution_type: module
 requires:
@@ -13,7 +13,7 @@ conflicts: {}
 provides:
   CGI::Application:
     file: lib/CGI/Application.pm
-    version: 3.2_mls7
+    version: 3.2
   CGI::Application::Mailform:
     file: lib/CGI/Application/Mailform.pm
 generated_by: Module::Build version 0.21
