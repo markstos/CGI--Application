@@ -1,4 +1,4 @@
-# $Id: Mailform.pm,v 1.5 2002/05/05 16:40:45 jesse Exp $
+# $Id: Mailform.pm,v 1.6 2002/05/05 22:57:39 jesse Exp $
 
 package CGI::Application::Mailform;
 
@@ -25,12 +25,15 @@ sub setup {
 	my $self = shift;
 
 	$self->mode_param('rm');
-	$self->start_mode('submitform');
+	$self->start_mode('showform');
 
-	# Set up run-mode table.  In a typical CGI::Application module, 
-	# this would contain multiple run-modes.
+	# Set up run-mode table.  In a typical CGI::Application module, this would
+	# contain multiple run-modes -- one for each think your app can do.
+	# We're using sub-ref instead of name-ref to display more intuitive errors.
+	#
 	$self->run_modes(
-		'submitform' => \&submitform_and_sendmail,  # Using sub-ref instead of name-ref to display more intuitive errors
+		'showform'   => \&redirect_to_mailform,
+		'submitform' => \&submitform_and_sendmail,
 	);
 }
 
@@ -39,6 +42,20 @@ sub setup {
 #############################################
 ##  RUN-MODE METHODS
 ##
+
+sub redirect_to_mailform {
+	my $self = shift;
+
+	# Set up the HTTP redirect
+	my $redirect_url = $self->param('HTMLFORM_REDIRECT_URL');
+	$self->header_type( 'redirect' );
+	$self->header_props( -url => $redirect_url );
+
+	# Return HTML to the web browser
+	my $redirect_html = "Continue: <a href=\"$redirect_url\">$redirect_url</a>";
+	return $redirect_html;
+}
+
 
 sub submitform_and_sendmail {
 	my $self = shift;
@@ -74,7 +91,14 @@ sub validate_runtime {
 	#
 	my $req_failed = 0;
 
-	my @required_params = qw/MAIL_FROM MAIL_TO SUCCESS_REDIRECT_URL FORM_FIELDS/;
+	my @required_params = qw/
+		MAIL_FROM 
+		MAIL_TO 
+		HTMLFORM_REDIRECT_URL 
+		SUCCESS_REDIRECT_URL 
+		FORM_FIELDS
+	/;
+
 	foreach my $req_param (@required_params) {
 		# Check each req param to verify that it is there
 		unless ( defined($self->param($req_param)) && length($self->param($req_param)) ) {
@@ -117,7 +141,9 @@ sub validate_runtime {
 
 	## SMTP_HOST
 	$self->param('SMTP_HOST', '') unless (defined($self->param('SMTP_HOST')));
-	unless (ref($self->param('SMTP_HOST')) eq '') {  # Expect scalar
+	# Expect a scalar for SMTP_HOST.  Other values will be deemed errors, 
+	# to prevent problems when interfacing with Net::SMTP.
+	unless (ref($self->param('SMTP_HOST')) eq '') {
 		$opt_failed++;
 		carp("Parameter 'SMTP_HOST' is not a scalar");
 	}
@@ -279,7 +305,8 @@ A simple HTML form to email system
   # Configure your mailform
   $mf->param('MAIL_FROM'   => 'webmaster@your.domain');
   $mf->param('MAIL_TO'     => 'form_recipient@your.domain');
-  $mf->param('SUCCESS_REDIRECT_URL' => '/uri/or/url/to/thankyou.html');
+  $mf->param('HTMLFORM_REDIRECT_URL' => '/uri/or/url/to/mailform.html');
+  $mf->param('SUCCESS_REDIRECT_URL'  => '/uri/or/url/to/thankyou.html');
   $mf->param('FORM_FIELDS' => [qw/name address comments etc/]);
 
   # Optional variables
@@ -295,6 +322,7 @@ A simple HTML form to email system
  
   ## In "mailform.html" --
   <form action="mailform.cgi">
+  <input type="hidden" name="rm" value="submitform">
   <!-- Your HTML form input fields here -->
   <input type="submit" name="submit">
   </form>
@@ -351,13 +379,17 @@ The file 'mailform.html' is simply an HTML file which contains your web form.
 This is the form whose contents will be sent, via CGI::Application::Mailform,
 to the specified recipient's email address.
 
-This file need only contain the basic HTML form.  The only requirement
-is that the "action" attribute of the <form> element must refer to the 
-CGI instance script ('mailform.cgi') you are about to create.
+This file need only contain the basic HTML form.  There are two requirements
+for this form.  First, the "action" attribute of the <form> element must refer to the 
+CGI instance script ('mailform.cgi') you are about to create.  Second, 
+the form must set a "hidden" form field with the name "rm" and the value "submitform".
+This hidden parameter is what tells the CGI::Application::Mailform application to send the
+email message, as opposed to send the user to the HTML form.
 
 For example:
 
     <form action="mailform.cgi">
+    <input type="hidden" name="rm" value="submitform">
     <!-- Your HTML form input fields go here -->
     </form>
 
@@ -368,7 +400,9 @@ If it is necessary to enforce any fields as "required", it is recommended that
 JavaScript be used.
 
 NOTE:  It is not necessary that your HTML file be called 'mailform.html'.  
-You may name this file anything you like.
+You may name this file anything you like.  The only naming limitation is that the name of this
+file should be correctly referenced in your 'mailform.cgi', in the variable 'HTMLFORM_REDIRECT_URL'.
+
 
 
 
@@ -396,6 +430,7 @@ For example:
 NOTE:  It is not necessary that your HTML file be called 'thankyou.html'.  You may name
 this file anything you like.  The only naming limitation is that the name of this
 file should be correctly referenced in your 'mailform.cgi', in the variable 'SUCCESS_REDIRECT_URL'.
+
 
 
 
@@ -463,6 +498,19 @@ This variable specifies the email address to which the email created by this
 mailform should be sent.  This should be the email address of the person to
 whom the form contents should be emailed.  This person will receive a 
 reasonably formatted message every time this mailform is submitted.
+
+This variable is required.  If not specified, CGI::Application::Mailform
+will die() with appropriate errors.
+
+
+=item HTMLFORM_REDIRECT_URL
+
+  $mf->param('HTMLFORM_REDIRECT_URL' => '/uri/or/url/to/mailform.html');
+
+This variable specifies the URL (or URI) to which the web user should be
+redirected before they have submitted the mailform.  This should be the 
+HTML form which the user fills out, the contents of which will be
+emailed once they are submitted.
 
 This variable is required.  If not specified, CGI::Application::Mailform
 will die() with appropriate errors.

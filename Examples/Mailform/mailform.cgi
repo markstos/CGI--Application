@@ -17,6 +17,7 @@ $mf->param( 'MAIL_TO'     => 'jesse@VM.COM' );
 $mf->param( 'MAIL_FROM'   => 
 	$ENV{SERVER_ADMIN} || 
 	($ENV{USER} || 'webmaster') . '@' . ($ENV{HOSTNAME} || $ENV{SERVER_NAME})   );
+$mf->param( 'HTMLFORM_REDIRECT_URL' => 'mailform.html' );
 $mf->param( 'SUCCESS_REDIRECT_URL' => 'thankyou.html' );
 $mf->param( 'FORM_FIELDS' => [qw/
 	company_name 
