@@ -1893,7 +1893,7 @@ callbacks should be executed.  Valid values for the order are
 'FIRST', 'DONTCARE' (default), 'LAST', and two special orders
 'REALLY_FIRST' and 'REALLY_LAST'.  If multiple callbacks are
 added to the same order for the same hook, they will be executed
-in the order they were registered.  The REALLY_FIRST and REALLY_FIRST
+in the order they were registered.  The REALLY_FIRST and REALLY_LAST
 orders can only be used once per hook and should only be used in 
 special circumstances where it is critical that the method should be
 executed first or last.
@@ -1910,7 +1910,7 @@ can be a new stage for developers to register new callbacks.  It works
 in conjunction with call_hook which will execute the callbacks registered
 at the new hook.
 
-It can be useful for plugin authors who want to new hook for developers
+It can be useful for plugin authors who want to create a new hook for developers
 to use.  See the L<CGI::Application::Plugin::TT> for an example of a new
 hook that is executed before and after every template that is processed.
 
