@@ -1,0 +1,7 @@
+* Update $VERSION in Application.pm
+* Update Changes file
+* Update ANNOUNCE file
+* Update README file
+* Is the POD up to date?
+* Have any new files been added to cvs?
+* Has bne MANIFEST been updated to include any new files?

@@ -1,4 +1,4 @@
-Version 2.0 of CGI::Application is now available via CPAN!
+Version 2.1 of CGI::Application is now available via CPAN!
 
 
 Download site for CGI::Application:
@@ -6,20 +6,21 @@ Download site for CGI::Application:
   http://www.cpan.org/authors/id/J/JE/JERLBAUM/
 
 
-CHANGES SINCE VERSION 1.31:
-- Added ability to set mode_param() to use a call-back instance method
-  (specified by subref) instead of a CGI parameter.
-- HTML::Template is now only loaded if load_tmpl() is called.
-  (Thanks to Stephen Howard for the two preceding ideas!) 
-- Run-modes may now return scalar-refs in addition to scalars.
-- Added new run-mode of last resort: "AUTOLOAD".  See POD for usage.
-- Updated MAJOR REVISION number to 2 -- new functionality deserves it.
+CHANGES SINCE VERSION 2.0:
+- The param() method has been extended to allow multiple parameters
+  to be set at one time, via a hash (or hashref).
+- Fixed bug in run() method where a null-string run-mode would be
+  considered valid.  A zero-length run-mode will now result in the 
+  start_mode() being called.
+  (Thanks to Mark Stosberg for the two preceding ideas!)
+- The run_mode() method now may be called a subsequent time to 
+  amend the list of run-modes.
 
 
 Read the recent "Using CGI::Application" article on Perl.com for an 
-overview of the module and its usage:
+overview of this module and its usage:
 
-  http://www.perl.com/pub/2001/06/05/cgi.html
+  http://www.perl.com/pub/a/2001/06/05/cgi.html
 
 
 CGI::Application is intended to make it easier to create sophisticated,
@@ -51,4 +52,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.vm.com".
 
 
-# $Id: ANNOUNCE,v 1.10 2001/06/25 03:05:20 jesse Exp $
+# $Id: ANNOUNCE,v 1.11 2001/08/11 19:08:33 jesse Exp $

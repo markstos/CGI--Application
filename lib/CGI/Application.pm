@@ -1,4 +1,4 @@
-# $Id: Application.pm,v 1.17 2001/08/11 18:43:47 jesse Exp $
+# $Id: Application.pm,v 1.18 2001/08/11 19:08:33 jesse Exp $
 
 package CGI::Application;
 
@@ -1194,8 +1194,8 @@ B<More Reading>
 If you're interested in finding out more about CGI::Application, the 
 following article is available on Perl.com:
 
-  Using CGI::Application
-  http://www.perl.com/pub/a/2001/06/05/cgi.html
+    Using CGI::Application
+    http://www.perl.com/pub/a/2001/06/05/cgi.html
 
 Thanks to Simon Cozens and the O'Reilly network for publishing this
 article, and for the incredible value they provide to the Perl
@@ -1211,17 +1211,21 @@ business, do check us out!
 
 Many thanks to Sam Tregar (author of the most excellent 
 HTML::Template module!) for his innumerable contributions 
-to this module over the past year, and most of all for getting 
+to this module over the years, and most of all for getting 
 me off my ass to finally get this thing up on CPAN!
 
 
-The following people have contributed suggestions or patches
-which have helped improve CGI::Application --
+The following people have contributed specific suggestions or 
+patches which have helped improve CGI::Application --
 
-  Stephen Howard
-  Mark Stosberg
+    Stephen Howard
+    Mark Stosberg
 
-Thanks!
+
+Thanks also to all the members of the CGI-App mailing list!
+Your ideas, suggestions, insights (and criticism!) have helped
+shape this module immeasurably.  (To join the mailing list, simply
+send a blank message to "cgiapp-subscribe@lists.vm.com".)
 
 
 
