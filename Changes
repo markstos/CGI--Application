@@ -1,4 +1,4 @@
-# $Id: Changes,v 1.26 2003/02/01 07:46:11 jesse Exp $
+# $Id: Changes,v 1.27 2003/03/01 23:42:26 jesse Exp $
 
 Revision history for Perl extension CGI::Application.
 
@@ -105,3 +105,9 @@ Revision history for Perl extension CGI::Application.
 	  number to reflect this significant change in functionality.
 	- Clarified license for module (GPL or Artistic).  Included
 	  licenses in distribution package.
+
+3.1   <date unspecified>
+        - Changed dump_html default run-mode to be referenced by name 
+          instead of sub-ref.  This allows dump_html() to be overridden 
+          in sub-class.
+

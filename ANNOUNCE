@@ -3,7 +3,7 @@ Version 3.0 of CGI::Application is now available via CPAN!
 
 Download site for CGI::Application:
 
-  http://www.cpan.org/authors/id/J/JE/JERLBAUM/
+  http://search.cpan.org/dist/CGI-Application/
 
 
 CHANGES SINCE VERSION 2.6:
@@ -51,4 +51,4 @@ post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
 
-# $Id: ANNOUNCE,v 1.23 2003/02/01 07:48:05 jesse Exp $
+# $Id: ANNOUNCE,v 1.24 2003/03/01 23:41:30 jesse Exp $
