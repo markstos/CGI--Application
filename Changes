@@ -1,8 +1,9 @@
-# $Id: Changes,v 1.35 2004/04/16 20:04:21 mark Exp $
+# $Id: Changes,v 1.36 2004/05/08 21:07:49 mark Exp $
 
 Revision history for Perl extension CGI::Application.
 
-3.23 XXX
+3.23 Sat May 08, 2004 
+    - Refactored test suite to use Test::More (Gabor Szabo)
     - Removed warnings being emitted for documented API calls
     - minor code clean-up to load_tmpl() (Emanuele Zeppieri)
 
