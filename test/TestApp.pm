@@ -1,20 +1,23 @@
-# $Id: TestApp.pm,v 1.1 2000/07/07 04:42:21 jesse Exp $
+# $Id: TestApp.pm,v 1.2 2000/07/11 03:15:07 jesse Exp $
 
 package TestApp;
 
 use strict;
 
-use lib '../';
 use base 'CGI::Application';
 
 
 sub setup {
 	my $self = shift;
+
+	$self->start_mode('basic_test');
+
+	$self->mode_param('test_rm');
+
 	$self->run_modes(
 		'basic_test'    => \&basic_test,
 		'redirect_test' => \&redirect_test,
 		'cookie_test'   => \&cookie_test,
-		'dump_test'     => \&dump_test,
 		'tmpl_test'     => \&tmpl_test,
 	);
 
@@ -32,7 +35,7 @@ sub teardown {
 sub basic_test {
 	my $self = shift;
 
-	return "Hello World";
+	return "Hello World: basic_test";
 }
 
 
@@ -44,7 +47,7 @@ sub redirect_test {
 		-url => 'http://www.vm.com/'
 	);
 
-	return "Hello World";
+	return "Hello World: redirect_test";
 }
 
 
@@ -63,22 +66,17 @@ sub cookie_test {
 		-cookie => $cookie		
 	);
 
-	return "Hello World";
-}
-
-
-sub dump_test {
-	my $self = shift;
-
-	my $output = $self->dump_html();
-	print STDERR $self->dump();
-
-	return $output;
+	return "Hello World: cookie_test";
 }
 
 
 sub tmpl_test {
 	my $self = shift;
+
+	my $t = $self->load_tmpl('test.tmpl');
+	$t->param('ping', 'Hello World: tmpl_test');
+	
+	return $t->output();
 }
 
 

@@ -1,11 +1,11 @@
-# $Id: Application.pm,v 1.5 2000/07/07 04:42:21 jesse Exp $
+# $Id: Application.pm,v 1.6 2000/07/11 03:15:07 jesse Exp $
 
 package CGI::Application;
 
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.2';
+$VERSION = '1.0';
 
 
 use CGI;
@@ -55,6 +55,11 @@ sub new {
 		$self->tmpl_path($rprops->{TMPL_PATH});
 	}
 
+	# Set CGI query object
+	if (exists($rprops->{QUERY})) {
+		$self->query($rprops->{QUERY});
+	}
+
 	# Set up init param() values
 	if (exists($rprops->{PARAMS})) {
 		croak("PARAMS is not a hash ref") unless (ref($rprops->{PARAMS}) eq 'HASH');
@@ -83,13 +88,21 @@ sub run {
 	my $rmeth = $rmodes{$rm}
 		|| croak("No function specified for run mode '$rm'");
 
-	my $output = $rmeth->($self);
+	my $body = $rmeth->($self);
+	my $headers = $self->_send_headers();
 
-	$self->_send_headers();
-	print $output;
+	# Build up total output
+	my $output = $headers . $body;
+
+	# Send output to browser (unless we're in serious debug mode!)
+	unless ($ENV{CGI_APP_RETURN_ONLY}) {
+		print $output;
+	}
 
 	# clean up operations
 	$self->teardown();
+
+	return $output;
 }
 
 
@@ -271,10 +284,21 @@ sub param {
 
 sub query {
 	my $self = shift;
+	my ($query) = @_;
 
-	# First use?  Create new __QUERY_OBJ!
-	$self->{__QUERY_OBJ} = CGI->new() 
-		unless (exists($self->{__QUERY_OBJ}));
+	# We're only allowed to set a new query object if one does not yet exist!
+	unless (exists($self->{__QUERY_OBJ})) {
+		my $new_query_obj;
+
+		# If data is provided, set it!  Otherwise, create a new one.
+		if (defined($query) && $query->isa('CGI')) {
+			$new_query_obj = $query;
+		} else {
+			$new_query_obj = CGI->new();
+		}
+
+		$self->{__QUERY_OBJ} = $new_query_obj;
+	}
 
 	return $self->{__QUERY_OBJ};
 }
@@ -354,9 +378,9 @@ sub _send_headers {
 	my $q = $self->query();
 
 	if ($self->header_type() =~ /redirect/i) {
-		print $q->redirect($self->header_props());
+		return $q->redirect($self->header_props());
 	} else {
-		print $q->header($self->header_props());
+		return $q->header($self->header_props());
 	}
 }
 
