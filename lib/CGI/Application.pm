@@ -1,10 +1,10 @@
-# $Id: Application.pm,v 1.40 2004/04/16 20:04:27 mark Exp $
+# $Id: Application.pm,v 1.41 2004/05/08 21:06:59 mark Exp $
 
 package CGI::Application;
 use Carp;
 use strict;
 
-$CGI::Application::VERSION = '3.22';
+$CGI::Application::VERSION = '3.23';
 
 ###################################
 ####  INSTANCE SCRIPT METHODS  ####
@@ -1468,8 +1468,6 @@ arbitrary code.  CGI::Application maintains a strict "default-deny" stance
 on all method invocation, thereby allowing secure applications
 to be built upon it.
 
-
-
 B<IMPORTANT NOTE ABOUT RUN MODE METHODS>
 
 Your application should *NEVER* print() to STDOUT.
@@ -1620,7 +1618,7 @@ This is a community built and maintained resource that anyone is welcome to
 contribute to. It contains a number of articles of its own and links
 to many other CGI::Application related pages:
 
-L<http://twiki.med.yale.edu/twiki2/bin/view/CGIapp/WebHome>
+L<http://www.cgi-app.org>
 
 B<Support Mailing List>
 
@@ -1636,6 +1634,9 @@ L<CGI>, L<HTML::Template>, L<CGI::Application::ValidateRM> perl(1)
 =head1 AUTHOR
 
 Jesse Erlbaum <jesse@erlbaum.net>
+
+Mark Stosberg has served as a co-maintainer since version 3.2, with the help of
+the numerous contributors documented in the Changes file.
 
 B<More Reading>
 
