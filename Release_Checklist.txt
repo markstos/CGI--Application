@@ -22,7 +22,5 @@
   - Usenet:                 news://comp.lang.perl.announce
       o Use Google's USENET posting system: 
         http://groups.google.com/groups?hl=en&lr=&ie=UTF8&oe=UTF8&group=comp.lang.perl.announce
-        jesse-googlegroups@erlbaum.net/belfry
   - Freshmeat Website:
       o http://freshmeat.net/
-        stiggystiggy/belfry
