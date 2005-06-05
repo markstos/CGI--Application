@@ -2,6 +2,11 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.0_3 Sun May 29, 2005
+    - Changed callback system to allow both class-based callbacks and
+      object-based callbacks
+    - removed named positions from the callback system
+
 4.0_2 Sat Mar 19, 2005 
     - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
     - Clarified Plug-in documentation (Timothy Appnel)

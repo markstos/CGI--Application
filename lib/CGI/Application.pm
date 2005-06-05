@@ -3,16 +3,17 @@
 package CGI::Application;
 use Carp;
 use strict;
+use Class::ISA;
 
-$CGI::Application::VERSION = '4.0_2';
+$CGI::Application::VERSION = '4.0_3';
 
-our %DEFAULT_HOOKS = (
-                      prerun   => 'cgiapp_prerun',
-                      postrun  => 'cgiapp_postrun',
-                      teardown => 'teardown',
+my %INSTALLED_CALLBACKS = (
+	init     => { 'CGI::Application' => [ 'cgiapp_init'    ] },
+	prerun   => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
+	postrun  => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
+	teardown => { 'CGI::Application' => [ 'teardown'       ] },
 );
 
-our @VALID_POSITIONS = qw( REALLY_FIRST FIRST MIDDLE LAST REALLY_LAST );
 ###################################
 ####  INSTANCE SCRIPT METHODS  ####
 ###################################
@@ -39,9 +40,6 @@ sub new {
 	$self->mode_param('rm');
 	$self->start_mode('start');
 
-  # Setup the default hooks and register the default callbacks
-  $self->new_hook($_) foreach keys %DEFAULT_HOOKS;
-  $self->add_callback($_ => $DEFAULT_HOOKS{$_}) foreach keys %DEFAULT_HOOKS;
 
 	# Process optional new() parameters
 	my $rprops;
@@ -77,7 +75,7 @@ sub new {
 	# Call cgiapp_init() method, which may be implemented in the sub-class.
 	# Pass all constructor args forward.  This will allow flexible usage 
 	# down the line.
-  $self->cgiapp_init(@args);
+	$self->call_hook('init', @args);
 
 	# Call setup() method, which should be implemented in the sub-class!
 	$self->setup();
@@ -86,50 +84,70 @@ sub new {
 }
 
 sub add_callback {
-  my $self = shift;
-  my $hook = lc shift;
-  my $callback = shift;
-  my $position = uc shift || 'MIDDLE';
+	my ($self_or_class, $hook, $callback) = @_;
 
-  # DONTCARE is a synonym for MIDDLE
-  $position = 'MIDDLE' if $position eq 'DONTCARE';
+	$hook = lc $hook;
   
-  # First use?  Create new __HOOKS!
-  unless (exists($self->{__HOOKS})) {
-    $self->{__HOOKS} = {};
-  }
 
   die "no callback provided when calling add_callback" unless $callback;
-  die "Unknown hook ($hook)" unless $self->{__HOOKS}->{$hook};
-  die "Unknown position ($position)" unless grep { $_ eq $position } @VALID_POSITIONS;
-  die "There is already a callback registered using ".$position." at the ".$hook." stage"
-          if $position =~ /^REALLY_/ && @{ $self->{__HOOKS}->{$hook}->{$position} };
+	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
 
-  push @{ $self->{__HOOKS}->{$hook}->{$position} }, $callback;
+	if (ref $self_or_class) {
+		# Install in object
+		my $caller = caller;
+		my $self = $self_or_class;
+		push @{ $self->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
+	}
+	else {
+		# Install in class
+		my $caller = caller;
+		my $class = $self_or_class;
+		push @{ $INSTALLED_CALLBACKS{$hook}{$class} }, $callback;
+	}
+
 }
 
 sub new_hook {
-  my $self = shift;
-  my $hook = shift;
+	my ($class, $hook) = @_;
 
-  # First use?  Create new __HOOKS!
-  unless (exists($self->{__HOOKS})) {
-    $self->{__HOOKS} = {};
-  }
+	$INSTALLED_CALLBACKS{$hook} ||= {};
 
-  $self->{__HOOKS}->{$hook} = {};
   return 1;
 }
 
 sub call_hook {
   my $self= shift;
-  my $hook= shift;
+	my $app_class = ref $self || $self;
+	my $hook      = lc shift;
 
-  foreach my $position ( @VALID_POSITIONS ) {
-    next unless $self->{__HOOKS}->{$hook} && $self->{__HOOKS}->{$hook}->{$position};
-    foreach my $callback ( @{ $self->{__HOOKS}->{$hook}->{$position} } ) {
+	my $caller = caller;
+
+	die "Unknown hook ($hook)" unless exists $INSTALLED_CALLBACKS{$hook};
+
+	my %executed_callback;
+
+	# First, run callbacks installed in the object
+	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
+		next if $executed_callback{$callback};
       eval { $self->$callback(@_); };
-      die "Error executing callback in $hook stage: $@" if $@;
+		$executed_callback{$callback} = 1;
+		die "Error executing object callback in $hook stage: $@" if $@;
+	}
+
+	# Next, run callbacks installed in class hierarchy
+
+	# Get list of classes that the current app inherits from
+	foreach my $class (Class::ISA::self_and_super_path($app_class)) {
+
+		# skip those classes that contain no callbacks
+		next unless exists $INSTALLED_CALLBACKS{$hook}{$class};
+
+		# call all of the callbacks in the class
+		foreach my $callback (@{ $INSTALLED_CALLBACKS{$hook}{$class} }) {
+			next if $executed_callback{$callback};
+			eval { $self->$callback(@_); };
+			$executed_callback{$callback} = 1;
+			die "Error executing class callback in $hook stage: $@" if $@;
     }
   }
 }
@@ -170,7 +188,6 @@ sub run {
 	# Call PRE-RUN hook, now that we know the run mode
 	# This hook can be used to provide run mode specific behaviors
 	# before the run mode actually runs.
-  #$self->cgiapp_prerun($rm);
  	$self->call_hook('prerun', $rm);
 
 	# Lock prerun_mode from being changed after cgiapp_prerun()
@@ -219,7 +236,6 @@ sub run {
     my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
 
     # Call cgiapp_postrun() hook
-    #$self->cgiapp_postrun($bodyref);
     $self->call_hook('postrun', $bodyref);
 
 	# Set up HTTP headers
@@ -235,7 +251,6 @@ sub run {
 	}
 
 	# clean up operations
-	#$self->teardown();
   $self->call_hook('teardown');
 
 	return $output;
@@ -1858,11 +1873,13 @@ B<Callback Examples>
 
   # register a callback to the standard CGI::Application hooks
   #   one of 'init', 'prerun', 'postrun' or 'teardown'
-  # As a plug-in author, this probably the only method you need. 
+  # As a plug-in author, this is probably the only method you need.
 
-  $self->add_callback('prerun', \&callback);
-  $self->add_callback('teardown', \&callback, 'FIRST');
+  # Class-based: callback will persist for all runs of the application
+  $class->add_callback('init', \&some_other_method);
 
+  # Object-based: callback will only last for lifetime of this object
+  $self->add_callback('prerun', \&some_method);
 
   # If you want to create a new hook location in your application,
   # You'll need to know about the following two methods to create
@@ -1878,37 +1895,78 @@ B<Callback Methods>
 
 =over 4
 
-=item add_callback(HOOK, CALLBACK, ORDER)
+=item add_callback(HOOK, CALLBACK)
 
-    $self->add_callback('teardown', \&callback, 'FIRST');
+	$self->add_callback('teardown', \&callback);
+	$class->add_callback('teardown', \&callback);
 
 The add_callback method allows you to register a callback
 function that is to be called at the given stage of execution.
-Valid hooks include 'prerun', 'postrun' and 'teardown',
-and possible a new hook defined using the new_hook method.
+Valid hooks include 'init', 'prerun', 'postrun' and 'teardown',
+and any other hooks that you define using the C<new_hook> method.
 
-The callback should be a reference to a subroutine.  The order
-is optional, and gives an indication of the order in which the
-callbacks should be executed.  Valid values for the order are
-'FIRST', 'DONTCARE' (default), 'LAST', and two special orders
-'REALLY_FIRST' and 'REALLY_LAST'.  If multiple callbacks are
-added to the same order for the same hook, they will be executed
-in the order they were registered.  The REALLY_FIRST and REALLY_LAST
-orders can only be used once per hook and should only be used in 
-special circumstances where it is critical that the method should be
-executed first or last.
+The callback should be a reference to a subroutine or the name of a
+method.
 
-'MIDDLE' is available as a synonym for DONTCARE.
+If multiple callbacks are added to the same hook, they will all be
+executed one after the other.  The exact order depends on which class
+installed each callback, as described below under B<Callback Ordering>.
+
+Callbacks can either be I<object-based> or I<class-based>, depending
+upon whether you call C<add_callback> as an object method or a class
+method:
+
+	# add object-based callback
+	$self->add_callback('teardown', \&callback);
+
+	# add class-based callbacks
+	$class->add_callback('teardown', \&callback);
+	My::Project->add_callback('teardown', \&callback);
+
+Object-based callbacks are stored in your web application's C<$self>
+object; at the end of the request when the C<$self> object goes out of
+scope, the callbacks are gone too.
+
+Object-based callbacks are useful for one-time tasks that apply only to
+the current running application.  For instance you could install a
+C<teardown> callback to trigger a long-running process to execute at the
+end of the current request, after all the HTML has been sent to the
+browser.
+
+Class-based callbacks survive for the duration of the running Perl
+process.  (In a persistent environment such as C<mod_perl> or
+C<PersistentPerl>, a single Perl process can serve many web requests.)
+
+Class-based callbacks are useful for plugins to add features to all web
+applications.
+
+Another feature of class-based callbacks is that your plugin can create
+hooks and add callbacks at any time - even before the web application's
+C<$self> object has been initialized.  A good place to do this is in
+your plugin's C<import> subroutine:
+
+	package CGI::Application::Plugin::MyPlugin;
+	use base 'Exporter';
+	sub import {
+		my $caller = scalar(caller);
+		$caller->add_callback('init', 'my_setup');
+		goto &Exporter::import;
+	}
+
+Notice that C<< $caller->add_callback >> installs the callback
+on behalf of the module that contained the line:
+
+	use CGI::Application::Plugin::MyPlugin;
 
 
 =item new_hook(HOOK)
 
     $self->new_hook('pretemplate');
 
-The new_hook method can be used to create a new hook location.  This
+The C<new_hook> method can be used to create a new hook location.  This
 can be a new stage for developers to register new callbacks.  It works
-in conjunction with call_hook which will execute the callbacks registered
-at the new hook.
+in conjunction with C<call_hook> which will execute the callbacks
+registered at the new hook.
 
 It can be useful for plugin authors who want to create a new hook for developers
 to use.  See the L<CGI::Application::Plugin::TT> for an example of a new
@@ -1918,11 +1976,57 @@ hook that is executed before and after every template that is processed.
 
     $self->call_hook('pretemplate');
 
-The call_hook method is used to executed the callbacks that have been registered
-at the given hook.  It is used in conjunction with the new_hook method which
+The C<call_hook> method is used to executed the callbacks that have been registered
+at the given hook.  It is used in conjunction with the C<new_hook> method which
 allows you to create a new hook location.
 
 =back
+
+B<Callback Ordering>
+
+Object-based callbacks are run before class-based callbacks.
+
+The order of class-based callbacks is determined by the inheritance tree
+of the running application.
+
+In a persistent environment, there might be a lot of applications
+in memory at the same time.  For instance:
+
+	CGI::Application
+	  Other::Project   # uses CGI::Application::Plugin::Baz
+		 Other::App    # uses CGI::Application::Plugin::Bam
+
+	  My::Project      # uses CGI::Application::Plugin::Foo
+		 My::App       # uses CGI::Application::Plugin::Bar
+
+Suppose that each of the above plugins each added a callback to be run
+at the 'init' stage:
+
+	Plugin                           init callback
+	------                           -------------
+	CGI::Application::Plugin::Baz    baz_startup
+	CGI::Application::Plugin::Bam    bam_startup
+
+	CGI::Application::Plugin::Foo    foo_startup
+	CGI::Application::Plugin::Bar    bar_startup
+
+When C<My::App> runs, only C<foo_callback> and C<bar_callback> will
+run.  The other callbacks are skipped.
+
+The C<@ISA> list of C<My::App> is:
+
+	My::App
+	My::Project
+	CGI::Application
+
+This order determines the order of callbacks run.
+
+When C<call_hook('init')> is run on a C<My::App> application, callbacks
+installed by these modules are run in order, resulting in:
+C<bar_startup>, C<foo_startup>, and then finally C<cgiapp_init>.
+
+If a single class installs more than one callback at the same hook, then
+these callbacks are run in the order they were registered (FIFO).
 
 =cut
 

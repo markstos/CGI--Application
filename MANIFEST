@@ -22,6 +22,7 @@ t/06enhancement31.t
 t/07postrun.t
 t/09zerorm.t
 t/10errormode.t
+t/11callbacks.t
 t/mode_param_path_info.t
 test/TestApp.pm
 test/TestApp2.pm
@@ -37,6 +38,4 @@ test/TestApp11.pm
 test/TestApp12.pm
 test/TestCGI.pm
 test/templates/test.tmpl
-t/TestAppCallbacks.pm
-t/callbacks.t
 

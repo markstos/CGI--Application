@@ -8,7 +8,8 @@ WriteMakefile
                            'CGI' => '0',
                            'Carp' => '0',
                            'HTML::Template' => '0',
-                           'Test::More' => '0'
+                           'Test::More'     => '0.47',
+                           'Class::ISA'     => '0',
                          },
           'INSTALLDIRS' => 'site',
           'PL_FILES' => {}
