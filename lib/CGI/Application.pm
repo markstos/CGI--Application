@@ -87,9 +87,8 @@ sub add_callback {
 	my ($self_or_class, $hook, $callback) = @_;
 
 	$hook = lc $hook;
-  
 
-  die "no callback provided when calling add_callback" unless $callback;
+    die "no callback provided when calling add_callback" unless $callback;
 	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
 
 	if (ref $self_or_class) {
