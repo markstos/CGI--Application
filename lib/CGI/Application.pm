@@ -1962,10 +1962,9 @@ on behalf of the module that contained the line:
 
     $self->new_hook('pretemplate');
 
-The C<new_hook> method can be used to create a new hook location.  This
-can be a new stage for developers to register new callbacks.  It works
-in conjunction with C<call_hook> which will execute the callbacks
-registered at the new hook.
+The C<new_hook> method can be used to create a new location for developers to
+register new callbacks.  It works in conjunction with C<call_hook> which will
+execute the callbacks registered at the new hook.
 
 It can be useful for plugin authors who want to create a new hook for developers
 to use.  See the L<CGI::Application::Plugin::TT> for an example of a new
