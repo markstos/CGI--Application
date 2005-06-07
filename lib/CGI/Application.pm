@@ -83,74 +83,6 @@ sub new {
 	return $self;
 }
 
-sub add_callback {
-	my ($self_or_class, $hook, $callback) = @_;
-
-	$hook = lc $hook;
-
-    die "no callback provided when calling add_callback" unless $callback;
-	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
-
-	if (ref $self_or_class) {
-		# Install in object
-		my $caller = caller;
-		my $self = $self_or_class;
-		push @{ $self->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
-	}
-	else {
-		# Install in class
-		my $caller = caller;
-		my $class = $self_or_class;
-		push @{ $INSTALLED_CALLBACKS{$hook}{$class} }, $callback;
-	}
-
-}
-
-sub new_hook {
-	my ($class, $hook) = @_;
-
-	$INSTALLED_CALLBACKS{$hook} ||= {};
-
-  return 1;
-}
-
-sub call_hook {
-  my $self= shift;
-	my $app_class = ref $self || $self;
-	my $hook      = lc shift;
-
-	my $caller = caller;
-
-	die "Unknown hook ($hook)" unless exists $INSTALLED_CALLBACKS{$hook};
-
-	my %executed_callback;
-
-	# First, run callbacks installed in the object
-	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
-		next if $executed_callback{$callback};
-      eval { $self->$callback(@_); };
-		$executed_callback{$callback} = 1;
-		die "Error executing object callback in $hook stage: $@" if $@;
-	}
-
-	# Next, run callbacks installed in class hierarchy
-
-	# Get list of classes that the current app inherits from
-	foreach my $class (Class::ISA::self_and_super_path($app_class)) {
-
-		# skip those classes that contain no callbacks
-		next unless exists $INSTALLED_CALLBACKS{$hook}{$class};
-
-		# call all of the callbacks in the class
-		foreach my $callback (@{ $INSTALLED_CALLBACKS{$hook}{$class} }) {
-			next if $executed_callback{$callback};
-			eval { $self->$callback(@_); };
-			$executed_callback{$callback} = 1;
-			die "Error executing class callback in $hook stage: $@" if $@;
-    }
-  }
-}
-
 sub run {
 	my $self = shift;
 	my $q = $self->query();
@@ -1957,6 +1889,30 @@ on behalf of the module that contained the line:
 
 	use CGI::Application::Plugin::MyPlugin;
 
+=cut
+
+sub add_callback {
+	my ($self_or_class, $hook, $callback) = @_;
+
+	$hook = lc $hook;
+
+    die "no callback provided when calling add_callback" unless $callback;
+	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
+
+	if (ref $self_or_class) {
+		# Install in object
+		my $caller = caller;
+		my $self = $self_or_class;
+		push @{ $self->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
+	}
+	else {
+		# Install in class
+		my $caller = caller;
+		my $class = $self_or_class;
+		push @{ $INSTALLED_CALLBACKS{$hook}{$class} }, $callback;
+	}
+
+}
 
 =item new_hook(HOOK)
 
@@ -1970,6 +1926,14 @@ It can be useful for plugin authors who want to create a new hook for developers
 to use.  See the L<CGI::Application::Plugin::TT> for an example of a new
 hook that is executed before and after every template that is processed.
 
+=cut
+
+sub new_hook {
+    my ($class, $hook) = @_;
+    $INSTALLED_CALLBACKS{$hook} ||= {};
+    return 1;
+}
+
 =item call_hook(HOOK)
 
     $self->call_hook('pretemplate');
@@ -1979,6 +1943,47 @@ at the given hook.  It is used in conjunction with the C<new_hook> method which
 allows you to create a new hook location.
 
 =back
+
+=cut
+
+sub call_hook {
+  my $self= shift;
+	my $app_class = ref $self || $self;
+	my $hook      = lc shift;
+
+	my $caller = caller;
+
+	die "Unknown hook ($hook)" unless exists $INSTALLED_CALLBACKS{$hook};
+
+	my %executed_callback;
+
+	# First, run callbacks installed in the object
+	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
+		next if $executed_callback{$callback};
+      eval { $self->$callback(@_); };
+		$executed_callback{$callback} = 1;
+		die "Error executing object callback in $hook stage: $@" if $@;
+	}
+
+	# Next, run callbacks installed in class hierarchy
+
+	# Get list of classes that the current app inherits from
+	foreach my $class (Class::ISA::self_and_super_path($app_class)) {
+
+		# skip those classes that contain no callbacks
+		next unless exists $INSTALLED_CALLBACKS{$hook}{$class};
+
+		# call all of the callbacks in the class
+		foreach my $callback (@{ $INSTALLED_CALLBACKS{$hook}{$class} }) {
+			next if $executed_callback{$callback};
+			eval { $self->$callback(@_); };
+			$executed_callback{$callback} = 1;
+			die "Error executing class callback in $hook stage: $@" if $@;
+    }
+  }
+}
+
+=pod
 
 B<Callback Ordering>
 
