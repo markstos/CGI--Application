@@ -1958,8 +1958,10 @@ allows you to create a new hook location.
 The first argument to C<call_hook> is the hook name. Any remaining arguments
 are passed to every callback executed at the hook location.
 
-Note that hooks are semi-public locations. Calling a hook means executing code at that hook name
-in the current object and the entire object hierarchy. See below for the exact ordering.
+Note that hooks are semi-public locations. Calling a hook means executing
+callbacks that were registered to that hook by the current object and also
+those registered by any of the current object's parent classes.  See below for
+the exact ordering.
 
 =back
 
