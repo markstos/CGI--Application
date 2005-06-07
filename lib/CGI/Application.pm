@@ -9,12 +9,11 @@ $CGI::Application::VERSION = '4.0_4';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
-	init     => { 'CGI::Application' => [ 'cgiapp_init',
-	                                      sub { my $self = shift; $self->new_hook('load_tmpl') },
-	                                    ] },
-	prerun   => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
-	postrun  => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
-	teardown => { 'CGI::Application' => [ 'teardown'       ] },
+	init      => { 'CGI::Application' => [ 'cgiapp_init'    ] },
+	prerun    => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
+	postrun   => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
+	teardown  => { 'CGI::Application' => [ 'teardown'       ] },
+    load_tmpl => { },
 );
 
 ###################################
