@@ -8,6 +8,7 @@ use Class::ISA;
 $CGI::Application::VERSION = '4.0_3';
 
 my %INSTALLED_CALLBACKS = (
+#   hook name      package                 sub
 	init     => { 'CGI::Application' => [ 'cgiapp_init'    ] },
 	prerun   => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
 	postrun  => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
@@ -1828,13 +1829,13 @@ B<Callback Methods>
 
 =item add_callback(HOOK, CALLBACK)
 
-	$self->add_callback('teardown', \&callback);
-	$class->add_callback('teardown', \&callback);
+	$self->add_callback ('teardown', \&callback);
+	$class->add_callback('teardown', 'method');
 
 The add_callback method allows you to register a callback
 function that is to be called at the given stage of execution.
 Valid hooks include 'init', 'prerun', 'postrun' and 'teardown',
-and any other hooks that you define using the C<new_hook> method.
+and any other hooks defined using the C<new_hook> method.
 
 The callback should be a reference to a subroutine or the name of a
 method.
@@ -1918,13 +1919,14 @@ sub add_callback {
 
     $self->new_hook('pretemplate');
 
-The C<new_hook> method can be used to create a new location for developers to
-register new callbacks.  It works in conjunction with C<call_hook> which will
-execute the callbacks registered at the new hook.
+The C<new_hook()> method can be used to create a new location for developers to
+register callbacks.  It takes one argument, a hook name. The hook location is
+created if it does not already exist. A true value is always returned. 
 
-It can be useful for plugin authors who want to create a new hook for developers
-to use.  See the L<CGI::Application::Plugin::TT> for an example of a new
-hook that is executed before and after every template that is processed.
+For an example, L<CGI::Application::Plugin::TT> adds hooks before and after every
+template is processed. 
+
+See L<call_hook(HOOK)> for more details about how hooks are called. 
 
 =cut
 
@@ -1936,11 +1938,17 @@ sub new_hook {
 
 =item call_hook(HOOK)
 
-    $self->call_hook('pretemplate');
+    $self->call_hook('pretemplate', @args);
 
 The C<call_hook> method is used to executed the callbacks that have been registered
 at the given hook.  It is used in conjunction with the C<new_hook> method which
 allows you to create a new hook location.
+
+The first argument to C<call_hook> is the hook name. Any remaining arguments
+are passed to every callback executed at the hook location. 
+
+Note that hooks are semi-public locations. Calling a hook means executing code at that hook name
+in the current object and the entire object hierarchy. See below for the exact ordering. 
 
 =back
 
@@ -1950,6 +1958,7 @@ sub call_hook {
   my $self= shift;
 	my $app_class = ref $self || $self;
 	my $hook      = lc shift;
+    my @args      = @_;
 
 	my $caller = caller;
 
@@ -1960,7 +1969,7 @@ sub call_hook {
 	# First, run callbacks installed in the object
 	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
 		next if $executed_callback{$callback};
-      eval { $self->$callback(@_); };
+      eval { $self->$callback(@args); };
 		$executed_callback{$callback} = 1;
 		die "Error executing object callback in $hook stage: $@" if $@;
 	}
@@ -1976,7 +1985,7 @@ sub call_hook {
 		# call all of the callbacks in the class
 		foreach my $callback (@{ $INSTALLED_CALLBACKS{$hook}{$class} }) {
 			next if $executed_callback{$callback};
-			eval { $self->$callback(@_); };
+			eval { $self->$callback(@args); };
 			$executed_callback{$callback} = 1;
 			die "Error executing class callback in $hook stage: $@" if $@;
     }
@@ -1989,8 +1998,10 @@ B<Callback Ordering>
 
 Object-based callbacks are run before class-based callbacks.
 
-The order of class-based callbacks is determined by the inheritance tree
-of the running application.
+The order of class-based callbacks is determined by the inheritance tree of the
+running application. The built-in methods of C<cgiapp_init>, C<cgiapp_prerun>,
+C<cgiapp_postrun>, and C<teardown> are also executed this way, according to the
+ordering below.
 
 In a persistent environment, there might be a lot of applications
 in memory at the same time.  For instance:
@@ -2031,9 +2042,9 @@ C<bar_startup>, C<foo_startup>, and then finally C<cgiapp_init>.
 If a single class installs more than one callback at the same hook, then
 these callbacks are run in the order they were registered (FIFO).
 
+
+
 =cut
-
-
 
 =head1 COMMUNITY
 
