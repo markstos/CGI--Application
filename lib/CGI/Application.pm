@@ -8,10 +8,10 @@ use Class::ISA;
 $CGI::Application::VERSION = '4.0_4';
 
 my %INSTALLED_CALLBACKS = (
-#   hook name      package                 sub
-	init     => { 'CGI::Application' => [ 'cgiapp_init',    
-                                           sub { my $self = shift; $self->new_hook('load_tmpl') },
-                                        ] },
+#	hook name          package                 sub
+	init     => { 'CGI::Application' => [ 'cgiapp_init',
+	                                      sub { my $self = shift; $self->new_hook('load_tmpl') },
+	                                    ] },
 	prerun   => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
 	postrun  => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
 	teardown => { 'CGI::Application' => [ 'teardown'       ] },
@@ -36,7 +36,7 @@ sub new {
 
 	### SET UP DEFAULT VALUES ###
 	#
-	# We set them up here and not in the setup() because a subclass 
+	# We set them up here and not in the setup() because a subclass
 	# which implements setup() still needs default values!
 
 	$self->header_type('header');
@@ -76,7 +76,7 @@ sub new {
 	$self->{__PRERUN_MODE_LOCKED} = 1;
 
 	# Call cgiapp_init() method, which may be implemented in the sub-class.
-	# Pass all constructor args forward.  This will allow flexible usage 
+	# Pass all constructor args forward.  This will allow flexible usage
 	# down the line.
 	$self->call_hook('init', @args);
 
@@ -102,7 +102,7 @@ sub run {
 	# support setting run mode from PATH_INFO
 	elsif (ref($rm_param) eq 'HASH') {
 		$rm = $rm_param->{run_mode};
-	} 
+	}
 	# Get run mode from CGI param
 	else {
 		$rm = $q->param($rm_param);
@@ -110,7 +110,7 @@ sub run {
 
 	# If $rm undefined, use default (start) mode
 	my $def_rm = $self->start_mode();
-        $def_rm = '' unless defined $def_rm;
+	$def_rm = '' unless defined $def_rm;
 	$rm = $def_rm unless (defined($rm) && length($rm));
 
 	# Set get_current_runmode() for access by user later
@@ -150,27 +150,27 @@ sub run {
 	}
 
 	# Process run mode!
-    my $body;
+	my $body;
 	eval {
-        $body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();
-	}; 
+		$body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();
+	};
 	if ($@) {
 		my $error = $@;
 		if (my $em = $self->error_mode) {
 			$body = $self->$em( $error );
 		} else {
-            croak("Error executing run mode '$rm': $error");
+		croak("Error executing run mode '$rm': $error");
 		}
 	}
 
-    # Make sure that $body is not undefined (supress 'uninitialized value' warnings)
-    $body = "" unless defined $body;
+	# Make sure that $body is not undefined (supress 'uninitialized value' warnings)
+	$body = "" unless defined $body;
 
-    # Support scalar-ref for body return
-    my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
+	# Support scalar-ref for body return
+	my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
 
-    # Call cgiapp_postrun() hook
-    $self->call_hook('postrun', $bodyref);
+	# Call cgiapp_postrun() hook
+	$self->call_hook('postrun', $bodyref);
 
 	# Set up HTTP headers
 	my $headers = $self->_send_headers();
@@ -185,7 +185,7 @@ sub run {
 	}
 
 	# clean up operations
-  $self->call_hook('teardown');
+	$self->call_hook('teardown');
 
 	return $output;
 }
@@ -286,51 +286,51 @@ sub dump {
 
 
 sub dump_html {
-        my $self   = shift;
-        my $query  = $self->query();
-        my $output = '';
+	my $self   = shift;
+	my $query  = $self->query();
+	my $output = '';
 
-        # Dump run-mode                                                                                                                                                                  
-        my $current_runmode = $self->get_current_runmode();
-        $output .= "<p>Current Run-mode:
+	# Dump run-mode
+	my $current_runmode = $self->get_current_runmode();
+	$output .= "<p>Current Run-mode:
 '<strong>$current_runmode</strong>'</p>\n";
 
-        # Dump Params                                                                                                                                                                    
-        $output .= "<p>Query Parameters:</p>\n";
-        $output .= $query->Dump;
+	# Dump Params
+	$output .= "<p>Query Parameters:</p>\n";
+	$output .= $query->Dump;
 
-        # Dump ENV                                                                                                                                                                       
-        $output .= "<p>Query Environment:</p>\n<ol>\n";
-        foreach my $ek ( sort( keys( %ENV ) ) ) {
-                $output .= sprintf(
-                        "<li> %s => '<strong>%s</strong>'</li>\n",
-                        $query->escapeHTML( $ek ),
-                        $query->escapeHTML( $ENV{$ek} )
-                );
-        }                                                                                                                                                                                
-        $output .= "</ol>\n";
+	# Dump ENV
+	$output .= "<p>Query Environment:</p>\n<ol>\n";
+	foreach my $ek ( sort( keys( %ENV ) ) ) {
+		$output .= sprintf(
+			"<li> %s => '<strong>%s</strong>'</li>\n",
+			$query->escapeHTML( $ek ),
+			$query->escapeHTML( $ENV{$ek} )
+		);
+	}
+	$output .= "</ol>\n";
 
-        return $output;
+	return $output;
 }
 
 
 sub header_add {
 	my $self = shift;
-    return $self->_header_props_update(\@_,add=>1);
+	return $self->_header_props_update(\@_,add=>1);
 }
 
 sub header_props {
 	my $self = shift;
-    return $self->_header_props_update(\@_,add=>0);
+	return $self->_header_props_update(\@_,add=>0);
 }
 
 # used by header_props and header_add to update the headers
 sub _header_props_update {
-    my $self     = shift;
-    my $data_ref = shift;
-    my %in       = @_;
+	my $self     = shift;
+	my $data_ref = shift;
+	my %in       = @_;
 
-    my @data = @$data_ref;
+	my @data = @$data_ref;
 
 	# First use?  Create new __HEADER_PROPS!
 	$self->{__HEADER_PROPS} = {} unless (exists($self->{__HEADER_PROPS}));
@@ -348,24 +348,24 @@ sub _header_props_update {
 			# It appears to be a possible hash (even # of elements)
 			%$props = @data;
 		} else {
-            my $meth = $in{add} ? 'add' : 'props';
+			my $meth = $in{add} ? 'add' : 'props';
 			croak("Odd number of elements passed to header_$meth().  Not a valid hash")
 		}
 
-        # merge in new headers, appending new values passed as array refs
-        if ($in{add}) {
-            for my $key_set_to_aref (grep { ref $props->{$_} eq 'ARRAY'} keys %$props) {
-                my $existing_val = $self->{__HEADER_PROPS}->{$key_set_to_aref};
-                next unless defined $existing_val;
-                my @existing_val_array = (ref $existing_val eq 'ARRAY') ? @$existing_val : ($existing_val);
-                $props->{$key_set_to_aref}  = [ @existing_val_array, @{ $props->{$key_set_to_aref} } ];
-            }
-            $self->{__HEADER_PROPS} = { %{ $self->{__HEADER_PROPS} }, %$props };
-        }
-        # Set new headers, clobbering existing values
-        else {
-            $self->{__HEADER_PROPS} = $props;
-        }
+		# merge in new headers, appending new values passed as array refs
+		if ($in{add}) {
+			for my $key_set_to_aref (grep { ref $props->{$_} eq 'ARRAY'} keys %$props) {
+				my $existing_val = $self->{__HEADER_PROPS}->{$key_set_to_aref};
+				next unless defined $existing_val;
+				my @existing_val_array = (ref $existing_val eq 'ARRAY') ? @$existing_val : ($existing_val);
+				$props->{$key_set_to_aref} = [ @existing_val_array, @{ $props->{$key_set_to_aref} } ];
+			}
+			$self->{__HEADER_PROPS} = { %{ $self->{__HEADER_PROPS} }, %$props };
+		}
+		# Set new headers, clobbering existing values
+		else {
+			$self->{__HEADER_PROPS} = $props;
+		}
 
 	}
 
@@ -378,7 +378,7 @@ sub header_type {
 	my $self = shift;
 	my ($header_type) = @_;
 
-    my @allowed_header_types = qw(header redirect none);
+	my @allowed_header_types = qw(header redirect none);
 
 	# First use?  Create new __HEADER_TYPE!
 	$self->{__HEADER_TYPE} = 'header' unless (exists($self->{__HEADER_TYPE}));
@@ -432,15 +432,15 @@ sub param {
 
 
 sub delete {
-        my $self = shift;
-        my ($param) = @_;
-        #return undef it it isn't defined
-        return undef if(!defined($param));
-                                                                                                                                                             
-        #simply delete this param from $self->{__PARAMS}
-        delete $self->{__PARAMS}->{$param};
+	my $self = shift;
+	my ($param) = @_;
+	#return undef it it isn't defined
+	return undef if(!defined($param));
+
+	#simply delete this param from $self->{__PARAMS}
+	delete $self->{__PARAMS}->{$param};
 }
-                                                                                                                                                             
+
 
 sub query {
 	my $self = shift;
@@ -590,7 +590,7 @@ sub _send_headers {
 	my $self = shift;
 	my $q = $self->query();
 
-        my $header_type = $self->header_type();
+	my $header_type = $self->header_type();
 
 	if ($header_type eq 'redirect') {
 		return $q->redirect($self->header_props());
@@ -598,11 +598,11 @@ sub _send_headers {
 		return $q->header($self->header_props());
 	}
 
-        # croak() if we have an unknown header type
-        croak ("Invalid header_type '$header_type'") unless ($header_type eq "none");
+	# croak() if we have an unknown header type
+	croak ("Invalid header_type '$header_type'") unless ($header_type eq "none");
 
-        # Do nothing if header type eq "none".
-        return "";
+	# Do nothing if header type eq "none".
+	return "";
 }
 
 
@@ -630,7 +630,7 @@ sub _cap_hash {
 
 =head1 NAME
 
-CGI::Application - 
+CGI::Application -
 Framework for building reusable web-applications
 
 
@@ -663,16 +663,16 @@ Framework for building reusable web-applications
 
 =head1 USAGE EXAMPLE
 
-CGI::Application is intended to make it easier to create sophisticated, 
-reusable web-based applications.  This module implements a methodology 
-which, if followed, will make your web software easier to design, 
+CGI::Application is intended to make it easier to create sophisticated,
+reusable web-based applications.  This module implements a methodology
+which, if followed, will make your web software easier to design,
 easier to document, easier to write, and easier to evolve.
 
 CGI::Application builds on standard, non-proprietary technologies
-and techniques, such as the Common Gateway Interface and 
-Lincoln D. Stein's excellent CGI.pm module.  CGI::Application 
+and techniques, such as the Common Gateway Interface and
+Lincoln D. Stein's excellent CGI.pm module.  CGI::Application
 judiciously avoids employing technologies and techniques which would
-bind a developer to any one set of tools, operating system or 
+bind a developer to any one set of tools, operating system or
 web server.
 
 Following is an example of the typical usage of CGI::Application.
@@ -689,13 +689,13 @@ To write this application using CGI::Application you will create two files:
    1. WidgetView.pm -- Your "Application Module"
    2. widgetview.cgi -- Your "Instance Script"
 
-The Application Module contains all the code specific to your 
+The Application Module contains all the code specific to your
 application functionality, and it exists outside of your web server's
 document root, somewhere in the Perl library search path.
 
-The Instance Script is what is actually called by your web server.  It is 
-a very small, simple file which simply creates an instance of your 
-application and calls an inherited method, run().  Following is the 
+The Instance Script is what is actually called by your web server.  It is
+a very small, simple file which simply creates an instance of your
+application and calls an inherited method, run().  Following is the
 entirety of "widgetview.cgi":
 
    #!/usr/bin/perl -w
@@ -703,8 +703,8 @@ entirety of "widgetview.cgi":
    my $webapp = WidgetView->new();
    $webapp->run();
 
-As you can see, widgetview.cgi simply "uses" your Application module 
-(which implements a Perl package called "WidgetView").  Your Application Module, 
+As you can see, widgetview.cgi simply "uses" your Application module
+(which implements a Perl package called "WidgetView").  Your Application Module,
 "WidgetView.pm", is somewhat more lengthy:
 
    package WidgetView;
@@ -767,10 +767,10 @@ As you can see, widgetview.cgi simply "uses" your Application module
 
 	## Do a bunch of stuff to select "widgets" from a DBI-connected
 	## database which match the user-supplied value of "widgetcode"
-	## which has been supplied from the previous HTML form via a 
+	## which has been supplied from the previous HTML form via a
 	## CGI.pm query object.
 	##
-	## Each row will contain a link to a "Widget Detail" which 
+	## Each row will contain a link to a "Widget Detail" which
 	## provides an anchor tag, as follows:
 	##
 	##   "widgetview.cgi?rm=mode3&widgetid=XXX"
@@ -796,9 +796,9 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $output = '';
 	$output .= $q->start_html(-title => 'Widget Detail');
 
-	## Do a bunch of things to select all the properties of  
+	## Do a bunch of things to select all the properties of
 	## the particular "widget" upon which the user has
-	## clicked.  The key id value of this widget is provided 
+	## clicked.  The key id value of this widget is provided
 	## via the "widgetid" property, accessed via the CGI.pm
 	## query object.
 
@@ -810,51 +810,51 @@ As you can see, widgetview.cgi simply "uses" your Application module
    1;  # Perl requires this at the end of all modules
 
 
-CGI::Application takes care of implementing the new() and the run() 
-methods.  Notice that at no point do you call print() to send any 
+CGI::Application takes care of implementing the new() and the run()
+methods.  Notice that at no point do you call print() to send any
 output to STDOUT.  Instead, all output is returned as a scalar.
 
-CGI::Application's most significant contribution is in managing 
+CGI::Application's most significant contribution is in managing
 the application state.  Notice that all which is needed to push
-the application forward is to set the value of a HTML form 
+the application forward is to set the value of a HTML form
 parameter 'rm' to the value of the "run mode" you wish to handle
 the form submission.  This is the key to CGI::Application.
 
 
 =head1 ABSTRACT
 
-The guiding philosophy behind CGI::Application is that a web-based 
+The guiding philosophy behind CGI::Application is that a web-based
 application can be organized into a specific set of "Run Modes."
-Each Run Mode is roughly analogous to a single screen (a form, some 
-output, etc.).  All the Run Modes are managed by a single "Application 
+Each Run Mode is roughly analogous to a single screen (a form, some
+output, etc.).  All the Run Modes are managed by a single "Application
 Module" which is a Perl module.  In your web server's document space
-there is an "Instance Script" which is called by the web server as a 
+there is an "Instance Script" which is called by the web server as a
 CGI (or an Apache::Registry script if you're using Apache + mod_perl).
 
-This methodology is an inversion of the "Embedded" philosophy (ASP, JSP, 
-EmbPerl, Mason, etc.) in which there are "pages" for each state of the 
-application, and the page drives functionality.  In CGI::Application, 
-form follows function -- the Application Module drives pages, and the 
-code for a single application is in one place; not spread out over 
-multiple "pages".  If you feel that Embedded architectures are 
-confusing, unorganized, difficult to design and difficult to manage, 
+This methodology is an inversion of the "Embedded" philosophy (ASP, JSP,
+EmbPerl, Mason, etc.) in which there are "pages" for each state of the
+application, and the page drives functionality.  In CGI::Application,
+form follows function -- the Application Module drives pages, and the
+code for a single application is in one place; not spread out over
+multiple "pages".  If you feel that Embedded architectures are
+confusing, unorganized, difficult to design and difficult to manage,
 CGI::Application is the methodology for you!
 
-Apache is NOT a requirement for CGI::Application.  Web applications based on 
-CGI::Application will run equally well on NT/IIS or any other 
-CGI-compatible environment.  CGI::Application-based applications 
-are, however, ripe for use on Apache/mod_perl servers, as they 
+Apache is NOT a requirement for CGI::Application.  Web applications based on
+CGI::Application will run equally well on NT/IIS or any other
+CGI-compatible environment.  CGI::Application-based applications
+are, however, ripe for use on Apache/mod_perl servers, as they
 naturally encourage Good Programming Practices.  As always, use strict!
 
 
 =head1 DESCRIPTION
 
-CGI::Application is an Object-Oriented Perl module which implements an 
-Abstract Class.  It is not intended that this package be instantiated 
-directly.  Instead, it is intended that your Application Module will be 
+CGI::Application is an Object-Oriented Perl module which implements an
+Abstract Class.  It is not intended that this package be instantiated
+directly.  Instead, it is intended that your Application Module will be
 implemented as a Sub-Class of CGI::Application.
 
-To inherit from CGI::Application, the following code should go at 
+To inherit from CGI::Application, the following code should go at
 the beginning of your Application Module, after your package declaration:
 
     use base 'CGI::Application';
@@ -862,14 +862,14 @@ the beginning of your Application Module, after your package declaration:
 
 B<Notation and Conventions>
 
-For the purpose of this document, we will refer to the 
+For the purpose of this document, we will refer to the
 following conventions:
 
   WebApp.pm   The Perl module which implements your Application Module class.
   WebApp      Your Application Module class; a sub-class of CGI::Application.
   webapp.cgi  The Instance Script which implements your Application Module.
   $webapp     An instance (object) of your Application Module class.
-  $self       Same as $webapp, used in instance methods to pass around the 
+  $self       Same as $webapp, used in instance methods to pass around the
               current object. (Standard Perl Object-Oriented technique)
 
 
@@ -886,8 +886,8 @@ are expected to be called from your Instance Script.
 
 =item new()
 
-The new() method is the constructor for a CGI::Application.  It returns 
-a blessed reference to your Application Module package (class).  Optionally, 
+The new() method is the constructor for a CGI::Application.  It returns
+a blessed reference to your Application Module package (class).  Optionally,
 new() may take a set of parameters as key => value pairs:
 
     my $webapp = App->new(
@@ -907,18 +907,18 @@ object.  This run-time parameter allows you to further encapsulate
 instantiating templates, providing potential for more re-usability.
 It can be either a scalar or an array reference of multiple paths.
 
-PARAMS        - This parameter, if used, allows you to set a number 
-of custom parameters at run-time.  By passing in different 
-values in different instance scripts which use the same application 
-module you can achieve a higher level of re-usability.  For instance, 
-imagine an application module, "Mailform.pm".  The application takes 
+PARAMS        - This parameter, if used, allows you to set a number
+of custom parameters at run-time.  By passing in different
+values in different instance scripts which use the same application
+module you can achieve a higher level of re-usability.  For instance,
+imagine an application module, "Mailform.pm".  The application takes
 the contents of a HTML form and emails it to a specified recipient.
-You could have multiple instance scripts throughout your site which 
+You could have multiple instance scripts throughout your site which
 all use this "Mailform.pm" module, but which set different recipients
 or different forms.
 
-QUERY         - This optional parameter allows you to specify an 
-already-created CGI.pm query object.  Under normal use, 
+QUERY         - This optional parameter allows you to specify an
+already-created CGI.pm query object.  Under normal use,
 CGI::Application will instantiate its own CGI.pm query object.
 Under certain conditions, it might be useful to be able to use
 one which has already been created.
@@ -927,41 +927,41 @@ one which has already been created.
 =item run()
 
 The run() method is called upon your Application Module object, from
-your Instance Script.  When called, it executes the functionality 
+your Instance Script.  When called, it executes the functionality
 in your Application Module.
 
     my $webapp = WebApp->new();
     $webapp->run();
 
-This method first determines the application state by looking at the 
-value of the CGI parameter specified by mode_param() (defaults to 
-'rm' for "Run Mode"), which is expected to contain the name of the mode of 
-operation.  If not specified, the state defaults to the value 
+This method first determines the application state by looking at the
+value of the CGI parameter specified by mode_param() (defaults to
+'rm' for "Run Mode"), which is expected to contain the name of the mode of
+operation.  If not specified, the state defaults to the value
 of start_mode().
 
-Once the mode has been determined, run() looks at the dispatch 
-table stored in run_modes() and finds the function pointer which 
-is keyed from the mode name.  If found, the function is called and the 
-data returned is print()'ed to STDOUT and to the browser.  If 
-the specified mode is not found in the run_modes() table, run() will 
+Once the mode has been determined, run() looks at the dispatch
+table stored in run_modes() and finds the function pointer which
+is keyed from the mode name.  If found, the function is called and the
+data returned is print()'ed to STDOUT and to the browser.  If
+the specified mode is not found in the run_modes() table, run() will
 croak().
- 
+
 If the runmode dies for whatever reason, run() will see if you have set a
-value for error_mode(). If you have, run() will call that method 
+value for error_mode(). If you have, run() will call that method
 as a run mode, passing $@ as the only parameter.
 
 =back
 
 =head2 Sub-classing and Override Methods
 
-CGI::Application implements some methods which are expected to be overridden 
+CGI::Application implements some methods which are expected to be overridden
 by implementing them in your sub-class module.  These methods are as follows:
 
 =over 4
 
 =item setup()
 
-This method is called by the inherited new() constructor method.  The 
+This method is called by the inherited new() constructor method.  The
 setup() method should be used to define the following property/methods:
 
     mode_param() - set the name of the run mode CGI param.
@@ -992,8 +992,8 @@ Your setup() method might be implemented something like this:
 
 =item teardown()
 
-If implemented, this method is called automatically after your application runs.  It 
-can be used to clean up after your operations.  A typical use of the 
+If implemented, this method is called automatically after your application runs.  It
+can be used to clean up after your operations.  A typical use of the
 teardown() function is to disconnect a database connection which was
 established in the setup() function.  You could also use the teardown()
 method to store state information about the application to the server.
@@ -1003,12 +1003,12 @@ method to store state information about the application to the server.
 
 If implemented, this method is called automatically right before the
 setup() method is called.  This method provides an optional initialization
-hook, which improves the object-oriented characteristics of 
+hook, which improves the object-oriented characteristics of
 CGI::Application.  The cgiapp_init() method receives, as its parameters,
 all the arguments which were sent to the new() method.
 
-An example of the benefits provided by utilizing this hook is 
-creating a custom "application super-class" from which which all 
+An example of the benefits provided by utilizing this hook is
+creating a custom "application super-class" from which which all
 your CGI applications would inherit, instead of CGI::Application.
 
 Consider the following:
@@ -1028,12 +1028,12 @@ Consider the following:
   use base 'MySuperclass';
   sub setup { ... }
   sub teardown { ... }
-  # The rest of your CGI::Application-based follows...  
+  # The rest of your CGI::Application-based follows...
 
 
-By using CGI::Application and the cgiapp_init() method as illustrated, 
-a suite of applications could be designed to share certain 
-characteristics.  This has the potential for much cleaner code 
+By using CGI::Application and the cgiapp_init() method as illustrated,
+a suite of applications could be designed to share certain
+characteristics.  This has the potential for much cleaner code
 built on object-oriented inheritance.
 
 
@@ -1044,7 +1044,7 @@ selected run mode method is called.  This method provides an optional
 pre-runmode hook, which permits functionality to be added at the point
 right before the run mode method is called.  To further leverage this
 hook, the value of the run mode is passed into cgiapp_prerun().
-  
+
 Another benefit provided by utilizing this hook is
 creating a custom "application super-class" from which all
 your CGI applications would inherit, instead of CGI::Application.
@@ -1067,12 +1067,12 @@ Consider the following:
   use base 'MySuperclass';
   sub setup { ... }
   sub teardown { ... }
-  # The rest of your CGI::Application-based follows...  
+  # The rest of your CGI::Application-based follows...
 
 
-By using CGI::Application and the cgiapp_prerun() method as illustrated, 
-a suite of applications could be designed to share certain 
-characteristics.  This has the potential for much cleaner code 
+By using CGI::Application and the cgiapp_prerun() method as illustrated,
+a suite of applications could be designed to share certain
+characteristics.  This has the potential for much cleaner code
 built on object-oriented inheritance.
 
 It is also possible, within your cgiapp_prerun() method, to change the
@@ -1085,13 +1085,13 @@ method, which is discussed elsewhere in this POD.
 
 If implemented, this hook will be called after the run mode method
 has returned its output, but before HTTP headers are generated.  This
-will give you an opportunity to modify the body and headers before they 
+will give you an opportunity to modify the body and headers before they
 are returned to the web browser.
 
-A typical use for this hook is pipelining the output of a CGI-Application 
+A typical use for this hook is pipelining the output of a CGI-Application
 through a series of "filter" processors.  For example:
 
-  * You want to enclose the output of all your CGI-Applications in 
+  * You want to enclose the output of all your CGI-Applications in
     an HTML table in a larger page.
 
   * Your run modes return structured data (such as XML), which you
@@ -1134,10 +1134,10 @@ modes, and when a param() is a particular value.
 =item cgiapp_get_query()
 
 This method is called when CGI::Application retrieves the CGI query object.
-The cgiapp_get_query() method loads CGI.pm via "require" and returns a 
+The cgiapp_get_query() method loads CGI.pm via "require" and returns a
 CGI.pm query object.  The implementation is as follows:
 
-  sub cgiapp_get_query {  
+  sub cgiapp_get_query {
         my $self = shift;
 
         # Include CGI.pm and related modules
@@ -1149,8 +1149,8 @@ CGI.pm query object.  The implementation is as follows:
         return $q;
   }
 
-You may override this method if you wish to use a different query 
-interface instead of CGI.pm.  Note, however, that your query interface 
+You may override this method if you wish to use a different query
+interface instead of CGI.pm.  Note, however, that your query interface
 must be compatible with CGI.pm, or you must wrap your chosen query
 interface in a "wrapper" class to achieve compatibility.
 
@@ -1161,7 +1161,7 @@ interface in a "wrapper" class to achieve compatibility.
 
 =head2 Application Module Methods
 
-The following methods are inherited from CGI::Application, and are 
+The following methods are inherited from CGI::Application, and are
 available to be called by your application within your Application
 Module.  These functions are listed in alphabetical order.
 
@@ -1169,9 +1169,9 @@ Module.  These functions are listed in alphabetical order.
 =over 4
 
 =item delete()
-                                                                                                                                                             
+
     $webapp->delete('my_param');
-                                                                                                                                                             
+
 The delete() method is used to delete a parameter that was previously
 stored inside of your application either by using the PARAMS hash that
 was passed in your call to new() or by a call to the param() method.
@@ -1179,15 +1179,15 @@ This is similar to the delete() method of CGI.pm. It is useful if your
 application makes decisions based on the existence of certain params that
 may have been removed in previous sections of your app or simply to
 clean-up your param()s.
-                                                                                                                                                             
+
 
 =item dump()
 
     print STDERR $webapp->dump();
 
-The dump() method is a debugging function which will return a 
-chunk of text which contains all the environment and CGI form 
-data of the request, formatted nicely for human readability.  
+The dump() method is a debugging function which will return a
+chunk of text which contains all the environment and CGI form
+data of the request, formatted nicely for human readability.
 Useful for outputting to STDERR.
 
 
@@ -1195,9 +1195,9 @@ Useful for outputting to STDERR.
 
     my $output = $webapp->dump_html();
 
-The dump_html() method is a debugging function which will return 
-a chunk of text which contains all the environment and CGI form 
-data of the request, formatted nicely for human readability via 
+The dump_html() method is a debugging function which will return
+a chunk of text which contains all the environment and CGI form
+data of the request, formatted nicely for human readability via
 a web browser.  Useful for outputting to a browser.
 
 =item error_mode()
@@ -1205,16 +1205,16 @@ a web browser.  Useful for outputting to a browser.
     $webapp->error_mode('my_error_rm');
 
 The error_mode contains the name of a run mode to call in the event that the
-planned run mode call fails C<eval>. No error_mode is defined by default. 
+planned run mode call fails C<eval>. No error_mode is defined by default.
 The death of your error_mode() run mode is not trapped, so you can also use
-it to die in your own special way. 
+it to die in your own special way.
 
 =item get_current_runmode()
 
     $webapp->get_current_runmode();
 
 The get_current_runmode() method will return a text scalar containing
-the name of the run mode which is currently being executed.  If the 
+the name of the run mode which is currently being executed.  If the
 run mode has not yet been determined, such as during setup(), this method
 will return undef.
 
@@ -1230,7 +1230,7 @@ will return undef.
 
 The header_add() method is used to add one or more headers to the outgoing
 response headers.  The parameters will eventuallly be passed on to the CGI.pm
-header() method, so refer to the L<CGI> docs for exact usage details.  
+header() method, so refer to the L<CGI> docs for exact usage details.
 
 Unlike calling header_props(), header_add() will preserve any existing
 headers. If a scalar value is passed to header_add() it will replace
@@ -1245,31 +1245,31 @@ been set.
 
     $webapp->header_props(-type=>'image/gif',-expires=>'+3d');
 
-The header_props() method expects a hash of CGI.pm-compatible 
-HTTP header properties.  These properties will be passed directly 
-to CGI.pm's header() or redirect() methods.  Refer to L<CGI> 
-for exact usage details.  
+The header_props() method expects a hash of CGI.pm-compatible
+HTTP header properties.  These properties will be passed directly
+to CGI.pm's header() or redirect() methods.  Refer to L<CGI>
+for exact usage details.
 
 Calling header_props will clobber any existing headers that have
-previously set. 
+previously set.
 
 To add additional headers later without clobbering the old ones,
 see L<header_add()>.
 
-header_props() return a hash of all the headers that have currently 
+header_props() return a hash of all the headers that have currently
 been set.
 
 B<IMPORTANT NOTE REGARDING HTTP HEADERS>
 
-It is through the header_props() and header_add() method that you may modify the outgoing 
-HTTP headers.  This is necessary when you want to set a cookie, set the mime 
-type to something other than "text/html", or perform a redirect.  The 
-header_props() method works in conjunction with the header_type() method.  
-The value contained in header_type() determines if we use CGI::header() or 
-CGI::redirect().  The content of header_props() is passed as an argument to 
+It is through the header_props() and header_add() method that you may modify the outgoing
+HTTP headers.  This is necessary when you want to set a cookie, set the mime
+type to something other than "text/html", or perform a redirect.  The
+header_props() method works in conjunction with the header_type() method.
+The value contained in header_type() determines if we use CGI::header() or
+CGI::redirect().  The content of header_props() is passed as an argument to
 whichever CGI.pm function is called.
 
-Understanding this relationship is important if you wish to manipulate 
+Understanding this relationship is important if you wish to manipulate
 the HTTP header properly.
 
 
@@ -1278,8 +1278,8 @@ the HTTP header properly.
     $webapp->header_type('redirect');
 
 The header_type() method expects to be passed either 'header', 'redirect', or 'none'.
-This method specifies the type of HTTP headers which should be sent back to 
-the browser.  If not specified, defaults is 'header'.  See the 
+This method specifies the type of HTTP headers which should be sent back to
+the browser.  If not specified, defaults is 'header'.  See the
 header section of L<CGI> for details.
 
 To perform a redirect using CGI::Application (and CGI.pm), you would
@@ -1293,7 +1293,7 @@ do the following:
     return "Redirecting to $new_url";
   }
 
-If you wish to suppress HTTP headers entirely (as might be the case if 
+If you wish to suppress HTTP headers entirely (as might be the case if
 you're working in a slightly more exotic environment), you can set
 header_type() to "none".  This will completely hide headers.
 
@@ -1301,7 +1301,7 @@ header_type() to "none".  This will completely hide headers.
 
     my $tmpl_obj = $webapp->load_tmpl('some.tmpl');
 
-This method takes the name of a template file and returns an 
+This method takes the name of a template file and returns an
 HTML::Template object.  The HTML::Template->new_file() constructor
 is used for create the object.  Refer to L<HTML::Template> for specific usage
 of HTML::Template.
@@ -1310,11 +1310,11 @@ If tmpl_path() has been specified, load_tmpl() will set the
 HTML::Template C<path> option to the path(s) provided.  This further
 assists in encapsulating template usage.
 
-The load_tmpl() method will pass any extra parameters sent to it directly to 
-HTML::Template->new_file().  This will allow the HTML::Template object to be 
+The load_tmpl() method will pass any extra parameters sent to it directly to
+HTML::Template->new_file().  This will allow the HTML::Template object to be
 further customized:
 
-    my $tmpl_obj = $webapp->load_tmpl('some_other.tmpl', 
+    my $tmpl_obj = $webapp->load_tmpl('some_other.tmpl',
          die_on_bad_params => 0,
          cache => 1
     );
@@ -1343,7 +1343,7 @@ sub load_tmpl {
 		my @tmpl_paths = (ref $tmpl_path eq 'ARRAY') ? @$tmpl_path : $tmpl_path;
 		my $found = 0;
 		for( my $x = 0; $x < @extra_params; $x += 2 ) {
-			if ($extra_params[$x] eq 'path' and 
+			if ($extra_params[$x] eq 'path' and
 			ref $extra_params[$x+1] eq 'ARRAY') {
 				unshift @{$extra_params[$x+1]}, @tmpl_paths;
 				$found = 1;
@@ -1356,7 +1356,7 @@ sub load_tmpl {
 	require HTML::Template;
 	my $t = HTML::Template->new_file($tmpl_file, @extra_params);
 
-    $self->call_hook('load_tmpl',$t,@_);
+	$self->call_hook('load_tmpl',$t,@_);
 
 	return $t;
 }
@@ -1369,23 +1369,23 @@ sub load_tmpl {
  # This is the the default behavior, and is often sufficient.
  $webapp->mode_param('rm');
 
- # Set the run mode name directly from a code ref 
+ # Set the run mode name directly from a code ref
  $webapp->mode_param(\&some_method);
- 
- # Alternate interface, which allows you to set the run 
+
+ # Alternate interface, which allows you to set the run
  # mode name directly from $ENV{PATH_INFO}.
- $webapp->mode_param( 
- 	path_info=> 1, 
+ $webapp->mode_param(
+ 	path_info=> 1,
  	param =>'rm'
  );
 
-This accessor/mutator method is generally called in the setup() method.  
-It is used to help determine the run mode to call. There are three options for calling it. 
+This accessor/mutator method is generally called in the setup() method.
+It is used to help determine the run mode to call. There are three options for calling it.
 
  $webapp->mode_param('rm');
 
 Here, a CGI form parameter is named that will contain the name of the run mode
-to use. This is the default behavior, with 'rm' being the parameter named used. 
+to use. This is the default behavior, with 'rm' being the parameter named used.
 
  $webapp->mode_param(\&some_method);
 
@@ -1399,8 +1399,8 @@ to use directly. Example:
 
 This would allow you to programmatically set the run mode based on arbitrary logic.
 
- $webapp->mode_param( 
- 	path_info=> 1, 
+ $webapp->mode_param(
+ 	path_info=> 1,
  	param =>'rm'
  );
 
@@ -1418,7 +1418,7 @@ If no run mode is found in $ENV{PATH_INFO}, it will fall back to looking in the
 value of a the CGI form field defined with 'param', as described above.  This
 allows you to use the convenient $ENV{PATH_INFO} trick most of the time, but
 also supports the edge cases, such as when you don't know what the run mode
-will be ahead of time and want to define it with JavaScript. 
+will be ahead of time and want to define it with JavaScript.
 
 B<More about $ENV{PATH_INFO}>.
 
@@ -1437,9 +1437,9 @@ query string:
 
 This demostrates that you can use $ENV{PATH_INFO} and a query string together
 without problems. $ENV{PATH_INFO} is defined as part of the CGI specification
-should be supported by any web server that supports CGI scripts. 
+should be supported by any web server that supports CGI scripts.
 
-=cut 
+=cut
 
 sub mode_param {
 	my $self = shift;
@@ -1455,15 +1455,15 @@ sub mode_param {
 	}
 	# expecting hash style params
 	else {
-  		croak("CGI::Application->mode_param() : You gave me an odd number of parameters to mode_param()!")
-    		unless ((@_ % 2) == 0);
+		croak("CGI::Application->mode_param() : You gave me an odd number of parameters to mode_param()!")
+		unless ((@_ % 2) == 0);
 		%p = @_;
 		$mode_param = $p{param};
 
 		if ( $p{path_info} && $self->query->path_info() ) {
 			my $pi = $self->query->path_info();
 
-			# computer scientists like to start counting from zero. 
+			# computer scientists like to start counting from zero.
 			my $idx = $p{path_info} - 1;
 
 			# remove the leading slash
@@ -1489,11 +1489,11 @@ sub mode_param {
 
     $webapp->param('pname', $somevalue);
 
-The param() method provides a facility through which you may set 
-application instance properties which are accessible throughout 
+The param() method provides a facility through which you may set
+application instance properties which are accessible throughout
 your application.
 
-The param() method may be used in two basic ways.  First, you may use it 
+The param() method may be used in two basic ways.  First, you may use it
 to get or set the value of a parameter:
 
     $webapp->param('scalar_param', '123');
@@ -1514,27 +1514,27 @@ by passing in a hash (or hashref):
         'key3' => 'val3',
     );
 
-The param() method enables a very valuable system for 
-customizing your applications on a per-instance basis.  
-One Application Module might be instantiated by different 
-Instance Scripts.  Each Instance Script might set different values for a 
-set of parameters.  This allows similar applications to share a common 
-code-base, but behave differently.  For example, imagine a mail form 
-application with a single Application Module, but multiple Instance 
+The param() method enables a very valuable system for
+customizing your applications on a per-instance basis.
+One Application Module might be instantiated by different
+Instance Scripts.  Each Instance Script might set different values for a
+set of parameters.  This allows similar applications to share a common
+code-base, but behave differently.  For example, imagine a mail form
+application with a single Application Module, but multiple Instance
 Scripts.  Each Instance Script might specify a different recipient.
-Another example would be a web bulletin boards system.  There could be 
+Another example would be a web bulletin boards system.  There could be
 multiple boards, each with a different topic and set of administrators.
 
 The new() method provides a shortcut for specifying a number of run-time
-parameters at once.  Internally, CGI::Application calls the param() 
-method to set these properties.  The param() method is a powerful tool for 
+parameters at once.  Internally, CGI::Application calls the param()
+method to set these properties.  The param() method is a powerful tool for
 greatly increasing your application's re-usability.
 
 =item prerun_mode()
 
     $webapp->prerun_mode('new_run_mode');
 
-The prerun_mode() method is an accessor/mutator which can be used within 
+The prerun_mode() method is an accessor/mutator which can be used within
 your cgiapp_prerun() method to change the run mode which is about to be executed.
 For example, consider:
 
@@ -1560,18 +1560,18 @@ unless they have already logged in.  The prerun_mode() method permits
 a scalar text string to be set which overrides whatever the run mode
 would otherwise be.
 
-The use of prerun_mode() within cgiapp_prerun() differs from setting 
-mode_param() to use a call-back via subroutine reference.  It differs 
-because cgiapp_prerun() allows you to selectively set the run mode based 
-on some logic in your cgiapp_prerun() method.  The call-back facility of 
-mode_param() forces you to entirely replace CGI::Application's mechanism 
+The use of prerun_mode() within cgiapp_prerun() differs from setting
+mode_param() to use a call-back via subroutine reference.  It differs
+because cgiapp_prerun() allows you to selectively set the run mode based
+on some logic in your cgiapp_prerun() method.  The call-back facility of
+mode_param() forces you to entirely replace CGI::Application's mechanism
 for determining the run mode with your own method.  The prerun_mode()
 method should be used in cases where you want to use CGI::Application's
 normal run mode switching facility, but you want to make selective
 changes to the mode under specific conditions.
 
 B<Note:>  The prerun_mode() method may ONLY be called in the context of
-a cgiapp_prerun() method.  Your application will die() if you call 
+a cgiapp_prerun() method.  Your application will die() if you call
 prerun_mode() elsewhere, such as in setup() or a run mode method.
 
 =item query()
@@ -1579,11 +1579,11 @@ prerun_mode() elsewhere, such as in setup() or a run mode method.
     my $q = $webapp->query();
     my $remote_user = $q->remote_user();
 
-This method retrieves the CGI.pm query object which has been created 
-by instantiating your Application Module.  For details on usage of this 
-query object, refer to L<CGI>.  CGI::Application is built on the CGI 
-module.  Generally speaking, you will want to become very familiar 
-with CGI.pm, as you will use the query object whenever you want to 
+This method retrieves the CGI.pm query object which has been created
+by instantiating your Application Module.  For details on usage of this
+query object, refer to L<CGI>.  CGI::Application is built on the CGI
+module.  Generally speaking, you will want to become very familiar
+with CGI.pm, as you will use the query object whenever you want to
 interact with form data.
 
 When the new() method is called, a CGI query object is automatically created.
@@ -1596,48 +1596,48 @@ the QUERY attribute.
 
     $webapp->run_modes('mode1' => 'some_sub_by_name', 'mode2' => \&some_other_sub_by_ref);
 
-This accessor/mutator expects a hash which specifies the dispatch table for the 
-different CGI states.  The run() method uses the data in this table 
-to send the CGI to the correct function as determined by reading 
-the CGI parameter specified by mode_param() (defaults to 'rm' for "Run Mode").  
+This accessor/mutator expects a hash which specifies the dispatch table for the
+different CGI states.  The run() method uses the data in this table
+to send the CGI to the correct function as determined by reading
+the CGI parameter specified by mode_param() (defaults to 'rm' for "Run Mode").
 These functions are referred to as "run mode methods".
 
-The hash table set by this method is expected to contain the mode 
-name as a key.  The value should be either a hard reference (a subref) 
-to the run mode method which you want to be called when the CGI enters 
+The hash table set by this method is expected to contain the mode
+name as a key.  The value should be either a hard reference (a subref)
+to the run mode method which you want to be called when the CGI enters
 the specified run mode, or the name of the run mode method to be called:
 
     'mode_name_by_ref'  => \&mode_function
     'mode_name_by_name' => 'mode_function'
 
-The run mode method specified is expected to return a block of text 
-(e.g.: HTML) which will eventually be sent back to the web browser.  
-The your run mode method may return its block of text as a scalar 
+The run mode method specified is expected to return a block of text
+(e.g.: HTML) which will eventually be sent back to the web browser.
+The your run mode method may return its block of text as a scalar
 or a scalar-ref.
 
-An advantage of specifying your run mode methods by name instead of 
-by reference is that you can more easily create derivative application 
+An advantage of specifying your run mode methods by name instead of
+by reference is that you can more easily create derivative application
 using inheritance.  For instance, if you have a new application which is
 exactly the same as an existing application with the exception of one
 run mode, you could simply inherit from that other application and override
-the run mode method which is different.  If you specified your run mode 
+the run mode method which is different.  If you specified your run mode
 method by reference, your child class would still use the function
 from the parent class.
 
-An advantage of specifying your run mode methods by reference instead of by name 
-is performance.  Dereferencing a subref is faster than eval()-ing 
+An advantage of specifying your run mode methods by reference instead of by name
+is performance.  Dereferencing a subref is faster than eval()-ing
 a code block.  If run-time performance is a critical issue, specify
 your run mode methods by reference and not by name.  The speed differences
 are generally small, however, so specifying by name is preferred.
 
-The run_modes() method may be called more than once.  Additional values passed 
-into run_modes() will be added to the run modes table.  In the case that an 
+The run_modes() method may be called more than once.  Additional values passed
+into run_modes() will be added to the run modes table.  In the case that an
 existing run mode is re-defined, the new value will override the existing value.
-This behavior might be useful for applications which are created via inheritance 
+This behavior might be useful for applications which are created via inheritance
 from another application, or some advanced application which modifies its
 own capabilities based on user input.
 
-The run_modes() method also supports a second interface for designating 
+The run_modes() method also supports a second interface for designating
 run modes and their methods:  Via array reference:
 
     $webapp->run_modes([ 'mode1', 'mode2', 'mode3' ]);
@@ -1651,14 +1651,14 @@ This is the same as the following, via hash:
     );
 
 Often, it makes good organizational sense to have your run modes map to
-methods of the same name.  The array-ref interface provides a shortcut 
+methods of the same name.  The array-ref interface provides a shortcut
 to that behavior while reducing verbosity of your code.
 
-Note that another importance of specifying your run modes in either a 
-hash or array-ref is to assure that only those Perl methods which are 
+Note that another importance of specifying your run modes in either a
+hash or array-ref is to assure that only those Perl methods which are
 specifically designated may be called via your application.  Application
 environments which don't specify allowed methods and disallow all others
-are insecure, potentially opening the door to allowing execution of 
+are insecure, potentially opening the door to allowing execution of
 arbitrary code.  CGI::Application maintains a strict "default-deny" stance
 on all method invocation, thereby allowing secure applications
 to be built upon it.
@@ -1666,26 +1666,26 @@ to be built upon it.
 B<IMPORTANT NOTE ABOUT RUN MODE METHODS>
 
 Your application should *NEVER* print() to STDOUT.
-Using print() to send output to STDOUT (including HTTP headers) is 
-exclusively the domain of the inherited run() method.  Breaking this 
-rule is a common source of errors.  If your program is erroneously 
+Using print() to send output to STDOUT (including HTTP headers) is
+exclusively the domain of the inherited run() method.  Breaking this
+rule is a common source of errors.  If your program is erroneously
 sending content before your HTTP header, you are probably breaking this rule.
 
 
 B<THE RUN MODE OF LAST RESORT: "AUTOLOAD">
 
 If CGI::Application is asked to go to a run mode which doesn't exist
-it will usually croak() with errors.  If this is not your desired 
-behavior, it is possible to catch this exception by implementing 
+it will usually croak() with errors.  If this is not your desired
+behavior, it is possible to catch this exception by implementing
 a run mode with the reserved name "AUTOLOAD":
 
   $self->run_modes(
 	"AUTOLOAD" => \&catch_my_exception
   );
 
-Before CGI::Application calls croak() it will check for the existence 
-of a run mode called "AUTOLOAD".  If specified, this run mode will in 
-invoked just like a regular run mode, with one exception:  It will 
+Before CGI::Application calls croak() it will check for the existence
+of a run mode called "AUTOLOAD".  If specified, this run mode will in
+invoked just like a regular run mode, with one exception:  It will
 receive, as an argument, the name of the run mode which invoked it:
 
   sub catch_my_exception {
@@ -1694,9 +1694,9 @@ receive, as an argument, the name of the run mode which invoked it:
 
 	my $output = "Looking for '$intended_runmode', but found 'AUTOLOAD' instead";
 	return $output;
-  } 
+  }
 
-This functionality could be used for a simple human-readable error 
+This functionality could be used for a simple human-readable error
 screen, or for more sophisticated application behaviors.
 
 
@@ -1704,9 +1704,9 @@ screen, or for more sophisticated application behaviors.
 
     $webapp->start_mode('mode1');
 
-The start_mode contains the name of the mode as specified in the run_modes() 
-table.  Default mode is "start".  The mode key specified here will be used 
-whenever the value of the CGI form parameter specified by mode_param() is 
+The start_mode contains the name of the mode as specified in the run_modes()
+table.  Default mode is "start".  The mode key specified here will be used
+whenever the value of the CGI form parameter specified by mode_param() is
 not defined.  Generally, this is the first time your application is executed.
 
 =item tmpl_path()
@@ -1721,23 +1721,23 @@ pass in a text scalar or an array reference of multiple paths.
 =back
 
 =head2 Testing
-                                                                                                                                                             
+
 CGI::Application currently has no built-in testing methodology but we leave that
 up to you. There are many testing structures and frameworks that are available for
 testing Perl modules (ie, Test::Harness, Test::More). There are large numbers
 of tools and frameworks for testing live web applications (WWW::Mechanize, HTTP::Test,
 Apache::Test). We encourage you to look around CPAN and find the one that
 best meets your needs.
-                                                                                                                                                             
+
 Since most of the module level testing frameworks require the output that is sent to
 STDOUT be of a certain format, and since CGI::Application will print the output of it's
 run modes directly to STDOUT this could cause problems. To avoid this simple set the
 environment variable 'CGI_APP_RETURN_ONLY' to true and you can catch your output and
 test it and then print your own message to STDOUT. For example
-                                                                                                                                                             
+
         $ENV{CGI_APP_RETURN_ONLY} = 1;
         $output = $webapp->run();
-                                                                                                                                                             
+
         #perform whatever test on the output that you want and then print to STDOUT
         if($output =~ /GOOD/){
                 print "ok 11\n";
@@ -1779,7 +1779,7 @@ L<CGI::Application::Plugin::Session> - Integration with L<CGI::Session>
 
 L<CGI::Application::Plugin::Stream> - Help stream files to the browser
 
-=item * 
+=item *
 
 L<CGI::Application::Plugin::TT> - Use L<Template::Toolkit> as an alternative to HTML::Template.
 
@@ -1789,7 +1789,7 @@ L<CGI:::Application::Plugin::ValidateRM> - Integration with Data::FormValidator 
 
 =back
 
-Consult each plug-in for the exact usage syntax. 
+Consult each plug-in for the exact usage syntax.
 
 
 =head2 Writing Plug-ins
@@ -1810,7 +1810,7 @@ name of plugin package, when storing information. For instance:
 
 When writing a plug-in, you may want some action to happen automatically at a
 particular stage, such as setting up a database connection or initializing a
-session. By using these 'callback' methods, you can register a subroutine 
+session. By using these 'callback' methods, you can register a subroutine
 to run at a particular phase, accomplishing this goal.
 
 B<Callback Examples>
@@ -1827,11 +1827,11 @@ B<Callback Examples>
 
   # If you want to create a new hook location in your application,
   # You'll need to know about the following two methods to create
-  # the hook and call it. 
+  # the hook and call it.
 
   # Create a new hook
   $self->new_hook('pretemplate');
-  
+
   # Then later execute all the callbacks registered at this hook
   $self->call_hook('pretemplate');
 
@@ -1909,7 +1909,7 @@ sub add_callback {
 
 	$hook = lc $hook;
 
-    die "no callback provided when calling add_callback" unless $callback;
+	die "no callback provided when calling add_callback" unless $callback;
 	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
 
 	if (ref $self_or_class) {
@@ -1933,19 +1933,19 @@ sub add_callback {
 
 The C<new_hook()> method can be used to create a new location for developers to
 register callbacks.  It takes one argument, a hook name. The hook location is
-created if it does not already exist. A true value is always returned. 
+created if it does not already exist. A true value is always returned.
 
 For an example, L<CGI::Application::Plugin::TT> adds hooks before and after every
-template is processed. 
+template is processed.
 
-See L<call_hook(HOOK)> for more details about how hooks are called. 
+See L<call_hook(HOOK)> for more details about how hooks are called.
 
 =cut
 
 sub new_hook {
-    my ($class, $hook) = @_;
-    $INSTALLED_CALLBACKS{$hook} ||= {};
-    return 1;
+	my ($class, $hook) = @_;
+	$INSTALLED_CALLBACKS{$hook} ||= {};
+	return 1;
 }
 
 =item call_hook(HOOK)
@@ -1957,20 +1957,20 @@ at the given hook.  It is used in conjunction with the C<new_hook> method which
 allows you to create a new hook location.
 
 The first argument to C<call_hook> is the hook name. Any remaining arguments
-are passed to every callback executed at the hook location. 
+are passed to every callback executed at the hook location.
 
 Note that hooks are semi-public locations. Calling a hook means executing code at that hook name
-in the current object and the entire object hierarchy. See below for the exact ordering. 
+in the current object and the entire object hierarchy. See below for the exact ordering.
 
 =back
 
 =cut
 
 sub call_hook {
-  my $self= shift;
+	my $self= shift;
 	my $app_class = ref $self || $self;
 	my $hook      = lc shift;
-    my @args      = @_;
+	my @args      = @_;
 
 	my $caller = caller;
 
@@ -1981,7 +1981,7 @@ sub call_hook {
 	# First, run callbacks installed in the object
 	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
 		next if $executed_callback{$callback};
-      eval { $self->$callback(@args); };
+		eval { $self->$callback(@args); };
 		$executed_callback{$callback} = 1;
 		die "Error executing object callback in $hook stage: $@" if $@;
 	}
@@ -2000,8 +2000,8 @@ sub call_hook {
 			eval { $self->$callback(@args); };
 			$executed_callback{$callback} = 1;
 			die "Error executing class callback in $hook stage: $@" if $@;
-    }
-  }
+		}
+	}
 }
 
 =pod
@@ -2073,7 +2073,7 @@ L<http://www.cgi-app.org>
 
 B<Support Mailing List>
 
-If you have any questions, comments, bug reports or feature suggestions, 
+If you have any questions, comments, bug reports or feature suggestions,
 post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
 
@@ -2091,7 +2091,7 @@ the numerous contributors documented in the Changes file.
 
 B<More Reading>
 
-If you're interested in finding out more about CGI::Application, the 
+If you're interested in finding out more about CGI::Application, the
 following article is available on Perl.com:
 
     Using CGI::Application
@@ -2106,7 +2106,7 @@ community!
 
 CGI::Application is developed by The Erlbaum Group, a software
 engineering and consulting firm in New York City.  If you are looking
-for a company to develop your web site or individual developers to 
+for a company to develop your web site or individual developers to
 augment your team please contact us:
 
     The Erlbaum Group, LLC
@@ -2119,13 +2119,13 @@ augment your team please contact us:
     Web: http://www.erlbaum.net
 
 
-Thanks to Vanguard Media (http://www.vm.com) for funding the initial 
-development of this library and for encouraging me to release it to 
+Thanks to Vanguard Media (http://www.vm.com) for funding the initial
+development of this library and for encouraging me to release it to
 the world.
 
-Many thanks to Sam Tregar (author of the most excellent 
-HTML::Template module!) for his innumerable contributions 
-to this module over the years, and most of all for getting 
+Many thanks to Sam Tregar (author of the most excellent
+HTML::Template module!) for his innumerable contributions
+to this module over the years, and most of all for getting
 me off my ass to finally get this thing up on CPAN!
 
 Many other people have contributed specific suggestions or patches,
