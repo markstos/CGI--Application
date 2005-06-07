@@ -9,7 +9,9 @@ $CGI::Application::VERSION = '4.0_3';
 
 my %INSTALLED_CALLBACKS = (
 #   hook name      package                 sub
-	init     => { 'CGI::Application' => [ 'cgiapp_init'    ] },
+	init     => { 'CGI::Application' => [ 'cgiapp_init',    
+                                           sub { my $self = shift; $self->new_hook('load_tmpl') },
+                                        ] },
 	prerun   => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
 	postrun  => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
 	teardown => { 'CGI::Application' => [ 'teardown'       ] },
@@ -1317,9 +1319,18 @@ further customized:
          cache => 1
     );
 
-If your application requires more specialized behavior than this, you are
-encouraged to override load_tmpl() by implementing your own load_tmpl() 
-in your CGI::Application sub-class application module.
+If your application requires more specialized behavior than this, you have a
+couple of options to replace or extend it. You can replace it by overriding
+load_tmpl() by implementing your own load_tmpl() in your CGI::Application
+sub-class application module.
+
+You can also extend it by registering a callback that will be executed just before
+load_tmpl() returns:
+
+  $self->add_callback('load_tmpl',\&your_method);
+
+When C<your_method()> is executed, it will be passed the template object followed by parameters
+passed to C<load_tmpl()>
 
 =cut
 
@@ -1344,6 +1355,8 @@ sub load_tmpl {
 
 	require HTML::Template;
 	my $t = HTML::Template->new_file($tmpl_file, @extra_params);
+
+    $self->call_hook('load_tmpl',$t,@_);
 
 	return $t;
 }

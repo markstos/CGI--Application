@@ -2,16 +2,20 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.0_4
+    - Added load_tmpl() hook (Mark Stosberg)
+    - Documentation updates and code re-organization
+
 4.0_3 Sun May 29, 2005
     - Changed callback system to allow both class-based callbacks and
-      object-based callbacks
+      object-based callbacks (Michael Graham)
     - removed named positions from the callback system
 
 4.0_2 Sat Mar 19, 2005 
     - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
     - Clarified Plug-in documentation (Timothy Appnel)
     - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
-    - removed init stage from callbacks to avoid confusion. (Mark Stosberg
+    - removed init stage from callbacks to avoid confusion. (Mark Stosberg)
 
 4.0_1 Sun Dec 19, 2004
     - New callback system opens the door for more powerful and easy-to-use
