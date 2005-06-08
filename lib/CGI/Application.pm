@@ -1989,8 +1989,11 @@ sub call_hook {
 
 	# Next, run callbacks installed in class hierarchy
 
+    # Cache this value as a performance boost
+    $self->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
+
 	# Get list of classes that the current app inherits from
-	foreach my $class (Class::ISA::self_and_super_path($app_class)) {
+	foreach my $class (@{ $self->{__CALLBACK_CLASSES} }) {
 
 		# skip those classes that contain no callbacks
 		next unless exists $INSTALLED_CALLBACKS{$hook}{$class};
