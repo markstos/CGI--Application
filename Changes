@@ -2,6 +2,9 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.0_5
+    - Added a bit of caching to speed up call_hook()
+
 4.0_4
     - Added load_tmpl() hook (Mark Stosberg)
     - Documentation updates and code re-organization
