@@ -1754,21 +1754,49 @@ to develop new plug-ins for.
 Here are some plug-ins that have already been developed for
 CGI::Application. For a current complete list, please consult CPAN:
 
-http://search.cpan.org/search?query=CGI%3A%3AApplication%3A%3APlugin&mode=module
+http://search.cpan.org/search?m=dist&q=CGI%2DApplication%2DPlugin
 
 =over 4
 
 =item *
 
-L<CGI::Application::Plugin::Config::Simple> - Integration with Config::Simple.
+L<CGI::Application::Plugin::AnyTemplate> - Use any templating system from within CGI::Application using a unified interface
 
 =item *
 
-L<CGI::Application::Plugin::ConfigAuto> - Integration with Config::Auto.
+L<CGI::Application::Plugin::Apache> - Use Apache::* modules without interference
+
+=item * 
+
+L<CGI::Application::Plugin::AutoRunmode> - Automatically register runmodes 
 
 =item *
 
-L<CGI::Application::Plugin::DBH> - Integration with DBI.
+L<CGI::Application::Plugin::ConfigAuto> - Integration with L<Config::Auto>.
+
+=item *
+
+L<CGI::Application::Plugin::Config::Context> - Integration with L<Config::Context>.
+
+=item *
+
+L<CGI::Application::Plugin::Config::General> - Integration with L<Config::General>.
+
+=item *
+
+L<CGI::Application::Plugin::Config::Simple> - Integration with L<Config::Simple>.
+
+=item * 
+
+L<CGI::Application::Plugin::CompressGzip> - Add Gzip compression
+
+=item *
+
+L<CGI::Application::Plugin::DBH> - Integration with L<DBI>.
+
+=item *
+
+L<CGI::Application::Plugin::LogDispatch> - Integration with L<Log::Dispatch>
 
 =item *
 
@@ -1784,12 +1812,13 @@ L<CGI::Application::Plugin::TT> - Use L<Template::Toolkit> as an alternative to 
 
 =item *
 
-L<CGI:::Application::Plugin::ValidateRM> - Integration with Data::FormValidator and HTML::FillInForm
+L<CGI::Application::Plugin::ValidateRM> - Integration with Data::FormValidator and HTML::FillInForm
 
 =back
 
-Consult each plug-in for the exact usage syntax.
 
+
+Consult each plug-in for the exact usage syntax.
 
 =head2 Writing Plug-ins
 
