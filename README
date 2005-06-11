@@ -7,21 +7,46 @@ reusable web-based applications. This module implements a methodology which,
 if followed, will make your web software easier to design, easier to
 document, easier to write, and easier to evolve.
 
-
 Download site for CGI::Application:
 
   http://search.cpan.org/dist/CGI-Application/
 
+CHANGES SINCE VERSION 3.31:
+    This release adds a major new feature of special interest to plugin
+    authors: 'hooks'. This concept helps to create plugins that are more powerful
+    and simpler to use for end users. See the documentation on writing plugins for
+    details.
 
-CHANGES SINCE VERSION 3.2:
+    Special thanks to Cees Hek and Michael Graham for their effort to develop
+    and refine the hook system.
 
-- Refactored test suite to use Test::More (Gabor Szabo)
-- Removed warnings being emitted for documented API calls
-- minor code clean-up to load_tmpl() (Emanuele Zeppieri)
-- Support for passing multiple template paths to HTML::Template (Michael Peters) 
-- Added error_mode to support trapping runmodes dying (Rob Kinyon)
-- Added Plug-in related documentation. (Mark Stosberg) 
-- mode_param() updated to more easily set the run mode from $ENV{PATH_INFO} (Mark Stosberg)
+    Since the last major release, there has been an explosion of new plugins
+    developed. This is an incomplete list of modules below the
+    'CGI::Application::Plugin' namespace. Expect more to be added and updated soon
+    with the advent of the hook system: 
+
+      ::AnyTemplate - Use any templating system with a unified interface 
+      ::Apache - Use Apache::* modules without interference
+      ::AutoRunmode - Automatically register runmodes
+      ::ConfigAuto - Integration with Config::Auto
+      ::Config::Context - Integration with Config::Context
+      ::Config::General - Integration with Config::General
+      ::Config::Simple - Integration with Config::Simple
+      ::CompressGzip - Add Gzip compression 
+      ::DBH - Integration with DBI
+      ::LogDispatch - Integration with Log::Dispatch
+      ::Session - Integration with CGI::Session
+      ::Stream - Help stream files to the browser
+      ::TT - Use Template::Toolkit as an alternative to HTML::Template
+      ::ValidateRM - Integration with Data::FormValidator and HTML::FillInForm
+
+    The following additional changes are also present in this release:
+
+    - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
+    - Clarified Plug-in documentation (Timothy Appnel)
+    - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
+    - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
+    - Documented return value of header_props()
 
 Read the article "Using CGI::Application" on Perl.com for an 
 overview of this module and its usage:

@@ -2,31 +2,42 @@
 
 Revision history for Perl extension CGI::Application.
 
-4.0_5
-    - Added a bit of caching to speed up call_hook()
+4.0 Fri Jun 10, 2005
+    This release adds a major new feature of special interest to plugin
+    authors: 'hooks'. This concept helps to create plugins that are more powerful
+    and simpler to use for end users. See the documentation on writing plugins for
+    details.
 
-4.0_4
-    - Added load_tmpl() hook (Mark Stosberg)
-    - Documentation updates and code re-organization
+    Special thanks to Cees Hek and Michael Graham for their effort to develop
+    and refine the hook system.
 
-4.0_3 Sun May 29, 2005
-    - Changed callback system to allow both class-based callbacks and
-      object-based callbacks (Michael Graham)
-    - removed named positions from the callback system
+    Since the last major release, there has been an explosion of new plugins
+    developed. This is an incomplete list of modules below the
+    'CGI::Application::Plugin' namespace. Expect more to be added and updated soon
+    with the advent of the hook system: 
 
-4.0_2 Sat Mar 19, 2005 
+      ::AnyTemplate - Use any templating system with a unified interface 
+      ::Apache - Use Apache::* modules without interference
+      ::AutoRunmode - Automatically register runmodes
+      ::ConfigAuto - Integration with Config::Auto
+      ::Config::Context - Integration with Config::Context
+      ::Config::General - Integration with Config::General
+      ::Config::Simple - Integration with Config::Simple
+      ::CompressGzip - Add Gzip compression 
+      ::DBH - Integration with DBI
+      ::LogDispatch - Integration with Log::Dispatch
+      ::Session - Integration with CGI::Session
+      ::Stream - Help stream files to the browser
+      ::TT - Use Template::Toolkit as an alternative to HTML::Template
+      ::ValidateRM - Integration with Data::FormValidator and HTML::FillInForm
+
+    The following additional changes are also present in this release:
+
     - Enhanced tests and documentation for error_mode(). (Rob Kinyon). 
     - Clarified Plug-in documentation (Timothy Appnel)
     - Avoid some warnings when getting run mode from PATH_INFO (Emanuele Zeppieri)
-    - removed init stage from callbacks to avoid confusion. (Mark Stosberg)
-
-4.0_1 Sun Dec 19, 2004
-    - New callback system opens the door for more powerful and easy-to-use
-      plug-ins. (Cees Hek)
-    - Document new plug-in available: 
-      CGI::Application::Plugin::Stream helps stream files to the browser
-    - Documented return value of header_props()
     - Use query() object to get PATH_INFO, to workaround bug in IIS web server. (Mark Stosberg)
+    - Documented return value of header_props()
 
 3.31 Sun Sep 26, 2004
     - Documentation clean-ups. No code changes. 
