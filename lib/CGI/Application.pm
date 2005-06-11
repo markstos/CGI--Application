@@ -13,7 +13,7 @@ my %INSTALLED_CALLBACKS = (
 	prerun    => { 'CGI::Application' => [ 'cgiapp_prerun'  ] },
 	postrun   => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
 	teardown  => { 'CGI::Application' => [ 'teardown'       ] },
-    load_tmpl => { },
+	load_tmpl => { },
 );
 
 ###################################
@@ -1815,7 +1815,7 @@ to run at a particular phase, accomplishing this goal.
 B<Callback Examples>
 
   # register a callback to the standard CGI::Application hooks
-  #   one of 'init', 'prerun', 'postrun' or 'teardown'
+  #   one of 'init', 'prerun', 'postrun', 'teardown' or 'load_tmpl'
   # As a plug-in author, this is probably the only method you need.
 
   # Class-based: callback will persist for all runs of the application
@@ -1846,7 +1846,8 @@ B<Callback Methods>
 The add_callback method allows you to register a callback
 function that is to be called at the given stage of execution.
 Valid hooks include 'init', 'prerun', 'postrun' and 'teardown',
-and any other hooks defined using the C<new_hook> method.
+'load_tmpl', and any other hooks defined using the C<new_hook>
+method.
 
 The callback should be a reference to a subroutine or the name of a
 method.
@@ -1913,13 +1914,11 @@ sub add_callback {
 
 	if (ref $self_or_class) {
 		# Install in object
-		my $caller = caller;
 		my $self = $self_or_class;
 		push @{ $self->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
 	}
 	else {
 		# Install in class
-		my $caller = caller;
 		my $class = $self_or_class;
 		push @{ $INSTALLED_CALLBACKS{$hook}{$class} }, $callback;
 	}
@@ -1968,12 +1967,10 @@ the exact ordering.
 =cut
 
 sub call_hook {
-	my $self= shift;
+	my $self      = shift;
 	my $app_class = ref $self || $self;
 	my $hook      = lc shift;
 	my @args      = @_;
-
-	my $caller = caller;
 
 	die "Unknown hook ($hook)" unless exists $INSTALLED_CALLBACKS{$hook};
 
@@ -1989,8 +1986,8 @@ sub call_hook {
 
 	# Next, run callbacks installed in class hierarchy
 
-    # Cache this value as a performance boost
-    $self->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
+	# Cache this value as a performance boost
+	$self->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
 
 	# Get list of classes that the current app inherits from
 	foreach my $class (@{ $self->{__CALLBACK_CLASSES} }) {
