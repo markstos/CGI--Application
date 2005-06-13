@@ -1328,8 +1328,21 @@ load_tmpl() returns:
 
   $self->add_callback('load_tmpl',\&your_method);
 
-When C<your_method()> is executed, it will be passed the template object followed by parameters
-passed to C<load_tmpl()>
+When C<your_method()> is executed, it will be passed three arguments: 
+
+ 1. A hash reference of the extra params passed into C<load_tmpl>
+ 2. Followed by a hash reference to template parameters. 
+    With both of these, you can modify them by reference to affect 
+    values that are actually passed to the new() and param() methods of the
+    template object.
+ 3. The name of the template file.    
+
+Here's an example stub for a load_tmpl() callback: 
+
+    sub my_load_tmpl_callback {
+        my ($self, $ht_params, $tmpl_params, $tmpl_file) = @_
+        # modify $ht_params or $tmpl_params by reference...    
+    }
 
 =cut
 
@@ -1352,10 +1365,17 @@ sub load_tmpl {
 		push(@extra_params, path => [ @tmpl_paths ]) unless $found;
 	}
 
-	require HTML::Template;
-	my $t = HTML::Template->new_file($tmpl_file, @extra_params);
+    my %tmpl_params;
+    my %ht_params = @extra_params;
 
-	$self->call_hook('load_tmpl',$t,@_);
+    $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
+
+    require HTML::Template;
+    my $t = HTML::Template->new_file($tmpl_file, %ht_params);
+
+    if (keys %tmpl_params) {
+        $t->param(%tmpl_params);
+    }
 
 	return $t;
 }
@@ -1984,7 +2004,13 @@ at the given hook.  It is used in conjunction with the C<new_hook> method which
 allows you to create a new hook location.
 
 The first argument to C<call_hook> is the hook name. Any remaining arguments
-are passed to every callback executed at the hook location.
+are passed to every callback executed at the hook location. So, a stub for a 
+callback at the 'pretemplate' hook would look like this:
+
+ sub my_hook {
+    my ($self,@args) = @_;
+    # ....
+ }
 
 Note that hooks are semi-public locations. Calling a hook means executing
 callbacks that were registered to that hook by the current object and also

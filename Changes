@@ -2,6 +2,14 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.01_01  Mon Jun 13, 2005
+
+    NOTE: This release has an important incompatibility from the 4.0 release
+    two days ago. The 'load_tmpl' hook which was just introduced has had it's
+    interface changed. The change allows plug-in authors to affect the parameters
+    passed to the 'new' constructor of the template object, instead of just adding
+    parameters later. 
+
 4.0 Fri Jun 10, 2005
     This release adds a major new feature of special interest to plugin
     authors: 'hooks'. This concept helps to create plugins that are more powerful
