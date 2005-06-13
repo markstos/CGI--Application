@@ -5,7 +5,7 @@ use Carp;
 use strict;
 use Class::ISA;
 
-$CGI::Application::VERSION = '4.0';
+$CGI::Application::VERSION = '4.01_01';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -2113,6 +2113,7 @@ these callbacks are run in the order they were registered (FIFO).
 
 
 =cut
+
 
 =head1 COMMUNITY
 
