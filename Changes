@@ -2,7 +2,7 @@
 
 Revision history for Perl extension CGI::Application.
 
-4.01_01  Mon Jun 13, 2005
+4.01 Tue Jun 14, 2005
 
     NOTE: This release has an important incompatibility from the 4.0 release
     two days ago. The 'load_tmpl' hook which was just introduced has had it's
