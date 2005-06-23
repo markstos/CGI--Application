@@ -178,7 +178,8 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	My::Framework;
-	use	base 'CGI::Application';
+    use vars qw/@ISA/;
+    @ISA = ('CGI::Application');
 	sub	cgiapp_init	   { main::record_event('init')       }
 	sub	cgiapp_prerun  { main::record_event('prerun')     }
 	sub	cgiapp_postrun { main::record_event('postrun')    }
@@ -188,7 +189,8 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	My::Project;
-	use	base 'My::Framework';
+    use vars qw/@ISA/;
+	@ISA = ('My::Framework');
 	import CGI::Application::Plugin::Foo;
 
 	# install another init callback	for	all	users of My::Project
@@ -206,7 +208,8 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	Other::Project;
-	use	base 'My::Framework';
+    use vars qw/@ISA/;
+    @ISA = ('My::Framework');
 	import CGI::Application::Plugin::Baz;
 	import CGI::Application::Plugin::Bam;
 
@@ -225,7 +228,8 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	My::App;
-	use	base 'My::Project';
+    use vars qw/@ISA/;
+    @ISA = ('My::Project');
 	import CGI::Application::Plugin::Bar;
 
 	sub	setup {
@@ -258,7 +262,8 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	Other::App;
-	use	base 'Other::Project';
+    use vars qw/@ISA/;
+    @ISA = 'Other::Project';
 
 	import CGI::Application::Plugin::Bam;
 
@@ -286,7 +291,8 @@ BEGIN {	use_ok('CGI::Application') };
 
 {
 	package	Unrelated::App;
-	use	base 'CGI::Application';
+    use vars qw/@ISA/;
+    @ISA = ('CGI::Application');
 
 	sub	setup {
 		my $self = shift;
