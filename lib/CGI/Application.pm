@@ -33,16 +33,6 @@ sub new {
 	my $self = {};
 	bless($self, $class);
 
-	### SET UP DEFAULT VALUES ###
-	#
-	# We set them up here and not in the setup() because a subclass
-	# which implements setup() still needs default values!
-
-	$self->header_type('header');
-	$self->mode_param('rm');
-	$self->start_mode('start');
-
-
 	# Process optional new() parameters
 	my $rprops;
 	if (ref($args[0]) eq 'HASH') {
@@ -78,6 +68,15 @@ sub new {
 	# Pass all constructor args forward.  This will allow flexible usage
 	# down the line.
 	$self->call_hook('init', @args);
+
+	### SET UP DEFAULT VALUES ###
+	#
+	# We set them up here and not in the setup() because a subclass
+	# which implements setup() still needs default values!
+
+	$self->header_type('header');
+	$self->mode_param('rm');
+	$self->start_mode('start') unless defined $self->start_mode;
 
 	# Call setup() method, which should be implemented in the sub-class!
 	$self->setup();
@@ -236,7 +235,6 @@ sub cgiapp_postrun {
 sub setup {
 	my $self = shift;
 
-	$self->start_mode('start');
 	$self->run_modes(
 		'start' => 'dump_html',
 	);

@@ -2,6 +2,10 @@
 
 Revision history for Perl extension CGI::Application.
 
+    - Altered how "start_mode" default is set, allowing it to be set
+      through the hook system in the 'init' phase. Existing applications
+      should be unaffected.
+
 4.01 Tue Jun 14, 2005
 
     NOTE: This release has an important incompatibility from the 4.0 release
