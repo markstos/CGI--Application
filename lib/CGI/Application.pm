@@ -1611,29 +1611,48 @@ the QUERY attribute.
 
 =item run_modes()
 
-    $webapp->run_modes('mode1' => 'some_sub_by_name', 'mode2' => \&some_other_sub_by_ref);
+    # The common usage: an arrayref of run mode names that exactly match subroutine names
+    $webapp->run_modes([qw/
+        form_display
+        form_process
+    /]);
 
-This accessor/mutator expects a hash which specifies the dispatch table for the
-different CGI states.  The run() method uses the data in this table
-to send the CGI to the correct function as determined by reading
-the CGI parameter specified by mode_param() (defaults to 'rm' for "Run Mode").
-These functions are referred to as "run mode methods".
+   # With a hashref, use a different name or a code ref
+   $webapp->run_modes(
+           'mode1' => 'some_sub_by_name', 
+           'mode2' => \&some_other_sub_by_ref
+    );
+
+This accessor/mutator specifies the dispatch table for the
+application states, using the syntax examples above. It returns 
+the dispatch table as a hash. 
+
+The run_modes() method may be called more than once.  Additional values passed
+into run_modes() will be added to the run modes table.  In the case that an
+existing run mode is re-defined, the new value will override the existing value.
+This behavior might be useful for applications which are created via inheritance
+from another application, or some advanced application which modifies its
+own capabilities based on user input.
+
+The run() method uses the data in this table to send the application to the
+correct function as determined by reading the CGI parameter specified by
+mode_param() (defaults to 'rm' for "Run Mode").  These functions are referred
+to as "run mode methods".
 
 The hash table set by this method is expected to contain the mode
 name as a key.  The value should be either a hard reference (a subref)
-to the run mode method which you want to be called when the CGI enters
+to the run mode method which you want to be called when the application enters
 the specified run mode, or the name of the run mode method to be called:
 
     'mode_name_by_ref'  => \&mode_function
     'mode_name_by_name' => 'mode_function'
 
-The run mode method specified is expected to return a block of text
-(e.g.: HTML) which will eventually be sent back to the web browser.
-The your run mode method may return its block of text as a scalar
-or a scalar-ref.
+The run mode method specified is expected to return a block of text (e.g.:
+HTML) which will eventually be sent back to the web browser.  The run mode
+method may return its block of text as a scalar or a scalar-ref.
 
 An advantage of specifying your run mode methods by name instead of
-by reference is that you can more easily create derivative application
+by reference is that you can more easily create derivative applications
 using inheritance.  For instance, if you have a new application which is
 exactly the same as an existing application with the exception of one
 run mode, you could simply inherit from that other application and override
@@ -1647,19 +1666,11 @@ a code block.  If run-time performance is a critical issue, specify
 your run mode methods by reference and not by name.  The speed differences
 are generally small, however, so specifying by name is preferred.
 
-The run_modes() method may be called more than once.  Additional values passed
-into run_modes() will be added to the run modes table.  In the case that an
-existing run mode is re-defined, the new value will override the existing value.
-This behavior might be useful for applications which are created via inheritance
-from another application, or some advanced application which modifies its
-own capabilities based on user input.
-
-The run_modes() method also supports a second interface for designating
-run modes and their methods:  Via array reference:
+Specifying the run modes by array reference:
 
     $webapp->run_modes([ 'mode1', 'mode2', 'mode3' ]);
 
-This is the same as the following, via hash:
+Is is the same as using a hash, with keys equal to values
 
     $webapp->run_modes(
         'mode1' => 'mode1',

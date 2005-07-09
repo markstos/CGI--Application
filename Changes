@@ -6,6 +6,8 @@ Revision history for Perl extension CGI::Application.
       through the hook system in the 'init' phase. Existing applications
       should be unaffected.
 
+    - Return value of run_modes() was documented.
+
 4.01 Tue Jun 14, 2005
 
     NOTE: This release has an important incompatibility from the 4.0 release
