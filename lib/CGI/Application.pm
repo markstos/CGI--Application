@@ -2126,7 +2126,7 @@ these callbacks are run in the order they were registered (FIFO).
 
 =head1 COMMUNITY
 
-There a couple of primary resources available for those who wish to learn more
+Therese are primary resources available for those who wish to learn more
 about CGI::Application and discuss it with others.
 
 B<Wiki>
@@ -2142,6 +2142,11 @@ B<Support Mailing List>
 If you have any questions, comments, bug reports or feature suggestions,
 post them to the support mailing list!  To join the mailing list, simply
 send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
+
+B<IRC>
+
+You can also drop by C<#cgiapp> on C<irc.perl.org> with a good chance of finding 
+some people involved with the project there. 
 
 =head1 SEE ALSO
 
