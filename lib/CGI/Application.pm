@@ -1423,13 +1423,18 @@ This would allow you to programmatically set the run mode based on arbitrary log
 
 This syntax allows you to easily set the run mode from $ENV{PATH_INFO}.  It
 will try to set the run mode from the first part of $ENV{PATH_INFO} (before the
-first "/"). To specify that you would rather get the run name from the 2nd
+first "/"). To specify that you would rather get the run mode name from the 2nd
 part of $ENV{PATH_INFO}:
 
  $webapp->mode_param( path_info=> 2 );
 
 This also demonstrates that you don't need to pass in the C<param> hash key. It will
 still default to C<rm>.
+
+You can also set C<path_info> to a negative value. This works just like a negative
+list index: if it is -1 the run mode name will be taken from the last part of 
+$ENV{PATH_INFO}, if it is -2, the one before that, and so on.
+
 
 If no run mode is found in $ENV{PATH_INFO}, it will fall back to looking in the
 value of a the CGI form field defined with 'param', as described above.  This
@@ -1480,8 +1485,12 @@ sub mode_param {
 		if ( $p{path_info} && $self->query->path_info() ) {
 			my $pi = $self->query->path_info();
 
-			# computer scientists like to start counting from zero.
-			my $idx = $p{path_info} - 1;
+			my $idx = $p{path_info};
+			# two cases: negative or positive index
+			# negative index counts from the end of path_info
+			# positive index needs to be fixed because 
+			#    computer scientists like to start counting from zero.
+			$idx -= 1 if ($idx > 0) ;	
 
 			# remove the leading slash
 			$pi =~ s!^/!!;

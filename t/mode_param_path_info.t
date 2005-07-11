@@ -1,4 +1,4 @@
-use Test::More tests=>12;
+use Test::More tests=>14;
 
 # Include the test hierarchy
 use lib './test';
@@ -62,3 +62,15 @@ $app->mode_param( path_info => 2, param => 'alt_rm' );
 eval { $out = $app->run() };
 is($@, '', 'avoided eval() death');
 like($out,qr/Hello World/, $test_name);
+
+####
+
+$test_name = "mode_param( path_info => -2 ), expecting success ";
+$ENV{PATH_INFO} = '/my_ses_id/basic_test1/foo';
+ $app = TestApp5->new( QUERY => $q );
+$app->mode_param( path_info => -2, );
+eval { $out = $app->run() };
+is($@, '', 'avoided eval() death');
+like($out,qr/Hello World/, $test_name);
+
+####
