@@ -2,10 +2,13 @@
 
 Revision history for Perl extension CGI::Application.
 
+    - path_info option to mode_param now supports negative index numbers
+      to grab the run mode name from the other end of the PATH_INFO. 
+      (Thilo Planz)
+
     - Altered how "start_mode" default is set, allowing it to be set
       through the hook system in the 'init' phase. Existing applications
       should be unaffected.
-
     - Return value of run_modes() was documented.
 
 4.01 Tue Jun 14, 2005
