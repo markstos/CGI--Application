@@ -709,7 +709,7 @@ As you can see, widgetview.cgi simply "uses" your Application module
    use strict;
 
    # Needed for our database connection
-   use DBI;
+   use CGI::Application::Plugin::DBH;
 
    sub setup {
 	my $self = shift;
@@ -720,15 +720,15 @@ As you can see, widgetview.cgi simply "uses" your Application module
 		'mode3' => 'showdetail'
 	);
 
-	# Connect to DBI database
-	$self->param('mydbh' => DBI->connect());
+	# Connect to DBI database, with the same args as DBI->connect();
+     $self->dbh_config();
    }
 
    sub teardown {
 	my $self = shift;
 
-	# Disconnect when we're done
-	$self->param('mydbh')->disconnect();
+	# Disconnect when we're done, (Although DBI usually does this automatically)
+	$self->dbh->disconnect();
    }
 
    sub showform {
@@ -753,7 +753,7 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $self = shift;
 
 	# Get our database connection
-	my $dbh = $self->param('mydbh');
+	my $dbh = $self->dbh();
 
 	# Get CGI query object
 	my $q = $self->query();
@@ -784,7 +784,7 @@ As you can see, widgetview.cgi simply "uses" your Application module
 	my $self = shift;
 
 	# Get our database connection
-	my $dbh = $self->param('mydbh');
+	my $dbh = $self->dbh();
 
 	# Get CGI query object
 	my $q = $self->query();
