@@ -2159,7 +2159,23 @@ some people involved with the project there.
 
 =head1 SEE ALSO
 
-L<CGI>, L<HTML::Template>, L<CGI::Application::ValidateRM> perl(1)
+=over 4
+
+=item o 
+
+L<CGI>
+
+=item o 
+
+L<HTML::Template>
+
+=item o
+
+B<CGI::Application::Framework> - A full-featured web application based on
+CGI::Application.  http://www.cafweb.org/
+
+=back
+
 
 
 =head1 AUTHOR
