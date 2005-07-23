@@ -1303,14 +1303,17 @@ If you wish to suppress HTTP headers entirely (as might be the case if
 you're working in a slightly more exotic environment), you can set
 header_type() to "none".  This will completely hide headers.
 
+
 =item load_tmpl()
 
     my $tmpl_obj = $webapp->load_tmpl('some.tmpl');
 
 This method takes the name of a template file and returns an
-HTML::Template object.  The HTML::Template->new_file() constructor
-is used for create the object.  Refer to L<HTML::Template> for specific usage
-of HTML::Template.
+HTML::Template object.  ( For integration with other template systems
+and automated template names, see "Alternatives to load_tmpl() below. )
+
+The HTML::Template->new_file() constructor is used for create the object.
+Refer to L<HTML::Template> for specific usage of HTML::Template.
 
 If tmpl_path() has been specified, load_tmpl() will set the
 HTML::Template C<path> option to the path(s) provided.  This further
@@ -1325,13 +1328,32 @@ further customized:
          cache => 1
     );
 
-If your application requires more specialized behavior than this, you have a
-couple of options to replace or extend it. You can replace it by overriding
-load_tmpl() by implementing your own load_tmpl() in your CGI::Application
-sub-class application module.
+B<Alternatives to load_tmpl()>
 
-You can also extend it by registering a callback that will be executed just before
-load_tmpl() returns:
+If your application requires more specialized behavior than this, you can
+always replace it by overriding load_tmpl() by implementing your own
+load_tmpl() in your CGI::Application sub-class application module.
+
+First, you may want to check out the template related plugins. 
+
+L<CGI::Application::Plugin::AnyTemplate> provides a consistent interface to
+HTML::Template, Template Toolkit, and Petal, automatic default file names, and
+other features. Check this one out first. 
+
+L<CGI::Application::Plugin::TT> focuses just on Template Toolkit integration,
+and features pre-and-post features, singleton support and more.
+
+L<CGI::Application::Plugin::Stream> can help if you want to return a stream and
+not a file. It features a simple syntax and MIME-type detection. 
+
+
+
+
+
+B<The load_tmpl() callback>
+
+Plugin authors will be intersted to know that you can register a callback that
+will be executed just before load_tmpl() returns:
 
   $self->add_callback('load_tmpl',\&your_method);
 
@@ -1852,6 +1874,12 @@ L<CGI::Application::Plugin::Session> - Integration with L<CGI::Session>
 =item *
 
 L<CGI::Application::Plugin::Stream> - Help stream files to the browser
+
+=item *
+
+L<CGI::Application::Plugin::TemplateRunner> - Allows for more of an ASP-style
+code structure, with the difference that code and HTML for each screen are in
+seperate files. 
 
 =item *
 
