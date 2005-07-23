@@ -636,6 +636,8 @@ Framework for building reusable web-applications
   # In "WebApp.pm"...
   package WebApp;
   use base 'CGI::Application';
+
+  # ( setup() can even be skipped for common cases. See docs below. )
   sub setup {
 	my $self = shift;
 	$self->start_mode('mode1');
@@ -986,6 +988,15 @@ Your setup() method might be implemented something like this:
 		$self->param('myprop2', 'prop2value');
 		$self->param('myprop3', ['p3v1', 'p3v2', 'p3v3']);
 	}
+
+However, often times all that needs to be in setup() is defining your run modes
+and your start mode. L<CGI::Application::Plugin::AutoRunmode> allows you to do  
+this with a simple syntax, using run mode attributes:
+
+ use CGI::Application::Plugin::AutoRunmode;
+
+ sub show_first : StartRunmode { ... };
+ sub do_next : Runmode { ... }
 
 =item teardown()
 
@@ -2175,8 +2186,6 @@ B<CGI::Application::Framework> - A full-featured web application based on
 CGI::Application.  http://www.cafweb.org/
 
 =back
-
-
 
 =head1 AUTHOR
 
