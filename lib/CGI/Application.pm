@@ -1,5 +1,3 @@
-# $Id: Application.pm,v 1.42 2004/05/12 17:04:08 jesse Exp $
-
 package CGI::Application;
 use Carp;
 use strict;
