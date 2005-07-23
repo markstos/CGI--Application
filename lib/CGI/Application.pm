@@ -1015,7 +1015,7 @@ all the arguments which were sent to the new() method.
 
 An example of the benefits provided by utilizing this hook is
 creating a custom "application super-class" from which which all
-your CGI applications would inherit, instead of CGI::Application.
+your web applications would inherit, instead of CGI::Application.
 
 Consider the following:
 
@@ -1053,7 +1053,7 @@ hook, the value of the run mode is passed into cgiapp_prerun().
 
 Another benefit provided by utilizing this hook is
 creating a custom "application super-class" from which all
-your CGI applications would inherit, instead of CGI::Application.
+your web applications would inherit, instead of CGI::Application.
 
 Consider the following:
 
@@ -1139,20 +1139,15 @@ modes, and when a param() is a particular value.
 
 =item cgiapp_get_query()
 
-This method is called when CGI::Application retrieves the CGI query object.
+This method is called when CGI::Application retrieves the query object.
 The cgiapp_get_query() method loads CGI.pm via "require" and returns a
 CGI.pm query object.  The implementation is as follows:
 
   sub cgiapp_get_query {
         my $self = shift;
 
-        # Include CGI.pm and related modules
         require CGI;
-
-        # Get the query object
-        my $q = CGI->new();
-
-        return $q;
+        return  CGI->new();
   }
 
 You may override this method if you wish to use a different query
@@ -1192,7 +1187,7 @@ clean-up your param()s.
     print STDERR $webapp->dump();
 
 The dump() method is a debugging function which will return a
-chunk of text which contains all the environment and CGI form
+chunk of text which contains all the environment and web form
 data of the request, formatted nicely for human readability.
 Useful for outputting to STDERR.
 
@@ -1202,7 +1197,7 @@ Useful for outputting to STDERR.
     my $output = $webapp->dump_html();
 
 The dump_html() method is a debugging function which will return
-a chunk of text which contains all the environment and CGI form
+a chunk of text which contains all the environment and web form
 data of the request, formatted nicely for human readability via
 a web browser.  Useful for outputting to a browser.
 
