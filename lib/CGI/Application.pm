@@ -657,22 +657,17 @@ Framework for building reusable web-applications
   my $webapp = WebApp->new();
   $webapp->run();
 
-
-=head1 USAGE EXAMPLE
+=head1 INTRODUCTION
 
 CGI::Application is intended to make it easier to create sophisticated,
-reusable web-based applications.  This module implements a methodology
-which, if followed, will make your web software easier to design,
+high-performance, reusable web-based applications.  This module implements a
+methodology which, if followed, will make your web software easier to design,
 easier to document, easier to write, and easier to evolve.
 
-CGI::Application builds on standard, non-proprietary technologies
-and techniques, such as the Common Gateway Interface and
-Lincoln D. Stein's excellent CGI.pm module.  CGI::Application
-judiciously avoids employing technologies and techniques which would
-bind a developer to any one set of tools, operating system or
-web server.
+CGI::Application judiciously avoids employing technologies and techniques which
+would bind a developer to any one set of tools, operating system or web server.
 
-Following is an example of the typical usage of CGI::Application.
+=head1 USAGE EXAMPLE
 
 Imagine you have to write an application to search through a database
 of widgets.  Your application has three screens:
@@ -839,10 +834,14 @@ CGI::Application is the methodology for you!
 
 Apache is NOT a requirement for CGI::Application.  Web applications based on
 CGI::Application will run equally well on NT/IIS or any other
-CGI-compatible environment.  CGI::Application-based applications
+CGI-compatible environment.  CGI::Application-based projects
 are, however, ripe for use on Apache/mod_perl servers, as they
-naturally encourage Good Programming Practices.  As always, use strict!
+naturally encourage Good Programming Practices and will often work
+in persistent environments without modification. 
 
+For more information on using CGI::Application with mod_perl, please see our
+website at http://www.cgi-app.org/, as well as
+L<CGI::Application::Plugin::Apache>, which integates with L<Apache::Request>.
 
 =head1 DESCRIPTION
 
