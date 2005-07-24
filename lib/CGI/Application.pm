@@ -12,6 +12,7 @@ my %INSTALLED_CALLBACKS = (
 	postrun   => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
 	teardown  => { 'CGI::Application' => [ 'teardown'       ] },
 	load_tmpl => { },
+    error     => { },
 );
 
 ###################################
@@ -152,6 +153,7 @@ sub run {
 	};
 	if ($@) {
 		my $error = $@;
+        $self->call_hook('error', $error);
 		if (my $em = $self->error_mode) {
 			$body = $self->$em( $error );
 		} else {
@@ -955,9 +957,15 @@ data returned is print()'ed to STDOUT and to the browser.  If
 the specified mode is not found in the run_modes() table, run() will
 croak().
 
+B<Handling unexpected death>
+
 If the runmode dies for whatever reason, run() will see if you have set a
 value for error_mode(). If you have, run() will call that method
 as a run mode, passing $@ as the only parameter.
+
+Plugins authors will be interested to know that just before C<error_mode()> is
+called, the C<error> hook will be executed, with the error message passed in as
+the only parameter.
 
 =back
 
@@ -1218,8 +1226,8 @@ a web browser.  Useful for outputting to a browser.
     $webapp->error_mode('my_error_rm');
 
 The error_mode contains the name of a run mode to call in the event that the
-planned run mode call fails C<eval>. No error_mode is defined by default.
-The death of your error_mode() run mode is not trapped, so you can also use
+planned run mode call fails C<eval>. No C<error_mode> is defined by default.
+The death of your C<error_mode()> run mode is not trapped, so you can also use
 it to die in your own special way.
 
 =item get_current_runmode()

@@ -14,6 +14,10 @@ Revision history for Perl extension CGI::Application.
 
     - Example of using the AutoRunmode plugin was added to the setup() docs. 
 
+    - 'error' hook was added, which is executed just before error_mode() might
+      be called. An example use of this would be a logging plugin that wants to
+      log that the application died. 
+
 4.01 Tue Jun 14, 2005
 
     NOTE: This release has an important incompatibility from the 4.0 release
