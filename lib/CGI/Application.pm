@@ -967,6 +967,8 @@ Plugins authors will be interested to know that just before C<error_mode()> is
 called, the C<error> hook will be executed, with the error message passed in as
 the only parameter.
 
+For a complete integrated logging solution, check out L<CGI::Application::Plugin::LogDispatch>.
+
 =back
 
 =head2 Sub-classing and Override Methods
