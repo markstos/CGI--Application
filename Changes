@@ -2,6 +2,8 @@
 
 Revision history for Perl extension CGI::Application.
 
+4.02_1 Sun Jul 24, 2005
+
     - path_info option to mode_param now supports negative index numbers
       to grab the run mode name from the other end of the PATH_INFO. 
       (Thilo Planz)
@@ -12,7 +14,7 @@ Revision history for Perl extension CGI::Application.
 
     - Return value of run_modes() was documented.
 
-    - Example of using the AutoRunmode plugin was added to the setup() docs. 
+    - Integrate more examples of using plugins into the documentation.
 
     - 'error' hook was added, which is executed just before error_mode() might
       be called. An example use of this would be a logging plugin that wants to
