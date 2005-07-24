@@ -877,7 +877,6 @@ By inheriting from CGI::Application you have access to a
 number of built-in methods.  The following are those which
 are expected to be called from your Instance Script.
 
-
 =over 4
 
 =item new()
@@ -896,14 +895,20 @@ new() may take a set of parameters as key => value pairs:
 
 This method may take some specific parameters:
 
-TMPL_PATH - This optional parameter adds value to the load_tmpl()
-method (specified below).  This sets a path using HTML::Template's
-C<path> option when you call load_tmpl() to get your HTML::Template
-object.  This run-time parameter allows you to further encapsulate
-instantiating templates, providing potential for more re-usability.
-It can be either a scalar or an array reference of multiple paths.
+B<TMPL_PATH> - This optional parameter defines a path to a directory of templates.
+This is used by the load_tmpl() method (specified below), and may also be used
+for the same purpose by other template plugins.  This run-time parameter allows
+you to further encapsulate instantiating templates, providing potential for
+more re-usability.  It can be either a scalar or an array reference of multiple
+paths.
 
-PARAMS        - This parameter, if used, allows you to set a number
+B<QUERY> - This optional parameter allows you to specify an
+already-created CGI.pm query object.  Under normal use,
+CGI::Application will instantiate its own CGI.pm query object.
+Under certain conditions, it might be useful to be able to use
+one which has already been created.
+
+B<PARAMS> - This parameter, if used, allows you to set a number
 of custom parameters at run-time.  By passing in different
 values in different instance scripts which use the same application
 module you can achieve a higher level of re-usability.  For instance,
@@ -913,12 +918,20 @@ You could have multiple instance scripts throughout your site which
 all use this "Mailform.pm" module, but which set different recipients
 or different forms.
 
-QUERY         - This optional parameter allows you to specify an
-already-created CGI.pm query object.  Under normal use,
-CGI::Application will instantiate its own CGI.pm query object.
-Under certain conditions, it might be useful to be able to use
-one which has already been created.
+One common use of instance scripts is to provide a path to a config file.  This
+design allows you to define project wide configuration objects used by many
+several instance scripts. There are several plugins which simplify the syntax
+for this and provide lazy loading. Here's an example using
+L<CGI::Application::Plugin::ConfigAuto>, which uses L<Config::Auto> to support
+many configuration file formats. 
 
+ my $app = WebApp->new(PARAMS => { cfg_file => 'config.pl' });
+
+ # Later in your app:
+ my %cfg = $self->cfg()
+ # or ... $self->cfg('HTML_ROOT_DIR');
+
+See the list of of plugins below for more config file integration solutions.
 
 =item run()
 
