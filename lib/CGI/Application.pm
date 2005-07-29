@@ -1882,6 +1882,10 @@ L<CGI::Application::Plugin::DBH> - Integration with L<DBI>.
 
 =item *
 
+L<CGI::Application::Plugin::FillInForm> - Integration with L<HTML::FillInForm>.
+
+=item *
+
 L<CGI::Application::Plugin::LogDispatch> - Integration with L<Log::Dispatch>
 
 =item *
