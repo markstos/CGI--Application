@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use Class::ISA;
 
-$CGI::Application::VERSION = '4.02_1';
+$CGI::Application::VERSION = '4.02';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -965,7 +965,8 @@ as a run mode, passing $@ as the only parameter.
 
 Plugins authors will be interested to know that just before C<error_mode()> is
 called, the C<error> hook will be executed, with the error message passed in as
-the only parameter.
+the only parameter. This hook is still considered experimental, although it is
+unlikely to change.
 
 For a complete integrated logging solution, check out L<CGI::Application::Plugin::LogDispatch>.
 

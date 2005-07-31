@@ -1,10 +1,8 @@
-# $Id: Changes,v 1.36 2004/05/08 21:07:49 mark Exp $
-
 Revision history for Perl extension CGI::Application.
-    
-    - Documented existence of CGI::Application::Plugin::FillInForm.
 
-4.02_1 Sun Jul 24, 2005
+4.02  Sat Jul 30, 2005
+
+    - Documented existence of CGI::Application::Plugin::FillInForm.
 
     - path_info option to mode_param now supports negative index numbers
       to grab the run mode name from the other end of the PATH_INFO. 
@@ -20,7 +18,8 @@ Revision history for Perl extension CGI::Application.
 
     - 'error' hook was added, which is executed just before error_mode() might
       be called. An example use of this would be a logging plugin that wants to
-      log that the application died. 
+      log that the application died. Although it's unlikely to change, it is marked
+      as experimental for now.
 
 4.01 Tue Jun 14, 2005
 
