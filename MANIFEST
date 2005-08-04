@@ -23,6 +23,7 @@ t/09zerorm.t
 t/10errormode.t
 t/11callbacks.t
 t/mode_param_path_info.t
+t/mode_param_overwritten.t
 t/load_tmpl_hook.t
 test/TestApp.pm
 test/TestApp2.pm

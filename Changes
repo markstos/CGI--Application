@@ -1,5 +1,10 @@
 Revision history for Perl extension CGI::Application.
 
+4.03  Thu Aug 04, 2005
+    - Fixed important bug introducted in 4.02 in which a mode_param
+      set in a sub-class would have been ignored. A new automated test
+      was added to prevent this regression in the future. 
+
 4.02  Sat Jul 30, 2005
 
     - Documented existence of CGI::Application::Plugin::FillInForm.
