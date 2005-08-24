@@ -1435,11 +1435,11 @@ sub load_tmpl {
     $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
 
     # Define our extension if doesn't already exist;
-    $self->{__CURRENT_TMPL_EXTENSION} = 'html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
+    $self->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
 
     # Define a default templat name based on the current run mode
     unless (defined $tmpl_file) {
-        $tmpl_file = $self->get_current_runmode .'.'. $self->{__CURRENT_TMPL_EXTENSION};    
+        $tmpl_file = $self->get_current_runmode . $self->{__CURRENT_TMPL_EXTENSION};    
     }
 
     require HTML::Template;

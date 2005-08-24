@@ -7,7 +7,7 @@ use  base 'CGI::Application';
 
 my $obj = CGI::Application->new(TMPL_PATH => [qw(test/templates)]);
 
-$obj->{__CURRENT_TMPL_EXTENSION} = 'tmpl';
+$obj->{__CURRENT_TMPL_EXTENSION} = '.tmpl';
 $obj->{__CURRENT_RUNMODE} = 'test';
 
 {
