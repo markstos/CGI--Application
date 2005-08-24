@@ -1324,10 +1324,19 @@ header_type() to "none".  This will completely hide headers.
 
 =item load_tmpl()
 
-    my $tmpl_obj = $webapp->load_tmpl('some.tmpl');
+    my $tmpl_obj = $webapp->load_tmpl;
+    my $tmpl_obj = $webapp->load_tmpl('some.html');
 
 This method takes the name of a template file and returns an
-HTML::Template object.  ( For integration with other template systems
+HTML::Template object. If the filename is undefined or missing,  
+CGI::Application will default to trying to use the current run mode name,
+plus the extension ".html". 
+
+If you use the default template naming system, you should also use
+L<CGI::Application::Plugin::Forward>, which simply helps to keep the current
+name accurate when you pass control from one run mode to another.
+
+( For integration with other template systems
 and automated template names, see "Alternatives to load_tmpl() below. )
 
 The HTML::Template->new_file() constructor is used for create the object.
@@ -1341,7 +1350,15 @@ The load_tmpl() method will pass any extra parameters sent to it directly to
 HTML::Template->new_file().  This will allow the HTML::Template object to be
 further customized:
 
-    my $tmpl_obj = $webapp->load_tmpl('some_other.tmpl',
+    my $tmpl_obj = $webapp->load_tmpl('some_other.html',
+         die_on_bad_params => 0,
+         cache => 1
+    );
+
+Note that if you want to pass extra arguments but use the default template
+name, you still need to provide a name of C<undef>:
+
+    my $tmpl_obj = $webapp->load_tmpl(undef',
          die_on_bad_params => 0,
          cache => 1
     );
@@ -1416,6 +1433,14 @@ sub load_tmpl {
     my %ht_params = @extra_params;
 
     $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
+
+    # Define our extension if doesn't already exist;
+    $self->{__CURRENT_TMPL_EXTENSION} = 'html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
+
+    # Define a default templat name based on the current run mode
+    unless (defined $tmpl_file) {
+        $tmpl_file = $self->get_current_runmode .'.'. $self->{__CURRENT_TMPL_EXTENSION};    
+    }
 
     require HTML::Template;
     my $t = HTML::Template->new_file($tmpl_file, %ht_params);
