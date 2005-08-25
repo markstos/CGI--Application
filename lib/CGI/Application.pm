@@ -1432,8 +1432,6 @@ sub load_tmpl {
     my %tmpl_params;
     my %ht_params = @extra_params;
 
-    $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
-
     # Define our extension if doesn't already exist;
     $self->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
 
@@ -1441,6 +1439,8 @@ sub load_tmpl {
     unless (defined $tmpl_file) {
         $tmpl_file = $self->get_current_runmode . $self->{__CURRENT_TMPL_EXTENSION};    
     }
+
+    $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
 
     require HTML::Template;
     my $t = HTML::Template->new_file($tmpl_file, %ht_params);
