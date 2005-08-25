@@ -1326,11 +1326,11 @@ header_type() to "none".  This will completely hide headers.
 
     my $tmpl_obj = $webapp->load_tmpl;
     my $tmpl_obj = $webapp->load_tmpl('some.html');
+    my $tmpl_obj = $webapp->load_tmpl( \$template_content );
+    my $tmpl_obj = $webapp->load_tmpl( FILEHANDLE );
 
-This method takes the name of a template file and returns an
-HTML::Template object. If the filename is undefined or missing,  
-CGI::Application will default to trying to use the current run mode name,
-plus the extension ".html". 
+This method takes the name of a template file, a reference to template data
+or a FILEHANDLE and returns an HTML::Template object. If the filename is undefined or missing, CGI::Application will default to trying to use the current run mode name, plus the extension ".html". 
 
 If you use the default template naming system, you should also use
 L<CGI::Application::Plugin::Forward>, which simply helps to keep the current
@@ -1339,7 +1339,12 @@ name accurate when you pass control from one run mode to another.
 ( For integration with other template systems
 and automated template names, see "Alternatives to load_tmpl() below. )
 
-The HTML::Template->new_file() constructor is used for create the object.
+When you pass in a filename, the HTML::Template->new_file() constructor
+is used for create the object.  When you pass in a reference to the template
+content, the HTML::Template->new_scalar_ref() constructor is used and
+when you pass in a filehandle, the HTML::Template->new_filehandle()
+constructor is used.
+
 Refer to L<HTML::Template> for specific usage of HTML::Template.
 
 If tmpl_path() has been specified, load_tmpl() will set the
@@ -1347,8 +1352,8 @@ HTML::Template C<path> option to the path(s) provided.  This further
 assists in encapsulating template usage.
 
 The load_tmpl() method will pass any extra parameters sent to it directly to
-HTML::Template->new_file().  This will allow the HTML::Template object to be
-further customized:
+HTML::Template->new_file() (or new_scalar_ref() or new_filehandle()).
+This will allow the HTML::Template object to be further customized:
 
     my $tmpl_obj = $webapp->load_tmpl('some_other.html',
          die_on_bad_params => 0,
@@ -1444,7 +1449,17 @@ sub load_tmpl {
     $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
 
     require HTML::Template;
-    my $t = HTML::Template->new_file($tmpl_file, %ht_params);
+    # let's check $tmpl_file and see what kind of parameter it is - we
+    # now support 3 options: scalar (filename), ref to scalar (the
+    # actual html/template content) and reference to FILEHANDLE
+    my $t = undef;
+    if ( ref $tmpl_file eq 'SCALAR' ) {
+        $t = HTML::Template->new_scalar_ref( $tmpl_file, %ht_params );
+    } elsif ( ref $tmpl_file eq 'GLOB' ) {
+        $t = HTML::Template->new_filehandle( $tmpl_file, %ht_params );
+    } else {
+        $t = HTML::Template->new_file($tmpl_file, %ht_params);
+    }
 
     if (keys %tmpl_params) {
         $t->param(%tmpl_params);
