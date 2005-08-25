@@ -1429,8 +1429,9 @@ sub load_tmpl {
 		push(@extra_params, path => [ @tmpl_paths ]) unless $found;
 	}
 
-    my %tmpl_params;
+    my %tmpl_params = ();
     my %ht_params = @extra_params;
+    %ht_params = () unless keys %ht_params;
 
     # Define our extension if doesn't already exist;
     $self->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
@@ -2160,6 +2161,7 @@ sub call_hook {
 			die "Error executing class callback in $hook stage: $@" if $@;
 		}
 	}
+
 }
 
 =pod
