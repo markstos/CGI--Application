@@ -1,7 +1,20 @@
 Revision history for Perl extension CGI::Application.
 
+
+4.04_01 Wed Aug 31, 2005
+    -  move load_tmpl hook to after we build $tmpl_file so it will always have a
+      (probably) valid file to work with.
+
+    - initial support for a default template name in load_tmpl(). That means
+      you can now do this:
+
+      my $t = $self->load_tmpl();
+
+      And it will default to a file named after the current run mode with a
+      .html extension. 
+
 4.03  Thu Aug 04, 2005
-    - Fixed important bug introducted in 4.02 in which a mode_param
+    - Fixed important bug introduced in 4.02 in which a mode_param
       set in a sub-class would have been ignored. A new automated test
       was added to prevent this regression in the future. 
 
