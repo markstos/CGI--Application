@@ -1,5 +1,8 @@
 Revision history for Perl extension CGI::Application.
 
+4.04_02 Thu Sep 8, 2005 
+    - Add support for templates stored in file handles and scalarrefs to load_tmpl(). 
+      (Jason Purdy)  
 
 4.04_01 Wed Aug 31, 2005
     -  move load_tmpl hook to after we build $tmpl_file so it will always have a
