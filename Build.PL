@@ -14,6 +14,9 @@ my $build = Module::Build->new
    'dist_author'        => 'Jesse Erlbaum <jesse@erlbaum.net>',
    'dist_abstract'      => 'Framework for building reusable web-applications',
    create_makefile_pl   => 'traditional',
+   meta_add             => {
+        no_index =>  { file => [ <test/*.pm> ] }, 
+   },
   );
 
 $build->create_build_script;
