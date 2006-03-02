@@ -1,5 +1,12 @@
 Revision history for Perl extension CGI::Application.
 
+4.05 Wed Mar  1, 2006
+    (No code changes)
+
+    -  Updated tests for redirects to check for 'Found', not 'Moved'.
+       This correctly matches the standard, and was changed in CGI.pm 3.16.
+       As a result, we now require CGI.pm 3.16 for consistent results.
+
 4.04    Wed Oct 11, 2005
     - No code changes since 4.04_02. Declaring stable. 
 

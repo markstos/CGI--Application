@@ -47,7 +47,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $app = TestApp->new();
 	$app->query(CGI->new({'test_rm' => 'redirect_test'}));
 	my $output = $app->run();
-	like($output, qr/^Status: 302 Moved/);
+	like($output, qr/^Status: 302 Found/);
 	like($output, qr/Hello World: redirect_test/);
 }
 
@@ -246,7 +246,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $output = $app->run();
 
 	like($output, qr/test: 1/i);
-	like($output, qr/Moved/);
+	like($output, qr/Found/);
 }
 
 # testing setting header_props more than once
@@ -305,7 +305,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $output = $app->run();
 
 	like($output, qr/test: 1/i);
-	like($output, qr/Moved/);
+	like($output, qr/Found/);
 }
 
 

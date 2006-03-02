@@ -26,7 +26,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
     my $q = CGI->new({rm=>"postrun_header"});
     my $app = TestApp9->new(QUERY=>$q);
     my $output = $app->run();
-    like($output, qr/302 Moved/, "Postrun header is redirect");
+    like($output, qr/302 Found/, "Postrun header is redirect");
     like($output, qr/postrun.html/, "Postrun header is redirect to postrun.html");
     like($output, qr/Hello world: postrun_header/, "Hello world: postrun_header");
     unlike($output, qr/postrun\ was\ here/, "Postrun was NOT here");
