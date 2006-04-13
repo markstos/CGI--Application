@@ -1,5 +1,11 @@
 Revision history for Perl extension CGI::Application.
 
+4.06 Wed Apr 12, 2006
+    (No code changes)
+    - Updated tests to work with status codes emitted before and after CGI.pm 3.16. 
+      The requirement for CGI.pm 3.16 or newer has been relaxed, so any version
+      of CGI.pm will do. (Rhesa)
+
 4.05 Wed Mar  1, 2006
     (No code changes)
 
