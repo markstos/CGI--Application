@@ -6,7 +6,7 @@ my $build = Module::Build->new
    license => 'perl',
    requires => {
        # For Moved vs Found change
-       'CGI'            => 3.16, 
+       'CGI'            => 0, 
        'HTML::Template' => 0,
        'Test::More'     => 0.47,
 	   'Carp'		    => 0,
