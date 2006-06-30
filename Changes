@@ -1,5 +1,7 @@
 Revision history for Perl extension CGI::Application.
 
+    - better test diagnostics (rjbs)
+
 4.06 Wed Apr 12, 2006
     (No code changes)
     - Updated tests to work with status codes emitted before and after CGI.pm 3.16. 
