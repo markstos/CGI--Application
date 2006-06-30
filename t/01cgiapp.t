@@ -1,7 +1,7 @@
 # $Id: 01cgiapp.t,v 1.12 2004/05/08 21:08:18 mark Exp $
 
 use strict;
-use Test::More tests => 98;
+use Test::More tests => 97;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -18,85 +18,129 @@ use TestApp5;
 
 $ENV{CGI_APP_RETURN_ONLY} = 1;
 
+sub response_like {
+	my ($app, $header_re, $body_re, $comment) = @_;
+
+	local $ENV{CGI_APP_RETURN_ONLY} = 1;
+	my $output = $app->run;
+	my ($header, $body) = split /\r\n\r\n/m, $output;
+	like($header, $header_re, "$comment (header match)");
+	like($body,	 $body_re,	 "$comment (body match)");
+}
+
 # Instantiate CGI::Application
-# run() CGI::Application object.  Expect header + output dump_html()
+# run() CGI::Application object.	Expect header + output dump_html()
 {
 	my $app = CGI::Application->new();
-	ok(ref $app, 'CGI::Application');
-	ok($app->isa('CGI::Application'));
+	isa_ok($app, 'CGI::Application');
+
 	$app->query(CGI->new(""));
 	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Query Environment:/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Query Environment:/,
+		'base class response',
+	);
 }
 
 # Instantiate CGI::Application sub-class.
-# run() CGI::Application sub-class.  Expect HTTP header + 'Hello World: basic_test'.
+# run() CGI::Application sub-class. 
+# Expect HTTP header + 'Hello World: basic_test'.
 {
-	my $app = TestApp->new(QUERY=>CGI->new(""));
-	ok(ref $app);
-	ok($app->isa('CGI::Application'));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: basic_test/);
+	my $app = TestApp->new(QUERY => CGI->new(""));
+	isa_ok($app, 'CGI::Application');
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: basic_test/,
+		'TestApp, blank query',
+	);
 }
 
 
-# run() CGI::Application sub-class, in run mode 'redirect_test'.  Expect HTTP redirect header + 'Hello World: redirect_test'.
+# run() CGI::Application sub-class, in run mode 'redirect_test'.
+# Expect HTTP redirect header + 'Hello World: redirect_test'.
 {
 	my $app = TestApp->new();
 	$app->query(CGI->new({'test_rm' => 'redirect_test'}));
-	my $output = $app->run();
-	like($output, qr/^Status: 302/);
-	like($output, qr/Hello World: redirect_test/);
+
+	response_like(
+		$app,
+		qr/^Status: 302/,
+		qr/Hello World: redirect_test/,
+		'TestApp, redirect_test'
+	);
 }
 
 
-# run() CGI::Application sub-class, in run mode 'cookie_test'.  Expect HTTP header w/ cookie 'c_name' => 'c_value' + 'Hello World: cookie_test'.
+# run() CGI::Application sub-class, in run mode 'cookie_test'. 
+# Expect HTTP header w/ cookie:
+#	 'c_name' => 'c_value' + 'Hello World: cookie_test'.
 {
 	my $app = TestApp->new();
 	$app->query(CGI->new({'test_rm' => 'cookie_test'}));
-	my $output = $app->run();
-	like($output, qr/^Set-Cookie: c_name=c_value/);
-	like($output, qr/Hello World: cookie_test/);
+
+	response_like(
+		$app,
+		qr/^Set-Cookie: c_name=c_value/,
+		qr/Hello World: cookie_test/,
+		"TestApp, cookie test",
+	);
 }
 
 
-# run() CGI::Application sub-class, in run mode 'tmpl_test'.  Expect HTTP header + 'Hello World: tmpl_test'.
+# run() CGI::Application sub-class, in run mode 'tmpl_test'. 
+# Expect HTTP header + 'Hello World: tmpl_test'.
 {
 	my $app = TestApp->new(TMPL_PATH=>'test/templates/');
 	$app->query(CGI->new({'test_rm' => 'tmpl_test'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/---->Hello World: tmpl_test<----/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/---->Hello World: tmpl_test<----/,
+		"TestApp, tmpl_test",
+	);
 }
 
 
-# run() CGI::Application sub-class, in run mode 'tmpl_badparam_test'.  Expect HTTP header + 'Hello World: tmpl_badparam_test'.
+# run() CGI::Application sub-class, in run mode 'tmpl_badparam_test'.
+# Expect HTTP header + 'Hello World: tmpl_badparam_test'.
 {
 	my $app = TestApp->new(TMPL_PATH=>'test/templates/');
 	$app->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/---->Hello World: tmpl_badparam_test<----/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/---->Hello World: tmpl_badparam_test<----/,
+		"TestApp, tmpl_badparam_test",
+	);
 }
 
 
-# Instantiate and call run_mode 'eval_test'.  Expect 'eval_test OK' in output.
+# Instantiate and call run_mode 'eval_test'.	Expect 'eval_test OK' in output.
 {
 	my $app = TestApp->new();
 	$app->query(CGI->new({'test_rm' => 'eval_test'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: eval_test OK/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: eval_test OK/,
+		"TestApp, eval_test",
+	);
 }
 
 # Test to make sure cgiapp_init() was called in inherited class.
 {
 	my $app = TestApp2->new();
 	my $init_state = $app->param('CGIAPP_INIT');
-	ok(defined $init_state);
-	is($init_state, 'true');
+	ok(defined($init_state), "TestApp2's cgiapp_init ran");
+	is($init_state, 'true', "TestApp2's cgiapp_init set the right value");
 }
 
 
@@ -104,37 +148,69 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 {
 	my $app = TestApp3->new();
 	$app->query(CGI->new({'go_to_mode' => 'subref_modeparam'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: subref_modeparam OK/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: subref_modeparam OK/,
+		"TestApp3, subref_modeparam",
+	);
 }
 
-
-# Test to make sure that "false" run modes are valid -- will not default to start_mode()
+# Test to make sure that "false" (but >0 length) run modes are valid -- will
+# not default to start_mode()
 {
 	my $app = TestApp3->new();
 	$app->query(CGI->new({'go_to_mode' => '0'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: blank_mode OK/);
+	
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: zero_mode OK/,
+		"TestApp3, 0 as run mode isn't start_mode",
+	);
 }
+
+
+# This failing test added when clarifying previous blank_mode to zero_mode. --
+# rjbs, 2006-06-30
+
+## Test to make sure that "false" (and 0 length) run modes are valid -- will not
+## default to start_mode()
+#{
+#	my $app = TestApp3->new();
+#	$app->query(CGI->new({'go_to_mode' => ''}));
+#	
+#	response_like(
+#		$app,
+#		qr{^Content-Type: text/html},
+#		qr/Hello World: blank_mode OK/,
+#		"TestApp3, q() as run mode isn't start_mode",
+#	);
+#}
 
 # Test to make sure that undef run modes will default to start_mode()
 {
 	my $app = TestApp3->new();
 	$app->query(CGI->new({'go_to_mode' => 'undef_rm'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: default_mode OK/);
+	
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: default_mode OK/,
+		"TestApp3, undef run mode (goes to start_mode)",
+	);
 }
-
 
 # Test run modes returning scalar-refs instead of scalars
 {
 	my $app = TestApp4->new(QUERY=>CGI->new(""));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: subref_test OK/);
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: subref_test OK/,
+		"run modes can return scalar references",
+	);
 }
 
 
@@ -143,14 +219,17 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	my $app = TestApp4->new();
 	$app->query(CGI->new({'rm' => 'undefined_mode'}));
 
-	my $output = $app->run();
-	   
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: undefined_mode OK/);
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: undefined_mode OK/,
+		"AUTOLOAD run mode",
+	);
 }
 
 
 # Can we incrementally add run modes?
+# XXX: I don't see how this code tests that question. -- rjbs, 2006-06-30
 {
 	my $app;
 	my $output;
@@ -158,84 +237,96 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	# Mode: BasicTest
 	$app = TestApp5->new();
 	$app->query(CGI->new({'rm' => 'basic_test1'}));
-	$output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: basic_test1/);
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: basic_test1/,
+		"force basic_test1",
+	);
 
 	# Mode: BasicTest2
 	$app = TestApp5->new();
 	$app->query(CGI->new({'rm' => 'basic_test2'}));
-	$output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: basic_test2/);
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: basic_test2/,
+		"force basic_test2",
+	);
 
 	# Mode: BasicTest3
 	$app = TestApp5->new();
 	$app->query(CGI->new({'rm' => 'basic_test3'}));
-	$output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/Hello World: basic_test3/);
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Hello World: basic_test3/,
+		"force basic_test3",
+	);
 }
 
 
-# Test 18: Can we add params in batches?
+# Can we add params in batches?
 {
-	my $app;
-	my @params = ('', 'one', 'two', 'new three', 'four', 'new five', 'six', 'seven', 'eight');
-
-	$app = TestApp5->new(
+	my $app = TestApp5->new(
 		PARAMS => {
 			P1 => 'one',
 			P2 => 'two'
 		}
 	);
 
-	my @plist = ();
-
 	# Do params set via new still get set?
-	@plist = sort $app->param();
-	is_deeply(\@plist, ['P1', 'P2']);
+	my @plist = sort $app->param();
+	is_deeply(\@plist, ['P1', 'P2'], "Pn params set during initialization");
 
-        is($app->param("P$_"), $params[$_]) for 1..2;
+	my @params = (
+		'', 'one', 'two', 'new three', 'four', 'new five', 'six', 'seven', 'eight'
+	);
 
+	is($app->param("P$_"), $params[$_], "P$_ of 2 correct") for 1..2;
 
 	# Can we still augment params one at a time?
 	$app->param('P3', 'three');
 	@plist = sort $app->param();
-	is_deeply(\@plist, ['P1', 'P2', 'P3']);
-        is($app->param("P$_"), $params[$_]) for 1..2;
-        is($app->param("P3"), 'three');
+	is_deeply(\@plist, ['P1', 'P2', 'P3'], 'added one param to list');
+	is($app->param("P$_"), $params[$_], "P$_ of 2 correct again") for 1..2;
+	is($app->param("P3"), 'three', "and new arg, P3, is also correct");
 
-	# Does a hash work?  (Should return undef)
+	# Does a list of pairs work?
 	my $pt3val = $app->param(
 		'P3' => 'new three',
 		'P4' => 'four',
 		'P5' => 'five'
 	);
 	@plist = sort $app->param();
-	is_deeply(\@plist, ['P1', 'P2', 'P3', 'P4', 'P5']);
-        is($app->param("P$_"), $params[$_]) for 1..4;
-        is($app->param("P5"), 'five');
-	ok(not(defined($pt3val)));
+	is_deeply(\@plist, ['P1', 'P2', 'P3', 'P4', 'P5'], "all five args set ok");
+	is($app->param("P$_"), $params[$_], "P$_ of 4 correct") for 1..4;
+	is($app->param("P5"), 'five', "P5 also correct");
+
+	# XXX: Do we really want to test for this?  Maybe we want to change this
+	# behavior, on which hopefully nothing but this test depends...
+	# -- rjbs, 2006-06-30
+	ok(not(defined($pt3val)), "multiple param setting returns undef (for now)");
 
 
-	# What about a hash-ref?  (Should return undef)
+	# What about a hash-ref?	(Should return undef)
 	my $pt4val = $app->param({
 		'P5' => 'new five',
 		'P6' => 'six',
 		'P7' => 'seven',
 	});
 	@plist = sort $app->param();
-	is_deeply(\@plist, ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7']);
-        is($app->param("P$_"), $params[$_]) for 1..7;
-	ok(not(defined($pt4val)));
+	is_deeply(\@plist, ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'], "7 params ok");
+	is($app->param("P$_"), $params[$_], "P$_ of 7 correct") for 1..7;
+	ok(not(defined($pt4val)), "multiple param setting returns undef (for now)");
 
-	# What about a simple pass-through?  (Should return param value)
+	# What about a simple pass-through?	(Should return param value)
 	my $pt5val = $app->param('P8', 'eight');
 	@plist = sort $app->param();
-	is_deeply(\@plist, ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8']);
-        is($app->param("P$_"), $params[$_]) for 1..8;
-	is($pt5val, 'eight');
+	is_deeply(\@plist, [qw(P1 P2 P3 P4 P5 P6 P7 P8)], "P1-8 all ok");
+	is($app->param("P$_"), $params[$_], "P$_ of 8 correct") for 1..8;
+	is($pt5val, 'eight', "value returned on setting P8 is correct");
 }
 
 
@@ -245,8 +336,8 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$app->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
 	my $output = $app->run();
 
-	like($output, qr/test: 1/i);
-	like($output, qr/Status: 302/);
+	like($output, qr/test: 1/i, "added test header before redirect");
+	like($output, qr/Status: 302/, "and still redirected");
 }
 
 # testing setting header_props more than once
@@ -255,9 +346,9 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$app->query(CGI->new({'test_rm' => 'header_props_twice_nomerge'}));
 	my $output = $app->run();
 
-	like($output, qr/test: Updated/i);
-	unlike($output, qr/second-header: 1/);
-	unlike($output, qr/Test2:/);
+	like($output, qr/test: Updated/i, "added test header");
+	unlike($output, qr/second-header: 1/, "no second-header header");
+	unlike($output, qr/Test2:/, "no Test2 header, either");
 }
 
 # testing header_add with arrayref
@@ -266,8 +357,8 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$app->query(CGI->new({'test_rm' => 'header_add_arrayref_test'}));
 	my $output = $app->run();
 
-	like($output, qr/Set-Cookie: cookie1=header_add/);
-	like($output, qr/Set-Cookie: cookie2=header_add/);
+	like($output, qr/Set-Cookie: cookie1=header_add/, "arrayref test: cookie1");
+	like($output, qr/Set-Cookie: cookie2=header_add/, "arrayref test: cookie2");
 }
 
 # make sure header_add does not clobber earlier headers
@@ -276,8 +367,8 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$app->query(CGI->new({'test_rm' => 'header_props_before_header_add'}));
 	my $output = $app->run();
 
-	like($output, qr/Set-Cookie: cookie1=header_props/);
-	like($output, qr/Set-Cookie: cookie2=header_add/);
+	like($output, qr/Set-Cookie: cookie1=header_props/, "header_props: cookie1");
+	like($output, qr/Set-Cookie: cookie2=header_add/,   "header_add: cookie2");
 }
 
 # make sure header_add works after header_props is called
@@ -286,26 +377,20 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 	$app->query(CGI->new({'test_rm' => 'header_add_after_header_props'}));
 	my $output = $app->run();
 
-	like($output, qr/Set-Cookie: cookie2=header_add/);
+	like($output, qr/Set-Cookie: cookie2=header_add/, "header add after props");
 }
 
 # test use of TMPL_PATH without trailing slash
 {
 	my $app = TestApp->new(TMPL_PATH=>'test/templates');
 	$app->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
-	my $output = $app->run();
-	like($output, qr{^Content-Type: text/html});
-	like($output, qr/---->Hello World: tmpl_badparam_test<----/);
-}
 
-# test setting header_props before header_type 
-{
-	my $app = TestApp->new();
-	$app->query(CGI->new({'test_rm' => 'props_before_redirect_test'}));
-	my $output = $app->run();
-
-	like($output, qr/test: 1/i);
-	like($output, qr/Status: 302/);
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/---->Hello World: tmpl_badparam_test<----/,
+		"TMPL_PATH without trailing slash",
+	);
 }
 
 
@@ -313,43 +398,63 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 {
 	my $app = TestApp5->new();
 	$app->param(
-        	P1 => 'one',
-        	P2 => 'two',
-        	P3 => 'three');
-	#a valid delete
-	$app->delete('P2');
-        my @params = sort $app->param();
+		P1 => 'one',
+		P2 => 'two',
+		P3 => 'three'
+	);
 
-	is_deeply(\@params, ['P1', 'P3']);
-        is($app->param('P1'), 'one');
-        ok(not defined($app->param('P2')));
-        is($app->param('P3'), 'three');
+	is_deeply(
+		[ sort $app->param ],
+		[ qw(P1 P2 P3) ],
+		"we start with P1 P2 P3",
+	);
+
+	#a valid delete
+	my $p2value = $app->delete('P2');
+	my @params = sort $app->param();
+
+	is_deeply(\@params, ['P1', 'P3'], "P2 deletes without incident");
+	is($p2value, "two", "and deletion returns the deleted value");
+
+	is($app->param('P1'), 'one', 'P1 still has the right value');
+
+	ok(!defined($app->param('P2')), 'P2 is now undef');
+	my @params = sort $app->param();
+	is_deeply(
+		[ sort $app->param ],
+		['P1', 'P3'],
+		"asking for P2 didn't instantiate it",
+	);
+
+	is($app->param('P3'), 'three', 'P3 still has the right value');
 
 
 	#an invalid delete
 	my $result = $app->delete('P4');
 	
-	ok(not defined($result));
-        is($app->param('P1'), 'one');
-        ok(not defined($app->param('P4')));
-        is($app->param('P3'), 'three');
+	ok(!defined($result), "we get undef back when deleting nonexistant param");
+	is($app->param('P1'), 'one', "and P1's value is unmolested");
+	ok(!defined($app->param('P4')), "and the fake param doesn't get a value");
+	is($app->param('P3'), 'three', "and P3 is unmolested too");
 }
 
 ###
 
-my $t27_ta_obj = CGI::Application->new(TMPL_PATH => [qw(test/templates /some/other/test/path)]);
+my $t27_ta_obj = CGI::Application->new(
+	TMPL_PATH => [qw(test/templates /some/other/test/path)]
+);
 my ($t1, $t2) = (0,0);
 my $tmpl_path = $t27_ta_obj->tmpl_path();
 
 ok((ref $tmpl_path eq 'ARRAY'), 'tmpl_path returns array ref');
 ok(($tmpl_path->[0] eq 'test/templates'), 'tmpl_path first element is correct');
-ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path  second element is correct');
+ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path second element is correct');
 
 my $tmpl = $t27_ta_obj->load_tmpl('test.tmpl');
 $tmpl_path = $tmpl->{options}->{path};
 
 ok((ref $tmpl_path eq 'ARRAY'), 'tmpl_path from H::T obj returns array ref');
 ok(($tmpl_path->[0] eq 'test/templates'), 'tmpl_path from H::T obj first element is correct');
-ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path from H::T obj  second element is correct');
+ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path from H::T obj	second element is correct');
 
 # All done!

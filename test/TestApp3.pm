@@ -18,7 +18,8 @@ sub setup {
 
 	$self->run_modes(
 		'subref_modeparam'	=> \&subref_modeparam_meth,
-		'0'			=> \&blank_mode,
+		'0'			=> \&zero_mode,
+		''			=> \&blank_mode,
 		'default_mode'		=> \&default_mode_meth,
 	);
 }
@@ -52,6 +53,13 @@ sub blank_mode {
 	my $self = shift;
 
 	return "Hello World: blank_mode OK";
+}
+
+
+sub zero_mode {
+	my $self = shift;
+
+	return "Hello World: zero_mode OK";
 }
 
 
