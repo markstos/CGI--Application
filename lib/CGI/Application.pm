@@ -12,7 +12,7 @@ my %INSTALLED_CALLBACKS = (
 	postrun   => { 'CGI::Application' => [ 'cgiapp_postrun' ] },
 	teardown  => { 'CGI::Application' => [ 'teardown'       ] },
 	load_tmpl => { },
-    error     => { },
+	error     => { },
 );
 
 ###################################
@@ -32,14 +32,14 @@ sub new {
 	my $self = {};
 	bless($self, $class);
 
-    ### SET UP DEFAULT VALUES ###
-    #
-    # We set them up here and not in the setup() because a subclass
-    # which implements setup() still needs default values!
-
-    $self->header_type('header');
-    $self->mode_param('rm');
-    $self->start_mode('start');
+	### SET UP DEFAULT VALUES ###
+	#
+	# We set them up here and not in the setup() because a subclass
+	# which implements setup() still needs default values!
+	
+	$self->header_type('header');
+	$self->mode_param('rm');
+	$self->start_mode('start');
 
 	# Process optional new() parameters
 	my $rprops;
@@ -84,10 +84,10 @@ sub new {
 }
 
 sub __get_runmode {
-  my $self     = shift;
-  my $rm_param = shift;
+	my $self     = shift;
+	my $rm_param = shift;
 
-  my $rm;
+	my $rm;
 	# Support call-back instead of CGI mode param
 	if (ref($rm_param) eq 'CODE') {
 		# Get run mode from subref
@@ -103,31 +103,29 @@ sub __get_runmode {
 	}
 
 	# If $rm undefined, use default (start) mode
-	my $def_rm = $self->start_mode();
-	$def_rm = '' unless defined $def_rm;
-	$rm = $def_rm unless (defined($rm) && length($rm));
+	$rm = $self->start_mode unless defined($rm) && length($rm);
 
-  return $rm;
+	return $rm;
 }
 
 sub __get_runmeth {
-  my $self = shift;
-  my $rm   = shift;
+	my $self = shift;
+	my $rm   = shift;
 
-  my $rmeth;
+	my $rmeth;
 
-  my %rmodes = ($self->run_modes());
-  if (exists($rmodes{$rm})) {
-    $rmeth = $rmodes{$rm};
-  } else {
-    # Look for run mode "AUTOLOAD" before dieing
-    unless (exists($rmodes{'AUTOLOAD'})) {
-      croak("No such run mode '$rm'");
-    }
-    $rmeth = $rmodes{'AUTOLOAD'};
-  }
+	my %rmodes = ($self->run_modes());
+	if (exists($rmodes{$rm})) {
+		$rmeth = $rmodes{$rm};
+	} else {
+		# Look for run mode "AUTOLOAD" before dieing
+		unless (exists($rmodes{'AUTOLOAD'})) {
+			croak("No such run mode '$rm'");
+		}
+		$rmeth = $rmodes{'AUTOLOAD'};
+	}
 
-  return $rmeth;
+	return $rmeth;
 }
 
 sub __get_body {
@@ -152,8 +150,8 @@ sub __get_body {
 		}
 	}
 
-  # Make sure that $body is not undefined (supress 'uninitialized value'
-  # warnings)
+	# Make sure that $body is not undefined (supress 'uninitialized value'
+	# warnings)
 	return defined $body ? $body : '';
 }
 

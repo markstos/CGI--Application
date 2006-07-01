@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 107;
+use Test::More tests => 109;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -448,6 +448,16 @@ sub response_like {
 		qr/---->Hello World: tmpl_badparam_test<----/,
 		"TMPL_PATH without trailing slash",
 	);
+}
+
+
+# If called "too early" we get undef for current runmode.
+{
+  my $app = CGI::Application->new;
+  is($app->get_current_runmode, undef, "current runmode is undef before run");
+  
+  my $dump = $app->dump;
+  like($dump, qr/^Current Run mode: ''\n/, "no current run mode in dump");
 }
 
 
