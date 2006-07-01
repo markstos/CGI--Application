@@ -9,7 +9,7 @@ BEGIN{use_ok('CGI::Application');}
 use CGI;
 
 # bring in testing hierarchy
-use lib './test';
+use lib 't/lib';
 use TestApp;
 use TestApp2;
 use TestApp3;
@@ -95,7 +95,7 @@ sub response_like {
 # run() CGI::Application sub-class, in run mode 'tmpl_test'. 
 # Expect HTTP header + 'Hello World: tmpl_test'.
 {
-	my $app = TestApp->new(TMPL_PATH=>'test/templates/');
+	my $app = TestApp->new(TMPL_PATH=>'t/lib/templates/');
 	$app->query(CGI->new({'test_rm' => 'tmpl_test'}));
 
 	response_like(
@@ -110,7 +110,7 @@ sub response_like {
 # run() CGI::Application sub-class, in run mode 'tmpl_badparam_test'.
 # Expect HTTP header + 'Hello World: tmpl_badparam_test'.
 {
-	my $app = TestApp->new(TMPL_PATH=>'test/templates/');
+	my $app = TestApp->new(TMPL_PATH=>'t/lib/templates/');
 	$app->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
 
 	response_like(
@@ -382,7 +382,7 @@ sub response_like {
 
 # test use of TMPL_PATH without trailing slash
 {
-	my $app = TestApp->new(TMPL_PATH=>'test/templates');
+	my $app = TestApp->new(TMPL_PATH=>'t/lib/templates');
 	$app->query(CGI->new({'test_rm' => 'tmpl_badparam_test'}));
 
 	response_like(
@@ -441,20 +441,20 @@ sub response_like {
 ###
 
 my $t27_ta_obj = CGI::Application->new(
-	TMPL_PATH => [qw(test/templates /some/other/test/path)]
+	TMPL_PATH => [qw(t/lib/templates /some/other/test/path)]
 );
 my ($t1, $t2) = (0,0);
 my $tmpl_path = $t27_ta_obj->tmpl_path();
 
 ok((ref $tmpl_path eq 'ARRAY'), 'tmpl_path returns array ref');
-ok(($tmpl_path->[0] eq 'test/templates'), 'tmpl_path first element is correct');
-ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path second element is correct');
+is($tmpl_path->[0], 't/lib/templates', 'tmpl_path first element is correct');
+is($tmpl_path->[1], '/some/other/test/path', 'tmpl_path second element is correct');
 
 my $tmpl = $t27_ta_obj->load_tmpl('test.tmpl');
 $tmpl_path = $tmpl->{options}->{path};
 
 ok((ref $tmpl_path eq 'ARRAY'), 'tmpl_path from H::T obj returns array ref');
-ok(($tmpl_path->[0] eq 'test/templates'), 'tmpl_path from H::T obj first element is correct');
+ok(($tmpl_path->[0] eq 't/lib/templates'), 'tmpl_path from H::T obj first element is correct');
 ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path from H::T obj	second element is correct');
 
 # All done!

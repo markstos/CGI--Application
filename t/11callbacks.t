@@ -1,8 +1,7 @@
 
 use	strict;
 
-# use Test::More tests => 6;
-use	Test::More 'no_plan';
+use Test::More tests => 5;
 
 # Record the subroutines we've seen in a session
 my @Event_History;

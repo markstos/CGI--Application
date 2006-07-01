@@ -1,7 +1,7 @@
 use Test::More tests=>6;
 
 # Include the test hierarchy
-use lib './test';
+use lib 't/lib';
 
 BEGIN {
 	use_ok('TestApp11');

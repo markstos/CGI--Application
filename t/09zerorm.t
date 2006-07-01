@@ -2,7 +2,7 @@ use Test::More tests=>1;
 use strict;
 
 # Include the test hierarchy
-use lib './test';
+use lib 't/lib';
 
 use TestApp10;
 

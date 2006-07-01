@@ -4,7 +4,7 @@ use Test::More tests => 10;
 use CGI;
 
 # Include the test hierarchy
-use lib './test';
+use lib 't/lib';
 
 # Can we even use this module?
 use_ok('TestApp6');

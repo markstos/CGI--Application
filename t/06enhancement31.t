@@ -1,7 +1,7 @@
 use Test::More tests=>2;
 
 # Include the test hierarchy
-use lib './test';
+use lib 't/lib';
 
 use CGI;
 use TestCGI;

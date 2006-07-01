@@ -4,8 +4,6 @@ package TestApp6;
 
 use strict;
 
-use Data::Dumper;
-
 use CGI::Application;
 @TestApp6::ISA = qw(CGI::Application);
 
@@ -43,8 +41,6 @@ sub cgiapp_prerun {
 		# Override the current run mode
 		$self->prerun_mode('new_prerun_mode_test');
 	}
-
-	print Dumper($self);
 }
 
 

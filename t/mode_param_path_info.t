@@ -1,7 +1,7 @@
 use Test::More tests=>14;
 
 # Include the test hierarchy
-use lib './test';
+use lib 't/lib';
 
 BEGIN { use_ok('TestApp5'); };
 BEGIN { use_ok('CGI'); };

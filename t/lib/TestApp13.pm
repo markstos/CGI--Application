@@ -17,7 +17,8 @@ sub setup {
 sub mode1 {
     my $self = shift;
     my $file;
-    open ( $file, "test/templates/test.tmpl" ) || die "Cannot open testing template";
+    open ( $file, "t/lib/templates/test.tmpl" )
+      || die "Cannot open testing template";
     my $template = $self->load_tmpl( $file, 'die_on_bad_params' => 0 );
     $template->param( 'ping' => "HELLO!" );
     my $output = $template->output;

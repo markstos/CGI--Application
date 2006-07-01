@@ -11,7 +11,7 @@ sub cgiapp_init {
 
 
 package main;
-use Test::More qw/no_plan/;
+use Test::More tests => 1;
 
 {
     my $app = My::CA->new();
