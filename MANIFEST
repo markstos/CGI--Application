@@ -12,7 +12,7 @@ META.yml
 Build.PL
 Makefile.PL
 README
-t/cgiapp.t
+t/basic.t
 t/mailform.t
 t/prerun.t
 t/getquery.t
