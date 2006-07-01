@@ -431,8 +431,9 @@ sub param {
 sub delete {
 	my $self = shift;
 	my ($param) = @_;
-	#return undef it it isn't defined
-	return undef if(!defined($param));
+
+	# return undef it the param name isn't given
+	return undef unless defined $param;
 
 	#simply delete this param from $self->{__PARAMS}
 	delete $self->{__PARAMS}->{$param};

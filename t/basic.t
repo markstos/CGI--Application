@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 104;
+use Test::More tests => 106;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -361,6 +361,21 @@ sub response_like {
 	is($pt5val, 'eight', "value returned on setting P8 is correct");
 }
 
+
+# test undef param values
+{
+  my $app = TestApp->new();
+
+  $app->param(foo => 10);
+
+  is(
+    $app->delete,
+    undef,
+    "we get undef when deleting unnamed param",
+  );
+
+  is($app->param('foo'), 10, q(and our real param is still ok));
+}
 
 # test setting header_props before header_type 
 {
