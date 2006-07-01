@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 106;
+use Test::More tests => 107;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -257,6 +257,16 @@ sub response_like {
 		qr/Hello World: undefined_mode OK/,
 		"AUTOLOAD run mode",
 	);
+}
+
+
+# what if there is no AUTOLOAD?
+{
+	my $app = TestApp->new();
+	$app->query(CGI->new({'test_rm' => 'undefined_mode'}));
+
+  my $output = eval { $app->run };
+  like($@, qr/No such run mode/, "no runmode + no autoload = exception");
 }
 
 

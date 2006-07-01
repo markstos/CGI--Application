@@ -106,9 +106,7 @@ sub run {
 	}
 
 	# If $rm undefined, use default (start) mode
-	my $def_rm = $self->start_mode();
-	$def_rm = '' unless defined $def_rm;
-	$rm = $def_rm unless (defined($rm) && length($rm));
+	$rm = $self->start_mode unless (defined($rm) && length($rm));
 
 	# Set get_current_runmode() for access by user later
 	$self->{__CURRENT_RUNMODE} = $rm;

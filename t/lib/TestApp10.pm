@@ -6,7 +6,7 @@ use CGI::Application;
 
 sub setup {
     my $self = shift;
-    $self->run_modes( AUTOLOAD => "handler" );
+    $self->run_modes({ AUTOLOAD => "handler" });
     $self->start_mode( 0 );
 }
 
