@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 97;
+use Test::More tests => 102;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -60,6 +60,13 @@ sub response_like {
 }
 
 
+# Non-hash references are invalid for PARAMS.
+{
+  my $app = eval { TestApp->new(PARAMS => [ 1, 2, 3, ]); };
+
+  like($@, qr/not a hash ref/, "PARAMS must be a hashref!");
+}
+
 # run() CGI::Application sub-class, in run mode 'redirect_test'.
 # Expect HTTP redirect header + 'Hello World: redirect_test'.
 {
@@ -71,6 +78,36 @@ sub response_like {
 		qr/^Status: 302/,
 		qr/Hello World: redirect_test/,
 		'TestApp, redirect_test'
+	);
+}
+
+
+# run() CGI::Application sub-class, in run mode 'redirect_test'.
+# Expect HTTP redirect header + 'Hello World: redirect_test'.
+# ...just like the test above, but we pass QUERY in via a hashref.
+{
+	my $app = TestApp->new({
+    QUERY => CGI->new({'test_rm' => 'redirect_test'})
+  });
+
+	response_like(
+		$app,
+		qr/^Status: 302/,
+		qr/Hello World: redirect_test/,
+		'TestApp, redirect_test'
+	);
+}
+
+# run() CGI::Application sub-class, in run mode 'dump_text'.
+{
+	my $app = TestApp->new();
+	$app->query(CGI->new({'test_rm' => 'dump_txt'}));
+
+	response_like(
+		$app,
+		qr{^Content-type: text/html}i,
+		qr/Query Environment/,
+		'TestApp, dump_text'
 	);
 }
 

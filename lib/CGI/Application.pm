@@ -87,7 +87,7 @@ sub run {
 	my $self = shift;
 	my $q = $self->query();
 
-	my $rm_param = $self->mode_param() || croak("No rm_param() specified");
+  croak("No rm_param() specified") unless my $rm_param = $self->mode_param();
 
 	my $rm;
 
