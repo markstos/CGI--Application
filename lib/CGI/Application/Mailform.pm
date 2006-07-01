@@ -1,4 +1,3 @@
-# $Id: Mailform.pm,v 1.10 2004/01/30 03:44:24 mark Exp $
 
 package CGI::Application::Mailform;
 

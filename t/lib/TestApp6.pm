@@ -1,4 +1,3 @@
-# $Id: TestApp6.pm,v 1.3 2004/01/31 23:33:28 mark Exp $
 
 package TestApp6;
 

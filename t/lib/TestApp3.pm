@@ -1,9 +1,7 @@
-# $Id: TestApp3.pm,v 1.2 2001/08/11 18:43:47 jesse Exp $
 
 package TestApp3;
 
 use strict;
-
 
 use CGI::Application;
 @TestApp3::ISA = qw(CGI::Application);
