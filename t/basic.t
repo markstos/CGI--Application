@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 102;
+use Test::More tests => 104;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -208,22 +208,18 @@ sub response_like {
 }
 
 
-# This failing test added when clarifying previous blank_mode to zero_mode. --
-# rjbs, 2006-06-30
-
-## Test to make sure that "false" (and 0 length) run modes are valid -- will not
-## default to start_mode()
-#{
-#	my $app = TestApp3->new();
-#	$app->query(CGI->new({'go_to_mode' => ''}));
-#	
-#	response_like(
-#		$app,
-#		qr{^Content-Type: text/html},
-#		qr/Hello World: blank_mode OK/,
-#		"TestApp3, q() as run mode isn't start_mode",
-#	);
-#}
+# A blank mode_param value isn't useful; we fall back to start_mode.
+{
+	my $app = TestApp3->new();
+ 	$app->query(CGI->new({'go_to_mode' => ''}));
+ 	
+ 	response_like(
+ 		$app,
+ 		qr{^Content-Type: text/html},
+ 		qr/Hello World: default_mode OK/,
+ 		"TestApp3, q() as run mode is start_mode",
+ 	);
+}
 
 # Test to make sure that undef run modes will default to start_mode()
 {
@@ -490,6 +486,6 @@ $tmpl_path = $tmpl->{options}->{path};
 
 ok((ref $tmpl_path eq 'ARRAY'), 'tmpl_path from H::T obj returns array ref');
 ok(($tmpl_path->[0] eq 't/lib/templates'), 'tmpl_path from H::T obj first element is correct');
-ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path from H::T obj	second element is correct');
+ok(($tmpl_path->[1] eq '/some/other/test/path'), 'tmpl_path from H::T obj second element is correct');
 
 # All done!

@@ -87,14 +87,14 @@ sub run {
 	my $self = shift;
 	my $q = $self->query();
 
-  croak("No rm_param() specified") unless my $rm_param = $self->mode_param();
+  my $rm_param = $self->mode_param();
 
 	my $rm;
 
 	# Support call-back instead of CGI mode param
 	if (ref($rm_param) eq 'CODE') {
 		# Get run mode from subref
-		$rm = $rm_param->($self);
+		$rm = $self->$rm_param;
 	}
 	# support setting run mode from PATH_INFO
 	elsif (ref($rm_param) eq 'HASH') {
@@ -1597,7 +1597,7 @@ sub mode_param {
 	}
 
 	# If data is provided, set it
-	if (defined($mode_param)) {
+	if (defined $mode_param and length $mode_param) {
 		$self->{__MODE_PARAM} = $mode_param;
 	}
 
