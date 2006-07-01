@@ -419,7 +419,6 @@ sub response_like {
 	is($app->param('P1'), 'one', 'P1 still has the right value');
 
 	ok(!defined($app->param('P2')), 'P2 is now undef');
-	my @params = sort $app->param();
 	is_deeply(
 		[ sort $app->param ],
 		['P1', 'P3'],
