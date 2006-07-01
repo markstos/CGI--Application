@@ -16,6 +16,7 @@ t/basic.t
 t/mailform.t
 t/prerun.t
 t/getquery.t
+t/header_props.t
 t/arrayrefmodes.t
 t/enhancement31.t
 t/postrun.t

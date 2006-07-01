@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 109;
+use Test::More tests => 110;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -448,6 +448,16 @@ sub response_like {
 		qr/---->Hello World: tmpl_badparam_test<----/,
 		"TMPL_PATH without trailing slash",
 	);
+}
+
+
+# If called "too early" we get undef for current runmode.
+{
+  my $app = CGI::Application->new;
+
+  eval { $app->run_modes('whatever') };
+
+  like($@, qr/odd number/i, "croak on odd number of args to run_modes");
 }
 
 
