@@ -83,18 +83,15 @@ sub new {
 	return $self;
 }
 
-sub run {
-	my $self = shift;
-	my $q = $self->query();
+sub __get_runmode {
+  my $self     = shift;
+  my $rm_param = shift;
 
-  my $rm_param = $self->mode_param();
-
-	my $rm;
-
+  my $rm;
 	# Support call-back instead of CGI mode param
 	if (ref($rm_param) eq 'CODE') {
 		# Get run mode from subref
-		$rm = $self->$rm_param;
+		$rm = $rm_param->($self);
 	}
 	# support setting run mode from PATH_INFO
 	elsif (ref($rm_param) eq 'HASH') {
@@ -102,11 +99,72 @@ sub run {
 	}
 	# Get run mode from CGI param
 	else {
-		$rm = $q->param($rm_param);
+		$rm = $self->query->param($rm_param);
 	}
 
 	# If $rm undefined, use default (start) mode
-	$rm = $self->start_mode unless (defined($rm) && length($rm));
+	my $def_rm = $self->start_mode();
+	$def_rm = '' unless defined $def_rm;
+	$rm = $def_rm unless (defined($rm) && length($rm));
+
+  return $rm;
+}
+
+sub __get_runmeth {
+  my $self = shift;
+  my $rm   = shift;
+
+  my $rmeth;
+
+  my %rmodes = ($self->run_modes());
+  if (exists($rmodes{$rm})) {
+    $rmeth = $rmodes{$rm};
+  } else {
+    # Look for run mode "AUTOLOAD" before dieing
+    unless (exists($rmodes{'AUTOLOAD'})) {
+      croak("No such run mode '$rm'");
+    }
+    $rmeth = $rmodes{'AUTOLOAD'};
+  }
+
+  return $rmeth;
+}
+
+sub __get_body {
+	my $self  = shift;
+	my $rm    = shift;
+
+	my $rmeth = $self->__get_runmeth($rm);
+
+	my $body;
+	eval {
+		# Prior to my refactoring, we only passed $rm to $rmeth if it was
+		# autoloaded.
+		$body = $self->$rmeth($rm);
+	};
+	if ($@) {
+		my $error = $@;
+		$self->call_hook('error', $error);
+		if (my $em = $self->error_mode) {
+			$body = $self->$em( $error );
+		} else {
+			croak("Error executing run mode '$rm': $error");
+		}
+	}
+
+  # Make sure that $body is not undefined (supress 'uninitialized value'
+  # warnings)
+	return defined $body ? $body : '';
+}
+
+
+sub run {
+	my $self = shift;
+	my $q = $self->query();
+
+	my $rm_param = $self->mode_param();
+
+	my $rm = $self->__get_runmode($rm_param);
 
 	# Set get_current_runmode() for access by user later
 	$self->{__CURRENT_RUNMODE} = $rm;
@@ -129,51 +187,20 @@ sub run {
 		$self->{__CURRENT_RUNMODE} = $rm;
 	}
 
-	my %rmodes = ($self->run_modes());
-
-	my $rmeth;
-	my $autoload_mode = 0;
-	if (exists($rmodes{$rm})) {
-		$rmeth = $rmodes{$rm};
-	} else {
-		# Look for run mode "AUTOLOAD" before dieing
-		unless (exists($rmodes{'AUTOLOAD'})) {
-			croak("No such run mode '$rm'");
-		}
-		$rmeth = $rmodes{'AUTOLOAD'};
-		$autoload_mode = 1;
-	}
-
 	# Process run mode!
-	my $body;
-	eval {
-		$body = $autoload_mode ? $self->$rmeth($rm) : $self->$rmeth();
-	};
-	if ($@) {
-		my $error = $@;
-        $self->call_hook('error', $error);
-		if (my $em = $self->error_mode) {
-			$body = $self->$em( $error );
-		} else {
-		croak("Error executing run mode '$rm': $error");
-		}
-	}
-
-	# Make sure that $body is not undefined (supress 'uninitialized value' warnings)
-	$body = "" unless defined $body;
+	my $body = $self->__get_body($rm);
 
 	# Support scalar-ref for body return
-	my $bodyref = (ref($body) eq 'SCALAR') ? $body : \$body;
+	$body = $$body if ref $body eq 'SCALAR';
 
 	# Call cgiapp_postrun() hook
-	$self->call_hook('postrun', $bodyref);
+	$self->call_hook('postrun', \$body);
 
 	# Set up HTTP headers
 	my $headers = $self->_send_headers();
 
 	# Build up total output
-	my $output  = $headers.$$bodyref;
-
+	my $output  = $headers.$body;
 
 	# Send output to browser (unless we're in serious debug mode!)
 	unless ($ENV{CGI_APP_RETURN_ONLY}) {
@@ -185,8 +212,6 @@ sub run {
 
 	return $output;
 }
-
-
 
 
 ############################
