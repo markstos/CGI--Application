@@ -1,7 +1,7 @@
 package CGI::Application;
 use Carp;
 use strict;
-use Class::ISA;
+use metaclass;
 
 $CGI::Application::VERSION = '4.06';
 
@@ -2185,7 +2185,7 @@ sub call_hook {
 	# Next, run callbacks installed in class hierarchy
 
 	# Cache this value as a performance boost
-	$self->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
+	$self->{__CALLBACK_CLASSES} ||=  [ $app_class->meta->class_precedence_list ];
 
 	# Get list of classes that the current app inherits from
 	foreach my $class (@{ $self->{__CALLBACK_CLASSES} }) {
