@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use metaclass;
 
-$CGI::Application::VERSION = '4.06';
+$CGI::Application::VERSION = '4.07_01';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub

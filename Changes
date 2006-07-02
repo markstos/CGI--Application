@@ -1,12 +1,19 @@
 Revision history for Perl extension CGI::Application.
 
+4.07_01 Sun Jul 2, 2006
+
     [INTERNALS] 
     - Switched from using Class::ISA to Class::MOP for introspection. Class::MOP
       models the way this will be done Perl6, providing the same result. (Mark Stosberg) 
     - better test diagnostics (rjbs)
     - improve test coverage (rjbs)
     - improve consistency of checks for false/0len/undef (rjbs)
-    - split &run up into chunks (not yet finalized) (rjbs)
+    - split &run up into chunks (not yet finalized). New methods currently include:
+        __get_runmode
+        __get_runmeth
+        __get_body
+      Feedback is welcome on whether these should be exposed to the user, with
+      (possibly) better names. (rjbs)
 
 4.06 Wed Apr 12, 2006
     (No code changes)
