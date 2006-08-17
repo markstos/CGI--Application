@@ -357,7 +357,9 @@ sub _header_props_update {
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
-		warn("header_props called while header_type set to 'none', headers will NOT be sent!") if $self->header_type eq 'none';
+        if ($self->header_type eq 'none') {
+		    warn "header_props called while header_type set to 'none', headers will NOT be sent!" 
+        }
 		# Is it a hash, or hash-ref?
 		if (ref($data[0]) eq 'HASH') {
 			# Make a copy
