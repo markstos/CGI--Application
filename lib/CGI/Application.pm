@@ -1180,11 +1180,11 @@ cgiapp_postrun() method might be implemented as follows:
 
 Obviously, with access to the CGI-App object you have full access to use all
 the methods normally available in a run mode.  You could, for example, use
-load_tmpl() to replace the static HTML in this example with HTML::Template.
-You could change the HTTP headers (via header_type() and header_props()
+C<load_tmpl()> to replace the static HTML in this example with HTML::Template.
+You could change the HTTP headers (via C<header_type()> and C<header_props()>
 methods) to set up a redirect.  You could also use the objects properties
 to apply changes only under certain circumstance, such as a in only certain run
-modes, and when a param() is a particular value.
+modes, and when a C<param()> is a particular value.
 
 
 =item cgiapp_get_query()
@@ -1327,27 +1327,33 @@ the HTTP header properly.
 =item header_type([<'header' || 'redirect' || 'none'>])
 
     $webapp->header_type('redirect');
+    $webapp->header_type('none');
 
-The header_type() method expects to be passed either 'header', 'redirect', or 'none'.
-This method specifies the type of HTTP headers which should be sent back to
-the browser.  If not specified, defaults is 'header'.  See the
-header section of L<CGI> for details.
+This method used to declare that you are setting a redirection header,
+or that you want no header to be returned by the framework. 
 
-To perform a redirect using CGI::Application (and CGI.pm), you would
-do the following:
+The value of 'header' is almost never used, as it is the default. 
+
+B<Example of redirecting>:
 
   sub some_redirect_mode {
     my $self = shift;
-    my $new_url = "http://site/path/doc.html";
+    # do stuff here.... 
     $self->header_type('redirect');
-    $self->header_props(-url=>$new_url);
-    return "Redirecting to $new_url";
+    $self->header_props(-url=>  "http://site/path/doc.html" );
   }
 
-If you wish to suppress HTTP headers entirely (as might be the case if
-you're working in a slightly more exotic environment), you can set
-header_type() to "none".  This will completely hide headers.
+To simplify that further, you could use L<CGI::Application::Plugin::Redirect>,
+which provides this simplification:
 
+    return $self->redirect('http://www.example.com/');
+
+Setting the header to 'none' may be useful if you are streaming content.
+In other contexts, it may be more useful to set C<$ENV{CGI_APP_RETURN_ONLY} = 1;>,
+which supresses all printing, including headers, and returns the output instead.
+
+That's commonly used for testing, or when using L<CGI::Application> as a controller
+for a cron script!
 
 =item load_tmpl()
 

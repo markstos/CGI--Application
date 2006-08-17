@@ -1,5 +1,13 @@
 Revision history for Perl extension CGI::Application.
 
+    [DOCUMENTATION]
+    - The docs for header_type() have been improved, including an example of using
+      CGI::Applicatin::Plugin::Redirect (Mark Stosberg)
+
+    [INTERNALS] 
+    - Reverted switch to Class::MOP in 4.07_01, which benchmarking showed
+      to be slower. (Mark Stosberg)
+
 4.07_01 Sun Jul 2, 2006
 
     [INTERNALS] 
