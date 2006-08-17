@@ -609,21 +609,14 @@ sub get_current_runmode {
 
 sub _send_headers {
 	my $self = shift;
-	my $q = $self->query();
+	my $q    = $self->query;
+	my $type = $self->header_type;
 
-	my $header_type = $self->header_type();
-
-	if ($header_type eq 'redirect') {
-		return $q->redirect($self->header_props());
-	} elsif ($header_type eq 'header' ) {
-		return $q->header($self->header_props());
-	}
-
-	# croak() if we have an unknown header type
-	croak ("Invalid header_type '$header_type'") unless ($header_type eq "none");
-
-	# Do nothing if header type eq "none".
-	return "";
+    return
+        $type eq 'redirect' ? $q->redirect( $self->header_props )
+      : $type eq 'header'   ? $q->header  ( $self->header_props )
+      : $type eq 'none'     ? ''
+      : croak "Invalid header_type '$type'"
 }
 
 
