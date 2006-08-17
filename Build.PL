@@ -10,7 +10,7 @@ my $build = Module::Build->new
        'HTML::Template' => 0,
        'Test::More'     => 0.47,
 	   'Carp'		    => 0,
-       'Class::MOP'     => 0,
+       'Class::ISA'     => 0,
        },
    'dist_author'        => [
             'Jesse Erlbaum <jesse@erlbaum.net>',
