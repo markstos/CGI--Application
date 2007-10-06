@@ -1,6 +1,7 @@
 Revision history for Perl extension CGI::Application.
 
     [DOCUMENTATION]
+    - typo corrections (Evan Zacks)
     - The docs for header_type() have been improved, including an example of using
       CGI::Applicatin::Plugin::Redirect (Mark Stosberg)
 

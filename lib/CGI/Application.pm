@@ -150,7 +150,7 @@ sub __get_body {
 		}
 	}
 
-	# Make sure that $body is not undefined (supress 'uninitialized value'
+	# Make sure that $body is not undefined (suppress 'uninitialized value'
 	# warnings)
 	return defined $body ? $body : '';
 }
@@ -863,7 +863,7 @@ in persistent environments without modification.
 
 For more information on using CGI::Application with mod_perl, please see our
 website at http://www.cgi-app.org/, as well as
-L<CGI::Application::Plugin::Apache>, which integates with L<Apache::Request>.
+L<CGI::Application::Plugin::Apache>, which integrates with L<Apache::Request>.
 
 =head1 DESCRIPTION
 
@@ -1008,7 +1008,7 @@ setup() method should be used to define the following property/methods:
     start_mode() - text scalar containing the default run mode.
     error_mode() - text scalar containing the error mode.
     run_modes() - hash table containing mode => function mappings.
-    tmpl_path() - text scalar or array refefence containing path(s) to template files.
+    tmpl_path() - text scalar or array reference containing path(s) to template files.
 
 Your setup() method may call any of the instance methods of your application.
 This function is a good place to define properties specific to your application
@@ -1273,7 +1273,7 @@ will return undef.
     $webapp->header_add(-cookie=>[$extra_cookie]);
 
 The header_add() method is used to add one or more headers to the outgoing
-response headers.  The parameters will eventuallly be passed on to the CGI.pm
+response headers.  The parameters will eventually be passed on to the CGI.pm
 header() method, so refer to the L<CGI> docs for exact usage details.
 
 Unlike calling header_props(), header_add() will preserve any existing
@@ -1418,7 +1418,7 @@ not a file. It features a simple syntax and MIME-type detection.
 
 B<The load_tmpl() callback>
 
-Plugin authors will be intersted to know that you can register a callback that
+Plugin authors will be interested to know that you can register a callback that
 will be executed just before load_tmpl() returns:
 
   $self->add_callback('load_tmpl',\&your_method);
@@ -1467,7 +1467,7 @@ sub load_tmpl {
     # Define our extension if doesn't already exist;
     $self->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
 
-    # Define a default templat name based on the current run mode
+    # Define a default template name based on the current run mode
     unless (defined $tmpl_file) {
         $tmpl_file = $self->get_current_runmode . $self->{__CURRENT_TMPL_EXTENSION};    
     }
@@ -1560,7 +1560,7 @@ will be ahead of time and want to define it with JavaScript.
 
 B<More about $ENV{PATH_INFO}>.
 
-Using $ENV{PATH_INFO} to name your run mode creates a clean seperation between
+Using $ENV{PATH_INFO} to name your run mode creates a clean separation between
 the form variables you submit and how you determine the processing run mode. It
 also creates URLs that are more search engine friendly. Let's look at an
 example form submission using this syntax:
@@ -1573,7 +1573,7 @@ query string:
 
 	/cgi-bin/instance.cgi/edit_form?breed_id=2
 
-This demostrates that you can use $ENV{PATH_INFO} and a query string together
+This demonstrates that you can use $ENV{PATH_INFO} and a query string together
 without problems. $ENV{PATH_INFO} is defined as part of the CGI specification
 should be supported by any web server that supports CGI scripts.
 
@@ -1968,7 +1968,7 @@ L<CGI::Application::Plugin::Stream> - Help stream files to the browser
 
 L<CGI::Application::Plugin::TemplateRunner> - Allows for more of an ASP-style
 code structure, with the difference that code and HTML for each screen are in
-seperate files. 
+separate files. 
 
 =item *
 
