@@ -1,5 +1,7 @@
 Revision history for Perl extension CGI::Application.
 
+4.07_02 Weds Oct 31, 2007
+
     [DOCUMENTATION]
     - typo corrections (Evan Zacks)
     - The docs for header_type() have been improved, including an example of using
