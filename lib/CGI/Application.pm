@@ -44,7 +44,6 @@ sub new {
 	# Process optional new() parameters
 	my $rprops;
 	if (ref($args[0]) eq 'HASH') {
-		my $rthash = %{$args[0]};
 		$rprops = $self->_cap_hash($args[0]);
 	} else {
 		$rprops = $self->_cap_hash({ @args });
