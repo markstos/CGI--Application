@@ -1288,19 +1288,20 @@ been set.
 
     $webapp->header_props(-type=>'image/gif',-expires=>'+3d');
 
-The header_props() method expects a hash of CGI.pm-compatible
+The C<header_props()> method expects a hash of CGI.pm-compatible
 HTTP header properties.  These properties will be passed directly
-to CGI.pm's header() or redirect() methods.  Refer to L<CGI>
+to CGI.pm's C<header()> or C<redirect()> methods.  Refer to L<CGI>
 for exact usage details.
 
-Calling header_props will clobber any existing headers that have
+Calling header_props any arguments will clobber any existing headers that have
 previously set.
+
+C<header_props()> return a hash of all the headers that have currently been
+set. It can be called with no arguments just to get the hash current headers
+back.
 
 To add additional headers later without clobbering the old ones,
 see L<header_add()>.
-
-header_props() return a hash of all the headers that have currently
-been set.
 
 B<IMPORTANT NOTE REGARDING HTTP HEADERS>
 
