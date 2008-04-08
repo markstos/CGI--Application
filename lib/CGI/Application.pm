@@ -906,7 +906,7 @@ The new() method is the constructor for a CGI::Application.  It returns
 a blessed reference to your Application Module package (class).  Optionally,
 new() may take a set of parameters as key => value pairs:
 
-    my $webapp = App->new(
+    my $webapp = WebApp->new(
 		TMPL_PATH => 'App/',
 		PARAMS => {
 			'custom_thing_1' => 'some val',

@@ -1,7 +1,8 @@
 Revision history for Perl extension CGI::Application.
 
    [DOCUMENTATION]
-   - documente that header_props() can be usefully called with no arguments
+   - Fix typo in example. Thanks to Lesley Binks.
+   - document that header_props() can be usefully called with no arguments
      to return the current headers. Thanks to neuhaus, RT#33992. 
 
 
