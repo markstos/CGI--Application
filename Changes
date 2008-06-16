@@ -1,5 +1,12 @@
 Revision history for Perl extension CGI::Application.
 
+4.07_03 Mon Jun 16, 2008
+
+   [INTERNALS]
+   - The refactor to split up run() in 4.07_01 started to always pass the run mode 
+     name as an argument to run modes. The behavior has now been reverted to
+     only pass the run mode name in the AUTOLOAD case. (Mark Stosberg)
+
    [DOCUMENTATION]
    - Fix typo in example. Thanks to Lesley Binks.
    - document that header_props() can be usefully called with no arguments
