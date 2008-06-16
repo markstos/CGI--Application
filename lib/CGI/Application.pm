@@ -113,6 +113,8 @@ sub __get_runmeth {
 
 	my $rmeth;
 
+    my $is_autoload = 0;
+
 	my %rmodes = ($self->run_modes());
 	if (exists($rmodes{$rm})) {
 		$rmeth = $rmodes{$rm};
@@ -122,22 +124,21 @@ sub __get_runmeth {
 			croak("No such run mode '$rm'");
 		}
 		$rmeth = $rmodes{'AUTOLOAD'};
+        $is_autoload = 1;
 	}
 
-	return $rmeth;
+	return ($rmeth, $is_autoload);
 }
 
 sub __get_body {
 	my $self  = shift;
 	my $rm    = shift;
 
-	my $rmeth = $self->__get_runmeth($rm);
+	my ($rmeth, $is_autoload) = $self->__get_runmeth($rm);
 
 	my $body;
 	eval {
-		# Prior to my refactoring, we only passed $rm to $rmeth if it was
-		# autoloaded.
-		$body = $self->$rmeth($rm);
+        $body = $is_autoload ? $self->$rmeth($rm) : $self->$rmeth();
 	};
 	if ($@) {
 		my $error = $@;
