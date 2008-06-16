@@ -118,7 +118,8 @@ sub __get_runmeth {
 	my %rmodes = ($self->run_modes());
 	if (exists($rmodes{$rm})) {
 		$rmeth = $rmodes{$rm};
-	} else {
+	}
+    else {
 		# Look for run mode "AUTOLOAD" before dieing
 		unless (exists($rmodes{'AUTOLOAD'})) {
 			croak("No such run mode '$rm'");
