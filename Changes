@@ -1,5 +1,9 @@
 Revision history for Perl extension CGI::Application.
 
+    [DOCUMENTATION]
+    - reformat POD so methods are easier browse on CPAN (Mark Stosberg)
+
+
 4.07_03 Mon Jun 16, 2008
 
    [INTERNALS]
