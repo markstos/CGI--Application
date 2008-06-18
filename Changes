@@ -1,7 +1,15 @@
 Revision history for Perl extension CGI::Application.
 
     [DOCUMENTATION]
-    - reformat POD so methods are easier browse on CPAN (Mark Stosberg)
+    Several documentation improvements (Mark Stosberg)
+    - Reformat POD so methods are easier browse on CPAN
+    - Highlight some specific, common plugins to use
+    - Mention that we now have two CGI::App specific testing tools to use
+      Test::WWW::Mechanize::CGIApp and Test::WWW::Selenium::CGIApp 
+    - Introduce and recommend CGI::Application::Dispatch 
+    - Consolidated the documentation on error_mode()
+    - Split out those application methods which are essential from
+      those that are not. 
 
 
 4.07_03 Mon Jun 16, 2008
