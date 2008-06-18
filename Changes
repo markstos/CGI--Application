@@ -11,11 +11,13 @@ Revision history for Perl extension CGI::Application.
     - Split out those application methods which are essential from
       those that are not. 
     - Use and recommend "$c" instead of "$self" to cut down on
-      typing for something that is abstract anyway. 
+      typing for something that is abstract anyway, and represented
+      a simple "." in Perl 6.
     - Mention CGI::Application::Server for offline website development.
     - Update the introduction to clarify that we are a proven, lightweight
       option.
     - Removed the "experimental" flag on the error hook. 
+    - Mention in the second Perl.com article in the "more reading" section. 
 
 4.07_03 Mon Jun 16, 2008
 

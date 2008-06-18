@@ -1899,7 +1899,7 @@ CGI_APP_RETURN_ONLY. For example:
   $output = $webapp->run();
   like($output, qr/good/, "output is good");
 
-Examples of tihs style can be seen in our own test suite. 
+Examples of this style can be seen in our own test suite. 
 
 =head1 PLUG-INS
 
@@ -2328,35 +2328,24 @@ the numerous contributors documented in the Changes file.
 B<More Reading>
 
 If you're interested in finding out more about CGI::Application, the
-following article is available on Perl.com:
+following articles are available on Perl.com:
 
     Using CGI::Application
     http://www.perl.com/pub/a/2001/06/05/cgi.html
 
-Thanks to Simon Cozens and the O'Reilly network for publishing this
-article, and for the incredible value they provide to the Perl
-community!
+    Rapid Website Development with CGI::Application
+    http://www.perl.com/pub/a/2006/10/19/cgi_application.html
 
+Thanks to O'Reilly for publishing these articles, and for the incredible value
+they provide to the Perl community!
 
 =head1 CREDITS
 
-CGI::Application is developed by The Erlbaum Group, a software
-engineering and consulting firm in New York City.  If you are looking
-for a company to develop your web site or individual developers to
-augment your team please contact us:
-
-    The Erlbaum Group, LLC
-    826 Broadway, Suite 933
-    New York, NY 10003
-
-    Phone: 212-684-6161
-    Fax: 212-684-6226
-    Email: info@erlbaum.net
-    Web: http://www.erlbaum.net
-
+CGI::Application was originally developed by The Erlbaum Group, a software
+engineering and consulting firm in New York City. 
 
 Thanks to Vanguard Media (http://www.vm.com) for funding the initial
-development of this library and for encouraging me to release it to
+development of this library and for encouraging Jesse Erlbaum to release it to
 the world.
 
 Many thanks to Sam Tregar (author of the most excellent
