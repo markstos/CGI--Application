@@ -2299,6 +2299,13 @@ B<IRC>
 You can also drop by C<#cgiapp> on C<irc.perl.org> with a good chance of finding 
 some people involved with the project there. 
 
+B<Source Code>
+
+This project is managed using the darcs source control system (
+http://www.darcs.net/ ). The darcs archive is here:
+http://mark.stosberg.com/darcs_hive/cgi-app
+
+
 =head1 SEE ALSO
 
 =over 4
@@ -2318,14 +2325,7 @@ CGI::Application.  http://www.cafweb.org/
 
 =back
 
-=head1 AUTHOR
-
-Jesse Erlbaum <jesse@erlbaum.net>
-
-Mark Stosberg has served as a co-maintainer since version 3.2, with the help of
-the numerous contributors documented in the Changes file.
-
-B<More Reading>
+=head1 MORE READING
 
 If you're interested in finding out more about CGI::Application, the
 following articles are available on Perl.com:
@@ -2338,6 +2338,13 @@ following articles are available on Perl.com:
 
 Thanks to O'Reilly for publishing these articles, and for the incredible value
 they provide to the Perl community!
+
+=head1 AUTHOR
+
+Jesse Erlbaum <jesse@erlbaum.net>
+
+Mark Stosberg has served as a co-maintainer since version 3.2, with the help of
+the numerous contributors documented in the Changes file.
 
 =head1 CREDITS
 

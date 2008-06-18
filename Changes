@@ -18,6 +18,7 @@ Revision history for Perl extension CGI::Application.
       option.
     - Removed the "experimental" flag on the error hook. 
     - Mention in the second Perl.com article in the "more reading" section. 
+    - Document darcs repo URL. (Suggested by Gabor) 
 
 4.07_03 Mon Jun 16, 2008
 
