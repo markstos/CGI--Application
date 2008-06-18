@@ -680,13 +680,22 @@ CGI::Application - Framework for building reusable web-applications
 
 =head1 INTRODUCTION
 
-CGI::Application is intended to make it easier to create sophisticated,
-high-performance, reusable web-based applications.  This module implements a
-methodology which, if followed, will make your web software easier to design,
-easier to document, easier to write, and easier to evolve.
+CGI::Application makes it easier to create sophisticated, high-performance,
+reusable web-based applications.  CGI::Application helps makes your web
+applications easier to design, write, and evolve.
 
 CGI::Application judiciously avoids employing technologies and techniques which
 would bind a developer to any one set of tools, operating system or web server.
+
+It is lightweight in turns of memory usage, making it suitable for common CGI
+environments, and a high performance choice in persistent environments like
+FastCGI or mod_perl.
+
+By adding L<PLUG-INS> as your needs grow, you can add advanced and complex
+features when you need them. 
+
+First released in 2000 and used and expanded by a number of professional
+website developers, CGI::Application is a stable, reliable choice. 
 
 =head1 USAGE EXAMPLE
 
