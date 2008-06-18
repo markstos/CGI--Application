@@ -29,34 +29,34 @@ sub new {
 	}
 
 	# Create our object!
-	my $self = {};
-	bless($self, $class);
+	my $c = {};
+	bless($c, $class);
 
 	### SET UP DEFAULT VALUES ###
 	#
 	# We set them up here and not in the setup() because a subclass
 	# which implements setup() still needs default values!
 	
-	$self->header_type('header');
-	$self->mode_param('rm');
-	$self->start_mode('start');
+	$c->header_type('header');
+	$c->mode_param('rm');
+	$c->start_mode('start');
 
 	# Process optional new() parameters
 	my $rprops;
 	if (ref($args[0]) eq 'HASH') {
-		$rprops = $self->_cap_hash($args[0]);
+		$rprops = $c->_cap_hash($args[0]);
 	} else {
-		$rprops = $self->_cap_hash({ @args });
+		$rprops = $c->_cap_hash({ @args });
 	}
 
 	# Set tmpl_path()
 	if (exists($rprops->{TMPL_PATH})) {
-		$self->tmpl_path($rprops->{TMPL_PATH});
+		$c->tmpl_path($rprops->{TMPL_PATH});
 	}
 
 	# Set CGI query object
 	if (exists($rprops->{QUERY})) {
-		$self->query($rprops->{QUERY});
+		$c->query($rprops->{QUERY});
 	}
 
 	# Set up init param() values
@@ -64,33 +64,33 @@ sub new {
 		croak("PARAMS is not a hash ref") unless (ref($rprops->{PARAMS}) eq 'HASH');
 		my $rparams = $rprops->{PARAMS};
 		while (my ($k, $v) = each(%$rparams)) {
-			$self->param($k, $v);
+			$c->param($k, $v);
 		}
 	}
 
 	# Lock prerun_mode from being changed until cgiapp_prerun()
-	$self->{__PRERUN_MODE_LOCKED} = 1;
+	$c->{__PRERUN_MODE_LOCKED} = 1;
 
 	# Call cgiapp_init() method, which may be implemented in the sub-class.
 	# Pass all constructor args forward.  This will allow flexible usage
 	# down the line.
-	$self->call_hook('init', @args);
+	$c->call_hook('init', @args);
 
 	# Call setup() method, which should be implemented in the sub-class!
-	$self->setup();
+	$c->setup();
 
-	return $self;
+	return $c;
 }
 
 sub __get_runmode {
-	my $self     = shift;
+	my $c     = shift;
 	my $rm_param = shift;
 
 	my $rm;
 	# Support call-back instead of CGI mode param
 	if (ref($rm_param) eq 'CODE') {
 		# Get run mode from subref
-		$rm = $rm_param->($self);
+		$rm = $rm_param->($c);
 	}
 	# support setting run mode from PATH_INFO
 	elsif (ref($rm_param) eq 'HASH') {
@@ -98,24 +98,24 @@ sub __get_runmode {
 	}
 	# Get run mode from CGI param
 	else {
-		$rm = $self->query->param($rm_param);
+		$rm = $c->query->param($rm_param);
 	}
 
 	# If $rm undefined, use default (start) mode
-	$rm = $self->start_mode unless defined($rm) && length($rm);
+	$rm = $c->start_mode unless defined($rm) && length($rm);
 
 	return $rm;
 }
 
 sub __get_runmeth {
-	my $self = shift;
+	my $c = shift;
 	my $rm   = shift;
 
 	my $rmeth;
 
     my $is_autoload = 0;
 
-	my %rmodes = ($self->run_modes());
+	my %rmodes = ($c->run_modes());
 	if (exists($rmodes{$rm})) {
 		$rmeth = $rmodes{$rm};
 	}
@@ -132,20 +132,20 @@ sub __get_runmeth {
 }
 
 sub __get_body {
-	my $self  = shift;
+	my $c  = shift;
 	my $rm    = shift;
 
-	my ($rmeth, $is_autoload) = $self->__get_runmeth($rm);
+	my ($rmeth, $is_autoload) = $c->__get_runmeth($rm);
 
 	my $body;
 	eval {
-        $body = $is_autoload ? $self->$rmeth($rm) : $self->$rmeth();
+        $body = $is_autoload ? $c->$rmeth($rm) : $c->$rmeth();
 	};
 	if ($@) {
 		my $error = $@;
-		$self->call_hook('error', $error);
-		if (my $em = $self->error_mode) {
-			$body = $self->$em( $error );
+		$c->call_hook('error', $error);
+		if (my $em = $c->error_mode) {
+			$body = $c->$em( $error );
 		} else {
 			croak("Error executing run mode '$rm': $error");
 		}
@@ -158,45 +158,45 @@ sub __get_body {
 
 
 sub run {
-	my $self = shift;
-	my $q = $self->query();
+	my $c = shift;
+	my $q = $c->query();
 
-	my $rm_param = $self->mode_param();
+	my $rm_param = $c->mode_param();
 
-	my $rm = $self->__get_runmode($rm_param);
+	my $rm = $c->__get_runmode($rm_param);
 
 	# Set get_current_runmode() for access by user later
-	$self->{__CURRENT_RUNMODE} = $rm;
+	$c->{__CURRENT_RUNMODE} = $rm;
 
 	# Allow prerun_mode to be changed
-	delete($self->{__PRERUN_MODE_LOCKED});
+	delete($c->{__PRERUN_MODE_LOCKED});
 
 	# Call PRE-RUN hook, now that we know the run mode
 	# This hook can be used to provide run mode specific behaviors
 	# before the run mode actually runs.
- 	$self->call_hook('prerun', $rm);
+ 	$c->call_hook('prerun', $rm);
 
 	# Lock prerun_mode from being changed after cgiapp_prerun()
-	$self->{__PRERUN_MODE_LOCKED} = 1;
+	$c->{__PRERUN_MODE_LOCKED} = 1;
 
 	# If prerun_mode has been set, use it!
-	my $prerun_mode = $self->prerun_mode();
+	my $prerun_mode = $c->prerun_mode();
 	if (length($prerun_mode)) {
 		$rm = $prerun_mode;
-		$self->{__CURRENT_RUNMODE} = $rm;
+		$c->{__CURRENT_RUNMODE} = $rm;
 	}
 
 	# Process run mode!
-	my $body = $self->__get_body($rm);
+	my $body = $c->__get_body($rm);
 
 	# Support scalar-ref for body return
 	$body = $$body if ref $body eq 'SCALAR';
 
 	# Call cgiapp_postrun() hook
-	$self->call_hook('postrun', \$body);
+	$c->call_hook('postrun', \$body);
 
 	# Set up HTTP headers
-	my $headers = $self->_send_headers();
+	my $headers = $c->_send_headers();
 
 	# Build up total output
 	my $output  = $headers.$body;
@@ -207,7 +207,7 @@ sub run {
 	}
 
 	# clean up operations
-	$self->call_hook('teardown');
+	$c->call_hook('teardown');
 
 	return $output;
 }
@@ -218,7 +218,7 @@ sub run {
 ############################
 
 sub cgiapp_get_query {
-	my $self = shift;
+	my $c = shift;
 
 	# Include CGI.pm and related modules
 	require CGI;
@@ -231,7 +231,7 @@ sub cgiapp_get_query {
 
 
 sub cgiapp_init {
-	my $self = shift;
+	my $c = shift;
 	my @args = (@_);
 
 	# Nothing to init, yet!
@@ -239,7 +239,7 @@ sub cgiapp_init {
 
 
 sub cgiapp_prerun {
-	my $self = shift;
+	my $c = shift;
 	my $rm = shift;
 
 	# Nothing to prerun, yet!
@@ -247,7 +247,7 @@ sub cgiapp_prerun {
 
 
 sub cgiapp_postrun {
-	my $self = shift;
+	my $c = shift;
 	my $bodyref = shift;
 
 	# Nothing to postrun, yet!
@@ -255,16 +255,16 @@ sub cgiapp_postrun {
 
 
 sub setup {
-	my $self = shift;
+	my $c = shift;
 
-	$self->run_modes(
+	$c->run_modes(
 		'start' => 'dump_html',
 	);
 }
 
 
 sub teardown {
-	my $self = shift;
+	my $c = shift;
 
 	# Nothing to shut down, yet!
 }
@@ -277,19 +277,19 @@ sub teardown {
 ######################################
 
 sub dump {
-	my $self = shift;
+	my $c = shift;
 	my $output = '';
 
 	# Dump run mode
-	my $current_runmode = $self->get_current_runmode();
+	my $current_runmode = $c->get_current_runmode();
 	$current_runmode = "" unless (defined($current_runmode));
 	$output .= "Current Run mode: '$current_runmode'\n";
 
 	# Dump Params
 	$output .= "\nQuery Parameters:\n";
-	my @params = $self->query->param();
+	my @params = $c->query->param();
 	foreach my $p (sort(@params)) {
-		my @data = $self->query->param($p);
+		my @data = $c->query->param($p);
 		my $data_str = "'".join("', '", @data)."'";
 		$output .= "\t$p => $data_str\n";
 	}
@@ -305,12 +305,12 @@ sub dump {
 
 
 sub dump_html {
-	my $self   = shift;
-	my $query  = $self->query();
+	my $c   = shift;
+	my $query  = $c->query();
 	my $output = '';
 
 	# Dump run-mode
-	my $current_runmode = $self->get_current_runmode();
+	my $current_runmode = $c->get_current_runmode();
 	$output .= "<p>Current Run-mode:
 '<strong>$current_runmode</strong>'</p>\n";
 
@@ -334,31 +334,31 @@ sub dump_html {
 
 
 sub header_add {
-	my $self = shift;
-	return $self->_header_props_update(\@_,add=>1);
+	my $c = shift;
+	return $c->_header_props_update(\@_,add=>1);
 }
 
 sub header_props {
-	my $self = shift;
-	return $self->_header_props_update(\@_,add=>0);
+	my $c = shift;
+	return $c->_header_props_update(\@_,add=>0);
 }
 
 # used by header_props and header_add to update the headers
 sub _header_props_update {
-	my $self     = shift;
+	my $c     = shift;
 	my $data_ref = shift;
 	my %in       = @_;
 
 	my @data = @$data_ref;
 
 	# First use?  Create new __HEADER_PROPS!
-	$self->{__HEADER_PROPS} = {} unless (exists($self->{__HEADER_PROPS}));
+	$c->{__HEADER_PROPS} = {} unless (exists($c->{__HEADER_PROPS}));
 
 	my $props;
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
-        if ($self->header_type eq 'none') {
+        if ($c->header_type eq 'none') {
 		    warn "header_props called while header_type set to 'none', headers will NOT be sent!" 
         }
 		# Is it a hash, or hash-ref?
@@ -376,55 +376,55 @@ sub _header_props_update {
 		# merge in new headers, appending new values passed as array refs
 		if ($in{add}) {
 			for my $key_set_to_aref (grep { ref $props->{$_} eq 'ARRAY'} keys %$props) {
-				my $existing_val = $self->{__HEADER_PROPS}->{$key_set_to_aref};
+				my $existing_val = $c->{__HEADER_PROPS}->{$key_set_to_aref};
 				next unless defined $existing_val;
 				my @existing_val_array = (ref $existing_val eq 'ARRAY') ? @$existing_val : ($existing_val);
 				$props->{$key_set_to_aref} = [ @existing_val_array, @{ $props->{$key_set_to_aref} } ];
 			}
-			$self->{__HEADER_PROPS} = { %{ $self->{__HEADER_PROPS} }, %$props };
+			$c->{__HEADER_PROPS} = { %{ $c->{__HEADER_PROPS} }, %$props };
 		}
 		# Set new headers, clobbering existing values
 		else {
-			$self->{__HEADER_PROPS} = $props;
+			$c->{__HEADER_PROPS} = $props;
 		}
 
 	}
 
 	# If we've gotten this far, return the value!
-	return (%{ $self->{__HEADER_PROPS}});
+	return (%{ $c->{__HEADER_PROPS}});
 }
 
 
 sub header_type {
-	my $self = shift;
+	my $c = shift;
 	my ($header_type) = @_;
 
 	my @allowed_header_types = qw(header redirect none);
 
 	# First use?  Create new __HEADER_TYPE!
-	$self->{__HEADER_TYPE} = 'header' unless (exists($self->{__HEADER_TYPE}));
+	$c->{__HEADER_TYPE} = 'header' unless (exists($c->{__HEADER_TYPE}));
 
 	# If data is provided, set it!
 	if (defined($header_type)) {
 		$header_type = lc($header_type);
 		croak("Invalid header_type '$header_type'")
 			unless(grep { $_ eq $header_type } @allowed_header_types);
-		$self->{__HEADER_TYPE} = $header_type;
+		$c->{__HEADER_TYPE} = $header_type;
 	}
 
 	# If we've gotten this far, return the value!
-	return $self->{__HEADER_TYPE};
+	return $c->{__HEADER_TYPE};
 }
 
 
 sub param {
-	my $self = shift;
+	my $c = shift;
 	my (@data) = (@_);
 
 	# First use?  Create new __PARAMS!
-	$self->{__PARAMS} = {} unless (exists($self->{__PARAMS}));
+	$c->{__PARAMS} = {} unless (exists($c->{__PARAMS}));
 
-	my $rp = $self->{__PARAMS};
+	my $rp = $c->{__PARAMS};
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
@@ -453,47 +453,47 @@ sub param {
 
 
 sub delete {
-	my $self = shift;
+	my $c = shift;
 	my ($param) = @_;
 
 	# return undef it the param name isn't given
 	return undef unless defined $param;
 
-	#simply delete this param from $self->{__PARAMS}
-	delete $self->{__PARAMS}->{$param};
+	#simply delete this param from $c->{__PARAMS}
+	delete $c->{__PARAMS}->{$param};
 }
 
 
 sub query {
-	my $self = shift;
+	my $c = shift;
 	my ($query) = @_;
 
 	# We're only allowed to set a new query object if one does not yet exist!
-	unless (exists($self->{__QUERY_OBJ})) {
+	unless (exists($c->{__QUERY_OBJ})) {
 		my $new_query_obj;
 
 		# If data is provided, set it!  Otherwise, create a new one.
 		if (defined($query)) {
 			$new_query_obj = $query;
 		} else {
-			$new_query_obj = $self->cgiapp_get_query();
+			$new_query_obj = $c->cgiapp_get_query();
 		}
 
-		$self->{__QUERY_OBJ} = $new_query_obj;
+		$c->{__QUERY_OBJ} = $new_query_obj;
 	}
 
-	return $self->{__QUERY_OBJ};
+	return $c->{__QUERY_OBJ};
 }
 
 
 sub run_modes {
-	my $self = shift;
+	my $c = shift;
 	my (@data) = (@_);
 
 	# First use?  Create new __RUN_MODES!
-	$self->{__RUN_MODES} = {} unless (exists($self->{__RUN_MODES}));
+	$c->{__RUN_MODES} = {} unless (exists($c->{__RUN_MODES}));
 
-	my $rr_m = $self->{__RUN_MODES};
+	my $rr_m = $c->{__RUN_MODES};
 
 	# If data is provided, set it!
 	if (scalar(@data)) {
@@ -520,83 +520,83 @@ sub run_modes {
 
 
 sub start_mode {
-	my $self = shift;
+	my $c = shift;
 	my ($start_mode) = @_;
 
 	# First use?  Create new __START_MODE
-	$self->{__START_MODE} = 'start' unless (exists($self->{__START_MODE}));
+	$c->{__START_MODE} = 'start' unless (exists($c->{__START_MODE}));
 
 	# If data is provided, set it
 	if (defined($start_mode)) {
-		$self->{__START_MODE} = $start_mode;
+		$c->{__START_MODE} = $start_mode;
 	}
 
-	return $self->{__START_MODE};
+	return $c->{__START_MODE};
 }
 
 
 sub error_mode {
-	my $self = shift;
+	my $c = shift;
 	my ($error_mode) = @_;
 
 	# First use?  Create new __ERROR_MODE
-	$self->{__ERROR_MODE} = undef unless (exists($self->{__ERROR_MODE}));
+	$c->{__ERROR_MODE} = undef unless (exists($c->{__ERROR_MODE}));
 
 	# If data is provided, set it.
 	if (defined($error_mode)) {
-		$self->{__ERROR_MODE} = $error_mode;
+		$c->{__ERROR_MODE} = $error_mode;
 	}
 
-	return $self->{__ERROR_MODE};
+	return $c->{__ERROR_MODE};
 }
 
 
 sub tmpl_path {
-	my $self = shift;
+	my $c = shift;
 	my ($tmpl_path) = @_;
 
 	# First use?  Create new __TMPL_PATH!
-	$self->{__TMPL_PATH} = '' unless (exists($self->{__TMPL_PATH}));
+	$c->{__TMPL_PATH} = '' unless (exists($c->{__TMPL_PATH}));
 
 	# If data is provided, set it!
 	if (defined($tmpl_path)) {
-		$self->{__TMPL_PATH} = $tmpl_path;
+		$c->{__TMPL_PATH} = $tmpl_path;
 	}
 
 	# If we've gotten this far, return the value!
-	return $self->{__TMPL_PATH};
+	return $c->{__TMPL_PATH};
 }
 
 
 sub prerun_mode {
-	my $self = shift;
+	my $c = shift;
 	my ($prerun_mode) = @_;
 
 	# First use?  Create new __PRERUN_MODE
-	$self->{__PRERUN_MODE} = '' unless (exists($self->{__PRERUN_MODE}));
+	$c->{__PRERUN_MODE} = '' unless (exists($c->{__PRERUN_MODE}));
 
 	# Was data provided?
 	if (defined($prerun_mode)) {
 		# Are we allowed to set prerun_mode?
-		if (exists($self->{__PRERUN_MODE_LOCKED})) {
+		if (exists($c->{__PRERUN_MODE_LOCKED})) {
 			# Not allowed!  Throw an exception.
 			croak("prerun_mode() can only be called within cgiapp_prerun()!  Error");
 		} else {
 			# If data is provided, set it!
-			$self->{__PRERUN_MODE} = $prerun_mode;
+			$c->{__PRERUN_MODE} = $prerun_mode;
 		}
 	}
 
 	# If we've gotten this far, return the value!
-	return $self->{__PRERUN_MODE};
+	return $c->{__PRERUN_MODE};
 }
 
 
 sub get_current_runmode {
-	my $self = shift;
+	my $c = shift;
 
 	# It's OK if we return undef if this method is called too early
-	return $self->{__CURRENT_RUNMODE};
+	return $c->{__CURRENT_RUNMODE};
 }
 
 
@@ -609,13 +609,13 @@ sub get_current_runmode {
 
 
 sub _send_headers {
-	my $self = shift;
-	my $q    = $self->query;
-	my $type = $self->header_type;
+	my $c = shift;
+	my $q    = $c->query;
+	my $type = $c->header_type;
 
     return
-        $type eq 'redirect' ? $q->redirect( $self->header_props )
-      : $type eq 'header'   ? $q->header  ( $self->header_props )
+        $type eq 'redirect' ? $q->redirect( $c->header_props )
+      : $type eq 'header'   ? $q->header  ( $c->header_props )
       : $type eq 'none'     ? ''
       : croak "Invalid header_type '$type'"
 }
@@ -626,7 +626,7 @@ sub _send_headers {
 # have come to rely on it, so any changes here should be
 # made with great care or avoided. 
 sub _cap_hash {
-	my $self = shift;
+	my $c = shift;
 	my $rhash = shift;
 	my %hash = map {
 		my $k = $_;
@@ -658,10 +658,10 @@ CGI::Application - Framework for building reusable web-applications
 
   # ( setup() can even be skipped for common cases. See docs below. )
   sub setup {
-	my $self = shift;
-	$self->start_mode('mode1');
-	$self->mode_param('rm');
-	$self->run_modes(
+	my $c = shift;
+	$c->start_mode('mode1');
+	$c->mode_param('rm');
+	$c->run_modes(
 		'mode1' => 'do_stuff',
 		'mode2' => 'do_more_stuff',
 		'mode3' => 'do_something_else'
@@ -728,30 +728,30 @@ As you can see, widgetview.cgi simply "uses" your Application module
    use CGI::Application::Plugin::DBH;
 
    sub setup {
-	my $self = shift;
-	$self->start_mode('mode1');
-	$self->run_modes(
+	my $c = shift;
+	$c->start_mode('mode1');
+	$c->run_modes(
 		'mode1' => 'showform',
 		'mode2' => 'showlist',
 		'mode3' => 'showdetail'
 	);
 
 	# Connect to DBI database, with the same args as DBI->connect();
-     $self->dbh_config();
+     $c->dbh_config();
    }
 
    sub teardown {
-	my $self = shift;
+	my $c = shift;
 
 	# Disconnect when we're done, (Although DBI usually does this automatically)
-	$self->dbh->disconnect();
+	$c->dbh->disconnect();
    }
 
    sub showform {
-	my $self = shift;
+	my $c = shift;
 
 	# Get CGI query object
-	my $q = $self->query();
+	my $q = $c->query();
 
 	my $output = '';
 	$output .= $q->start_html(-title => 'Widget Search Form');
@@ -766,13 +766,13 @@ As you can see, widgetview.cgi simply "uses" your Application module
    }
 
    sub showlist {
-	my $self = shift;
+	my $c = shift;
 
 	# Get our database connection
-	my $dbh = $self->dbh();
+	my $dbh = $c->dbh();
 
 	# Get CGI query object
-	my $q = $self->query();
+	my $q = $c->query();
 	my $widgetcode = $q->param("widgetcode");
 
 	my $output = '';
@@ -797,13 +797,13 @@ As you can see, widgetview.cgi simply "uses" your Application module
    }
 
    sub showdetail {
-	my $self = shift;
+	my $c = shift;
 
 	# Get our database connection
-	my $dbh = $self->dbh();
+	my $dbh = $c->dbh();
 
 	# Get CGI query object
-	my $q = $self->query();
+	my $q = $c->query();
 	my $widgetid = $q->param("widgetid");
 
 	my $output = '';
@@ -881,8 +881,8 @@ following conventions:
   WebApp      Your Application Module class; a sub-class of CGI::Application.
   webapp.cgi  The Instance Script which implements your Application Module.
   $webapp     An instance (object) of your Application Module class.
-  $self       Same as $webapp, used in instance methods to pass around the
-              current object. (Standard Perl Object-Oriented technique)
+  $c          Same as $webapp, used in instance methods to pass around the
+              current object. (Sometimes referred as "$self" in other code)
 
 
 
@@ -942,8 +942,8 @@ many configuration file formats.
  my $app = WebApp->new(PARAMS => { cfg_file => 'config.pl' });
 
  # Later in your app:
- my %cfg = $self->cfg()
- # or ... $self->cfg('HTML_ROOT_DIR');
+ my %cfg = $c->cfg()
+ # or ... $c->cfg('HTML_ROOT_DIR');
 
 See the list of of plugins below for more config file integration solutions.
 
@@ -992,17 +992,17 @@ via the $webapp->param() method.
 Your setup() method might be implemented something like this:
 
 	sub setup {
-		my $self = shift;
-		$self->tmpl_path('/path/to/my/templates/');
-		$self->start_mode('putform');
-		$self->error_mode('my_error_rm');
-		$self->run_modes({
+		my $c = shift;
+		$c->tmpl_path('/path/to/my/templates/');
+		$c->start_mode('putform');
+		$c->error_mode('my_error_rm');
+		$c->run_modes({
 			'putform'  => 'my_putform_func',
 			'postdata' => 'my_data_func'
 		});
-		$self->param('myprop1');
-		$self->param('myprop2', 'prop2value');
-		$self->param('myprop3', ['p3v1', 'p3v2', 'p3v3']);
+		$c->param('myprop1');
+		$c->param('myprop2', 'prop2value');
+		$c->param('myprop3', ['p3v1', 'p3v2', 'p3v3']);
 	}
 
 However, often times all that needs to be in setup() is defining your run modes
@@ -1041,7 +1041,7 @@ Consider the following:
   package MySuperclass;
   use base 'CGI::Application';
   sub cgiapp_init {
-	my $self = shift;
+	my $c = shift;
 	# Perform some project-specific init behavior
 	# such as to load settings from a database or file.
   }
@@ -1079,7 +1079,7 @@ Consider the following:
   package MySuperclass;
   use base 'CGI::Application';
   sub cgiapp_prerun {
-	my $self = shift;
+	my $c = shift;
 	# Perform some project-specific init behavior
 	# such as to implement run mode specific
 	# authorization functions.
@@ -1130,7 +1130,7 @@ your run mode method, in addition to the CGI-App object.  A typical
 cgiapp_postrun() method might be implemented as follows:
 
   sub cgiapp_postrun {
-    my $self = shift;
+    my $c = shift;
     my $output_ref = shift;
 
     # Enclose output HTML table
@@ -1244,7 +1244,7 @@ B<The load_tmpl() callback>
 Plugin authors will be interested to know that you can register a callback that
 will be executed just before load_tmpl() returns:
 
-  $self->add_callback('load_tmpl',\&your_method);
+  $c->add_callback('load_tmpl',\&your_method);
 
 When C<your_method()> is executed, it will be passed three arguments: 
 
@@ -1258,7 +1258,7 @@ When C<your_method()> is executed, it will be passed three arguments:
 Here's an example stub for a load_tmpl() callback: 
 
     sub my_load_tmpl_callback {
-        my ($self, $ht_params, $tmpl_params, $tmpl_file) = @_
+        my ($c, $ht_params, $tmpl_params, $tmpl_file) = @_
         # modify $ht_params or $tmpl_params by reference...    
     }
 
@@ -1423,7 +1423,7 @@ it will usually croak() with errors.  If this is not your desired
 behavior, it is possible to catch this exception by implementing
 a run mode with the reserved name "AUTOLOAD":
 
-  $self->run_modes(
+  $c->run_modes(
 	"AUTOLOAD" => \&catch_my_exception
   );
 
@@ -1433,7 +1433,7 @@ invoked just like a regular run mode, with one exception:  It will
 receive, as an argument, the name of the run mode which invoked it:
 
   sub catch_my_exception {
-	my $self = shift;
+	my $c = shift;
 	my $intended_runmode = shift;
 
 	my $output = "Looking for '$intended_runmode', but found 'AUTOLOAD' instead";
@@ -1598,15 +1598,15 @@ The value of 'header' is almost never used, as it is the default.
 B<Example of redirecting>:
 
   sub some_redirect_mode {
-    my $self = shift;
+    my $c = shift;
     # do stuff here.... 
-    $self->header_type('redirect');
-    $self->header_props(-url=>  "http://site/path/doc.html" );
+    $c->header_type('redirect');
+    $c->header_props(-url=>  "http://site/path/doc.html" );
   }
 
 To simplify that further, use L<CGI::Application::Plugin::Redirect>:
 
-    return $self->redirect('http://www.example.com/');
+    return $c->redirect('http://www.example.com/');
 
 Setting the header to 'none' may be useful if you are streaming content.
 In other contexts, it may be more useful to set C<$ENV{CGI_APP_RETURN_ONLY} = 1;>,
@@ -1618,11 +1618,11 @@ for a cron script!
 =cut
 
 sub load_tmpl {
-	my $self = shift;
+	my $c = shift;
 	my ($tmpl_file, @extra_params) = @_;
 
 	# add tmpl_path to path array if one is set, otherwise add a path arg
-	if (my $tmpl_path = $self->tmpl_path) {
+	if (my $tmpl_path = $c->tmpl_path) {
 		my @tmpl_paths = (ref $tmpl_path eq 'ARRAY') ? @$tmpl_path : $tmpl_path;
 		my $found = 0;
 		for( my $x = 0; $x < @extra_params; $x += 2 ) {
@@ -1641,14 +1641,14 @@ sub load_tmpl {
     %ht_params = () unless keys %ht_params;
 
     # Define our extension if doesn't already exist;
-    $self->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $self->{__CURRENT_TMPL_EXTENSION};
+    $c->{__CURRENT_TMPL_EXTENSION} = '.html' unless defined $c->{__CURRENT_TMPL_EXTENSION};
 
     # Define a default template name based on the current run mode
     unless (defined $tmpl_file) {
-        $tmpl_file = $self->get_current_runmode . $self->{__CURRENT_TMPL_EXTENSION};    
+        $tmpl_file = $c->get_current_runmode . $c->{__CURRENT_TMPL_EXTENSION};    
     }
 
-    $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
+    $c->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
 
     require HTML::Template;
     # let's check $tmpl_file and see what kind of parameter it is - we
@@ -1702,7 +1702,7 @@ Here a code reference is provided. It will return the name of the run mode
 to use directly. Example:
 
  sub some_method {
-   my $self = shift;
+   my $c = shift;
    return 'run_mode_x';
  }
 
@@ -1756,11 +1756,11 @@ should be supported by any web server that supports CGI scripts.
 =cut
 
 sub mode_param {
-	my $self = shift;
+	my $c = shift;
 	my $mode_param;
 
 	# First use?  Create new __MODE_PARAM
-	$self->{__MODE_PARAM} = 'rm' unless (exists($self->{__MODE_PARAM}));
+	$c->{__MODE_PARAM} = 'rm' unless (exists($c->{__MODE_PARAM}));
 
 	my %p;
 	# expecting a scalar or code ref
@@ -1774,8 +1774,8 @@ sub mode_param {
 		%p = @_;
 		$mode_param = $p{param};
 
-		if ( $p{path_info} && $self->query->path_info() ) {
-			my $pi = $self->query->path_info();
+		if ( $p{path_info} && $c->query->path_info() ) {
+			my $pi = $c->query->path_info();
 
 			my $idx = $p{path_info};
 			# two cases: negative or positive index
@@ -1797,10 +1797,10 @@ sub mode_param {
 
 	# If data is provided, set it
 	if (defined $mode_param and length $mode_param) {
-		$self->{__MODE_PARAM} = $mode_param;
+		$c->{__MODE_PARAM} = $mode_param;
 	}
 
-	return $self->{__MODE_PARAM};
+	return $c->{__MODE_PARAM};
 }
 
 
@@ -1816,15 +1816,15 @@ For example, consider:
   package WebApp;
   use base 'CGI::Application';
   sub cgiapp_prerun {
-	my $self = shift;
+	my $c = shift;
 
 	# Get the web user name, if any
-	my $q = $self->query();
+	my $q = $c->query();
 	my $user = $q->remote_user();
 
 	# Redirect to login, if necessary
 	unless ($user) {
-		$self->prerun_mode('login');
+		$c->prerun_mode('login');
 	}
   }
 
@@ -2018,23 +2018,23 @@ B<Callback Examples>
   $class->add_callback('init', \&some_other_method);
 
   # Object-based: callback will only last for lifetime of this object
-  $self->add_callback('prerun', \&some_method);
+  $c->add_callback('prerun', \&some_method);
 
   # If you want to create a new hook location in your application,
   # You'll need to know about the following two methods to create
   # the hook and call it.
 
   # Create a new hook
-  $self->new_hook('pretemplate');
+  $c->new_hook('pretemplate');
 
   # Then later execute all the callbacks registered at this hook
-  $self->call_hook('pretemplate');
+  $c->call_hook('pretemplate');
 
 B<Callback Methods>
 
 =head3 add_callback()
 
-	$self->add_callback ('teardown', \&callback);
+	$c->add_callback ('teardown', \&callback);
 	$class->add_callback('teardown', 'method');
 
 The add_callback method allows you to register a callback
@@ -2055,14 +2055,14 @@ upon whether you call C<add_callback> as an object method or a class
 method:
 
 	# add object-based callback
-	$self->add_callback('teardown', \&callback);
+	$c->add_callback('teardown', \&callback);
 
 	# add class-based callbacks
 	$class->add_callback('teardown', \&callback);
 	My::Project->add_callback('teardown', \&callback);
 
-Object-based callbacks are stored in your web application's C<$self>
-object; at the end of the request when the C<$self> object goes out of
+Object-based callbacks are stored in your web application's C<$c>
+object; at the end of the request when the C<$c> object goes out of
 scope, the callbacks are gone too.
 
 Object-based callbacks are useful for one-time tasks that apply only to
@@ -2080,7 +2080,7 @@ applications.
 
 Another feature of class-based callbacks is that your plugin can create
 hooks and add callbacks at any time - even before the web application's
-C<$self> object has been initialized.  A good place to do this is in
+C<$c> object has been initialized.  A good place to do this is in
 your plugin's C<import> subroutine:
 
 	package CGI::Application::Plugin::MyPlugin;
@@ -2099,21 +2099,21 @@ on behalf of the module that contained the line:
 =cut
 
 sub add_callback {
-	my ($self_or_class, $hook, $callback) = @_;
+	my ($c_or_class, $hook, $callback) = @_;
 
 	$hook = lc $hook;
 
 	die "no callback provided when calling add_callback" unless $callback;
 	die "Unknown hook ($hook)"                           unless exists $INSTALLED_CALLBACKS{$hook};
 
-	if (ref $self_or_class) {
+	if (ref $c_or_class) {
 		# Install in object
-		my $self = $self_or_class;
-		push @{ $self->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
+		my $c = $c_or_class;
+		push @{ $c->{__INSTALLED_CALLBACKS}{$hook} }, $callback;
 	}
 	else {
 		# Install in class
-		my $class = $self_or_class;
+		my $class = $c_or_class;
 		push @{ $INSTALLED_CALLBACKS{$hook}{$class} }, $callback;
 	}
 
@@ -2121,7 +2121,7 @@ sub add_callback {
 
 =head3 new_hook(HOOK)
 
-    $self->new_hook('pretemplate');
+    $c->new_hook('pretemplate');
 
 The C<new_hook()> method can be used to create a new location for developers to
 register callbacks.  It takes one argument, a hook name. The hook location is
@@ -2142,7 +2142,7 @@ sub new_hook {
 
 =head3 call_hook(HOOK)
 
-    $self->call_hook('pretemplate', @args);
+    $c->call_hook('pretemplate', @args);
 
 The C<call_hook> method is used to executed the callbacks that have been registered
 at the given hook.  It is used in conjunction with the C<new_hook> method which
@@ -2153,7 +2153,7 @@ are passed to every callback executed at the hook location. So, a stub for a
 callback at the 'pretemplate' hook would look like this:
 
  sub my_hook {
-    my ($self,@args) = @_;
+    my ($c,@args) = @_;
     # ....
  }
 
@@ -2165,8 +2165,8 @@ the exact ordering.
 =cut
 
 sub call_hook {
-	my $self      = shift;
-	my $app_class = ref $self || $self;
+	my $c      = shift;
+	my $app_class = ref $c || $c;
 	my $hook      = lc shift;
 	my @args      = @_;
 
@@ -2175,9 +2175,9 @@ sub call_hook {
 	my %executed_callback;
 
 	# First, run callbacks installed in the object
-	foreach my $callback (@{ $self->{__INSTALLED_CALLBACKS}{$hook} }) {
+	foreach my $callback (@{ $c->{__INSTALLED_CALLBACKS}{$hook} }) {
 		next if $executed_callback{$callback};
-		eval { $self->$callback(@args); };
+		eval { $c->$callback(@args); };
 		$executed_callback{$callback} = 1;
 		die "Error executing object callback in $hook stage: $@" if $@;
 	}
@@ -2185,10 +2185,10 @@ sub call_hook {
 	# Next, run callbacks installed in class hierarchy
 
 	# Cache this value as a performance boost
-	$self->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
+	$c->{__CALLBACK_CLASSES} ||=  [ Class::ISA::self_and_super_path($app_class) ];
 
 	# Get list of classes that the current app inherits from
-	foreach my $class (@{ $self->{__CALLBACK_CLASSES} }) {
+	foreach my $class (@{ $c->{__CALLBACK_CLASSES} }) {
 
 		# skip those classes that contain no callbacks
 		next unless exists $INSTALLED_CALLBACKS{$hook}{$class};
@@ -2196,7 +2196,7 @@ sub call_hook {
 		# call all of the callbacks in the class
 		foreach my $callback (@{ $INSTALLED_CALLBACKS{$hook}{$class} }) {
 			next if $executed_callback{$callback};
-			eval { $self->$callback(@args); };
+			eval { $c->$callback(@args); };
 			$executed_callback{$callback} = 1;
 			die "Error executing class callback in $hook stage: $@" if $@;
 		}
