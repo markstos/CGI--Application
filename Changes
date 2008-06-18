@@ -1,4 +1,10 @@
-Revision history for Perl extension CGI::Application.
+Revision history for CGI::Application.
+
+4.10 Tue Jun 17, 2008
+
+    This release maintains the same API public from 4.06.  Changes since the
+    last stable release include documentation updates and refactors to the internal
+    of CGI::Application. 
 
     [DOCUMENTATION]
     Several documentation improvements (Mark Stosberg)
