@@ -12,6 +12,7 @@ Revision history for Perl extension CGI::Application.
       those that are not. 
     - Use and recommend "$c" instead of "$self" to cut down on
       typing for something that is abstract anyway. 
+    - Mention CGI::Application::Server for offline website development.
 
 
 4.07_03 Mon Jun 16, 2008

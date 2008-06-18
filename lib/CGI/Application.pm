@@ -1863,7 +1863,14 @@ The process of mapping these URIs to run modes is called dispatching and is
 handled by L<CGI::Application::Dispatch>. Dispatching is not required and is a
 layer you can fairly easily add to an application later.
 
-=head2 Testing
+=head2 Offline website development
+
+You can work on your CGI::Application project on your desktop or laptop without
+installing a full-featured web-server like Apache. Instead, install 
+L<CGI::Application::Server> from CPAN. After a few minutes of setup, you'll
+have your own private application server up and running. 
+
+=head2 Automated Testing
 
 There a couple of testing modules specifically made for CGI::Application.
 
