@@ -15,6 +15,7 @@ Revision history for Perl extension CGI::Application.
     - Mention CGI::Application::Server for offline website development.
     - Update the introduction to clarify that we are a proven, lightweight
       option.
+    - Removed the "experimental" flag on the error hook. 
 
 4.07_03 Mon Jun 16, 2008
 
