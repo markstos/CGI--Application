@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use Class::ISA;
 
-$CGI::Application::VERSION = '4.10';
+$CGI::Application::VERSION = '4.11';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -1579,7 +1579,7 @@ set. It can be called with no arguments just to get the hash current headers
 back.
 
 To add additional headers later without clobbering the old ones,
-see C<header_add().
+see C<header_add()>.
 
 B<IMPORTANT NOTE REGARDING HTTP HEADERS>
 

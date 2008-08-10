@@ -1,5 +1,11 @@
 Revision history for CGI::Application.
 
+4.11 Sun Aug 10, 2008
+    No code changes. 
+
+    [DOCUMENTATION]
+    - Fix POD syntax issue.
+
 4.10 Tue Jun 17, 2008
 
     This release maintains the same API public from 4.06.  Changes since the
