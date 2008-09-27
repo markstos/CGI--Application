@@ -2,6 +2,8 @@ Revision history for CGI::Application.
 
     [DOCUMENTATION]
     - typo fix (George Hartzell)
+    - Revert back to documenting the use of "$self", not $c, after community
+      feedback. 
 
     [INTERNALS]
     - Change how default run modes are declared for better compatibility
