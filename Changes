@@ -1,5 +1,14 @@
 Revision history for CGI::Application.
 
+    [FEATURES]
+    - New 'html_tmpl_class' method allows you to specify an alternative
+      HTML::Template class. This technique will eliminate the need to use 
+      a plugin for HTML::Template-compatible classes. See the docs 
+      for load_tmpl() for details. 
+      
+      Thanks to Rhesa Rozendaal for the initial patch, and Mark Stosberg for
+      documentation refinements.
+
     [DOCUMENTATION]
     - typo fix (George Hartzell)
     - Revert back to documenting the use of "$self", not $c, after community

@@ -1244,6 +1244,22 @@ and features pre-and-post features, singleton support and more.
 L<CGI::Application::Plugin::Stream> can help if you want to return a stream and
 not a file. It features a simple syntax and MIME-type detection. 
 
+B<specifying the template class with html_tmpl_class()>
+
+You may specify an API-compatible alternative to HTML::Template by overriding
+C<html_tmpl_class()>. This method should return the class name of your template
+system. The default simply returns "HTML::Template". The alternate class should
+provide at least the following parts of the HTML::Template API:
+
+ $t = $class->new( scalarref => ... );  # If you use scalarref templates
+ $t = $class->new( filehandle => ... ); # If you use filehandle templates
+ $t = $class->new( filename => ... );
+ $t->param(...); 
+
+Example implementation:
+
+ sub html_tmpl_class { 'HTML::Template::Pro' }
+
 B<The load_tmpl() callback>
 
 Plugin authors will be interested to know that you can register a callback that
@@ -1622,6 +1638,8 @@ for a cron script!
 
 =cut
 
+sub html_tmpl_class { 'HTML::Template' }
+
 sub load_tmpl {
 	my $self = shift;
 	my ($tmpl_file, @extra_params) = @_;
@@ -1655,17 +1673,19 @@ sub load_tmpl {
 
     $self->call_hook('load_tmpl', \%ht_params, \%tmpl_params, $tmpl_file);
 
-    require HTML::Template;
+    my $ht_class = $self->html_tmpl_class;
+     eval "require $ht_class;" || die "require $ht_class failed: $@";
+
     # let's check $tmpl_file and see what kind of parameter it is - we
     # now support 3 options: scalar (filename), ref to scalar (the
     # actual html/template content) and reference to FILEHANDLE
     my $t = undef;
     if ( ref $tmpl_file eq 'SCALAR' ) {
-        $t = HTML::Template->new_scalar_ref( $tmpl_file, %ht_params );
+        $t = $ht_class->new( scalarref => $tmpl_file, %ht_params );
     } elsif ( ref $tmpl_file eq 'GLOB' ) {
-        $t = HTML::Template->new_filehandle( $tmpl_file, %ht_params );
+        $t = $ht_class->new( filehandle => $tmpl_file, %ht_params );
     } else {
-        $t = HTML::Template->new_file($tmpl_file, %ht_params);
+        $t = $ht_class->new( filename => $tmpl_file, %ht_params);
     }
 
     if (keys %tmpl_params) {
