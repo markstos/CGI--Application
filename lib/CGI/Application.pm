@@ -256,10 +256,6 @@ sub cgiapp_postrun {
 
 sub setup {
 	my $c = shift;
-
-	$c->run_modes(
-		'start' => 'dump_html',
-	);
 }
 
 
@@ -491,7 +487,7 @@ sub run_modes {
 	my (@data) = (@_);
 
 	# First use?  Create new __RUN_MODES!
-	$c->{__RUN_MODES} = {} unless (exists($c->{__RUN_MODES}));
+    $c->{__RUN_MODES} = { 'start' => 'dump_html' } unless (exists($c->{__RUN_MODES}));
 
 	my $rr_m = $c->{__RUN_MODES};
 

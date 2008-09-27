@@ -1,5 +1,9 @@
 Revision history for CGI::Application.
 
+    [INTERNALS]
+    - Change how default run modes are declared for better compatibility
+      with AutoRunmode and RunmodeDeclare plugins. Thanks Rhesa via RT#39631.
+
 4.11 Sun Aug 10, 2008
     No code changes. 
 
