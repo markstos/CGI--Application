@@ -1,5 +1,8 @@
 Revision history for CGI::Application.
 
+    [DOCUMENTATION]
+    - typo fix (George Hartzell)
+
     [INTERNALS]
     - Change how default run modes are declared for better compatibility
       with AutoRunmode and RunmodeDeclare plugins. Thanks Rhesa via RT#39631.
