@@ -1,5 +1,7 @@
 Revision history for CGI::Application.
 
+4.19_1 Fri Sep 27, 2008
+
     [FEATURES]
     - New 'html_tmpl_class' method allows you to specify an alternative
       HTML::Template class. This technique will eliminate the need to use 
