@@ -1,5 +1,8 @@
 Revision history for CGI::Application.
 
+    [DOCUMENTATION]
+    - typo fix (Lyle)
+
 4.19_1 Fri Sep 27, 2008
 
     [FEATURES]
