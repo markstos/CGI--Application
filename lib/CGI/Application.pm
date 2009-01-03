@@ -464,18 +464,14 @@ sub query {
 	my $self = shift;
 	my ($query) = @_;
 
-	# We're only allowed to set a new query object if one does not yet exist!
-	unless (exists($self->{__QUERY_OBJ})) {
-		my $new_query_obj;
-
-		# If data is provided, set it!  Otherwise, create a new one.
-		if (defined($query)) {
-			$new_query_obj = $query;
-		} else {
-			$new_query_obj = $self->cgiapp_get_query();
+	# If data is provided, set it!  Otherwise, create a new one.
+	if (defined($query)) {
+		$self->{__QUERY_OBJ} = $query;
+	} else {
+		# We're only allowed to create a new query object if one does not yet exist!
+		unless (exists($self->{__QUERY_OBJ})) {
+			$self->{__QUERY_OBJ} = $self->cgiapp_get_query();
 		}
-
-		$self->{__QUERY_OBJ} = $new_query_obj;
 	}
 
 	return $self->{__QUERY_OBJ};
@@ -1345,6 +1341,12 @@ If, for some reason, you want to use your own CGI query object, the new()
 method supports passing in your existing query object on construction using
 the QUERY attribute.
 
+There are a few rare situations where you want your own query object to be 
+used after your Application Module has already been constructed. In that case 
+you can pass it to c<query()> like this:
+
+    $webapp->query($new_query_object);
+    my $q = $webapp->query(); # now uses $new_query_object
 
 =head3 run_modes()
 

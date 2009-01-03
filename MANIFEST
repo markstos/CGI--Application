@@ -27,6 +27,7 @@ t/callbacks.t
 t/mode_param_path_info.t
 t/mode_param_overwritten.t
 t/load_tmpl_hook.t
+t/query.t
 t/lib/TestApp.pm
 t/lib/TestApp2.pm
 t/lib/TestApp3.pm
@@ -39,5 +40,7 @@ t/lib/TestApp9.pm
 t/lib/TestApp10.pm
 t/lib/TestApp11.pm
 t/lib/TestApp12.pm
+t/lib/TestApp13.pm
+t/lib/TestApp14.pm
 t/lib/TestCGI.pm
 t/lib/templates/test.tmpl
