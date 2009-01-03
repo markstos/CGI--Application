@@ -1,5 +1,13 @@
 Revision history for CGI::Application.
 
+4.21 Sat Jan 3, 2009
+
+    [FEATURES]
+    - This now works: 
+            $webapp->query($new_query_object); 
+      Setting a new query object can be useful in combination with
+      CGI::Application::Server.  (Jaldhar Vyas)
+
     [DOCUMENTATION]
     - More typo fixes (Lyle)
 
