@@ -1037,7 +1037,7 @@ CGI::Application.  The cgiapp_init() method receives, as its parameters,
 all the arguments which were sent to the new() method.
 
 An example of the benefits provided by utilizing this hook is
-creating a custom "application super-class" from which which all
+creating a custom "application super-class" from which all
 your web applications would inherit, instead of CGI::Application.
 
 Consider the following:
@@ -1165,13 +1165,13 @@ modes, and when a C<param()> is a particular value.
 Override this method to retrieve the query object if you wish to use a
 different query interface instead of CGI.pm.  
 
-CGI.pm is only loaded to provided query object is only loaded if it used on a given request.
+CGI.pm is only loaded if it is used on a given request.
 
 If you can use an alternative to CGI.pm, it needs to have some compatibility
 with the CGI.pm API. For normal use, just having a compatible C<param> method
 should be sufficient. 
 
-If use the C<path_info> option to the mode_param() method, then we will call
+If you use the C<path_info> option to the mode_param() method, then we will call
 the C<path_info()> method on the query object.
 
 If you use the C<Dump> method in CGI::Application, we will call the C<Dump> and
