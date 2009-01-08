@@ -1940,7 +1940,7 @@ L<CGI::Application::Plugin::ConfigAuto> - Keeping your config details in a separ
 
 =item *
 
-L<CGI::Application::Plugin::DBH> - Provides easy management of one or more database handles and candelay making the database connection until the moment it is actually used. 
+L<CGI::Application::Plugin::DBH> - Provides easy management of one or more database handles and can delay making the database connection until the moment it is actually used. 
 
 =item *
 
