@@ -1221,7 +1221,7 @@ This will allow the HTML::Template object to be further customized:
 Note that if you want to pass extra arguments but use the default template
 name, you still need to provide a name of C<undef>:
 
-    my $tmpl_obj = $webapp->load_tmpl(undef',
+    my $tmpl_obj = $webapp->load_tmpl(undef,
          die_on_bad_params => 0,
          cache => 1
     );
