@@ -1,5 +1,12 @@
 Revision history for CGI::Application.
 
+    [FEATURES]
+    - html_tmpl_class() now allows setting an an alternate HTML::Template class
+      at a run time. This makes it easy to set the class to be
+      'HTML::Template::Dumper' for debugging. You can then see and precisely
+      test the Perl data structure that would be sent your template, taking
+      into account the template tokens that are actually set there.  (Mark Stosberg)
+
     [DOCUMENATION]
     - More typo fixes (Lyle)
 

@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use Class::ISA;
 
-$CGI::Application::VERSION = '4.21';
+$CGI::Application::VERSION = '4.30';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -21,6 +21,7 @@ my %INSTALLED_CALLBACKS = (
 
 sub new {
 	my $class = shift;
+
 	my @args = @_;
 
 	if (ref($class)) {
@@ -1242,9 +1243,12 @@ not a file. It features a simple syntax and MIME-type detection.
 
 B<specifying the template class with html_tmpl_class()>
 
-You may specify an API-compatible alternative to HTML::Template by overriding
-C<html_tmpl_class()>. This method should return the class name of your template
-system. The default simply returns "HTML::Template". The alternate class should
+You may specify an API-compatible alternative to L<HTML::Template> by setting
+a new C<html_tmpl_class()>:
+
+  $self->html_tmpl_class('HTML::Template::Dumper');
+
+The default is "HTML::Template". The alternate class should
 provide at least the following parts of the HTML::Template API:
 
  $t = $class->new( scalarref => ... );  # If you use scalarref templates
@@ -1252,9 +1256,23 @@ provide at least the following parts of the HTML::Template API:
  $t = $class->new( filename => ... );
  $t->param(...); 
 
-Example implementation:
+Here's an example case allowing you to precisely test what's sent to your
+templates:
 
- sub html_tmpl_class { 'HTML::Template::Pro' }
+    $ENV{CGI_APP_RETURN_ONLY} = 1;
+    my $webapp = WebApp->new;
+       $webapp->html_tmpl_class('HTML::Template::Dumper'); 
+    my $out_str = $webapp->run;
+    my $tmpl_href = eval "$out_str";
+
+    # Now Precisely test what would be set to the template
+    is ($tmpl_href->{pet_name}, 'Daisy', "Daisy is sent template");
+
+This is a powerful technique because HTML::Template::Dumper loads and considers
+the template file would actually be used. If the 'pet_name' token was missing
+in the template, the above test would fail. So, you are testing both your code
+and your templates in a much more precise way than using simple regular
+expressions to see if the string "Daisy" appeared somewhere on the page.
 
 B<The load_tmpl() callback>
 
@@ -1640,7 +1658,19 @@ for a cron script!
 
 =cut
 
-sub html_tmpl_class { 'HTML::Template' }
+sub html_tmpl_class { 
+    my $self = shift;
+    my $tmpl_class = shift;
+
+	# First use?  Create new __ERROR_MODE
+	$self->{__HTML_TMPL_CLASS} = 'HTML::Template' unless (exists($self->{__HTML_TMPL_CLASS}));
+
+    if (defined $tmpl_class) {
+        $self->{__HTML_TMPL_CLASS} = $tmpl_class;
+    }
+
+    return $self->{__HTML_TMPL_CLASS};
+}
 
 sub load_tmpl {
 	my $self = shift;
