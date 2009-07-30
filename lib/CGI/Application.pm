@@ -1269,7 +1269,7 @@ templates:
     is ($tmpl_href->{pet_name}, 'Daisy', "Daisy is sent template");
 
 This is a powerful technique because HTML::Template::Dumper loads and considers
-the template file would actually be used. If the 'pet_name' token was missing
+the template file that would actually be used. If the 'pet_name' token was missing
 in the template, the above test would fail. So, you are testing both your code
 and your templates in a much more precise way than using simple regular
 expressions to see if the string "Daisy" appeared somewhere on the page.
