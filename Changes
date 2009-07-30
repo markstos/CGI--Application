@@ -1,6 +1,6 @@
 Revision history for CGI::Application.
 
-4.30 Wed Jul 29, 2009
+4.31 Wed Jul 29, 2009
 
     [FEATURES]
     - html_tmpl_class() now allows setting an an alternate HTML::Template class
@@ -9,7 +9,7 @@ Revision history for CGI::Application.
       test the Perl data structure that would be sent your template, taking
       into account the template tokens that are actually set there.  (Mark Stosberg)
 
-    [DOCUMENATION]
+    [DOCUMENTATION]
     - More typo fixes (Lyle)
 
 4.21 Sat Jan 3, 2009
