@@ -196,21 +196,32 @@ sub run {
 	# Call cgiapp_postrun() hook
 	$self->call_hook('postrun', \$body);
 
-	# Set up HTTP headers
-	my $headers = $self->_send_headers();
+    my $return_value;
+    if ($self->{__IS_PSGI}) {
+        my ($status, $headers) = $self->_send_psgi_headers();
+        $return_value = [ $status, $headers, [ $body ]];
+    }
+    else {
+        # Set up HTTP headers non-PSGI responses
+        my $headers = $self->_send_headers();
 
-	# Build up total output
-	my $output  = $headers.$body;
-
-	# Send output to browser (unless we're in serious debug mode!)
-	unless ($ENV{CGI_APP_RETURN_ONLY}) {
-		print $output;
-	}
+        # Build up total output
+        $return_value  = $headers.$body;
+        print $return_value unless $ENV{CGI_APP_RETURN_ONLY};
+    }
 
 	# clean up operations
 	$self->call_hook('teardown');
 
-	return $output;
+	return $return_value;
+}
+
+sub run_as_psgi {
+    my $self = shift;
+    $self->{__IS_PSGI} = 1;
+
+    # Run doesn't officially support any args, but pass them through in case some sub-class uses them.
+    return $self->run(@_);
 }
 
 
@@ -601,6 +612,7 @@ sub get_current_runmode {
 ###########################
 
 
+# return headers as a string
 sub _send_headers {
 	my $self = shift;
 	my $q    = $self->query;
@@ -611,6 +623,20 @@ sub _send_headers {
       : $type eq 'header'   ? $q->header  ( $self->header_props )
       : $type eq 'none'     ? ''
       : croak "Invalid header_type '$type'"
+}
+
+# return a 2 element array modeling the first PSGI redirect values: status code and arrayref of header pairs
+sub _send_psgi_headers {
+	my $self = shift;
+	my $q    = $self->query;
+	my $type = $self->header_type;
+
+    return
+        $type eq 'redirect' ? $q->psgi_redirect( $self->header_props )
+      : $type eq 'header'   ? $q->psgi_header  ( $self->header_props )
+      : $type eq 'none'     ? ''
+      : croak "Invalid header_type '$type'"
+
 }
 
 
@@ -971,7 +997,50 @@ data returned is print()'ed to STDOUT and to the browser.  If
 the specified mode is not found in the run_modes() table, run() will
 croak().
 
-=head2 Methods to possibly override 
+=head3 run_as_psgi
+
+ my $psgi_aref = $webapp->run_as_psgi;
+
+Just like C<< run >>, but prints no output and returns the data structure
+required by the L<PSGI> specification. Use this if you want to run the
+application on top of a PSGI-compatible handler, such as L<Plack> provides.
+
+If you are just getting started, just use C<< run() >>. It's easy to switch to using
+C<< run_as_psgi >> later.
+
+Why use C<< run_as_psgi() >>? There are already solutions to run
+CGI::Application-based projects on several web servers with dozens of plugins.
+Running as a PSGI-compatible application provides the ability to run on
+additional PSGI-compatible servers, as well as providing access to all of the
+"Middleware" solutions available through the L<Plack> project.
+
+The structure returned is an arrayref, containing the status code, an arrayref
+of header key/values and an arrayref containing the body.
+
+ [ 200, [ 'Content-Type' => 'text/html' ], [ $body ] ]
+
+By default the body is a single scalar, but plugins may modify this to return
+other value PSGI values.  See L<PSGI/"The Response"> for details about the
+response format.
+
+Note that calling C<< run_as_psgi >> only handles the I<output> portion of the
+PSGI spec. to handle the input, you need to use a CGI.pm-like query object that
+is PSGI-compliant, such as L<CGI::PSGI>. This query object must provide L<psgi_header>
+and L<psgi_redirect> methods.
+
+The final result might look like this:
+
+    use WebApp;
+    use CGI::PSGI;
+
+    my $handler = sub {
+        my $env = shift;
+        my $webapp = WebApp->new({ QUERY => CGI::PSGI->new($env) });
+        $webapp->run_as_psgi;
+    };
+
+
+=head2 Methods to possibly override
 
 CGI::Application implements some methods which are expected to be overridden
 by implementing them in your sub-class module.  These methods are as follows:

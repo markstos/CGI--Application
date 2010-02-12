@@ -28,6 +28,7 @@ t/mode_param_path_info.t
 t/mode_param_overwritten.t
 t/load_tmpl_hook.t
 t/query.t
+t/run_as_psgi.t
 t/lib/TestApp.pm
 t/lib/TestApp2.pm
 t/lib/TestApp3.pm

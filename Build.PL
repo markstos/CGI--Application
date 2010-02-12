@@ -12,6 +12,9 @@ my $build = Module::Build->new
 	   'Carp'		    => 0,
        'Class::ISA'     => 0,
        },
+    recommends => {
+        CGI::PSGI       => 0.09, # If you want to use run_as_psgi()
+    },
    'dist_author'        => [
             'Jesse Erlbaum <jesse@erlbaum.net>',
             'Mark Stosberg <mark@summersault.com>',
