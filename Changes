@@ -1,5 +1,11 @@
 Revision history for CGI::Application.
 
+4.32_01 Sat Feb 13, 2010
+    [FEATURES]
+    - A new run_as_psgi() method is being proposed. Working code are docs are
+      included in this release. Comments on the possible feature are being
+      sought before February 19th and should be sent to the mailing list.
+
 4.31 Wed Jul 29, 2009
 
     [FEATURES]
