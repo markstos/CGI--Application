@@ -1,11 +1,9 @@
-# $Id: Build.PL,v 1.2 2004/02/14 02:09:17 mark Exp $
 use Module::Build;
 my $build = Module::Build->new
   (
    module_name => 'CGI::Application',
    license => 'perl',
    requires => {
-       # For Moved vs Found change
        'CGI'            => 0, 
        'HTML::Template' => 0,
        'Test::More'     => 0.47,
