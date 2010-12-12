@@ -216,6 +216,24 @@ sub run {
 	return $return_value;
 }
 
+
+sub psgi_app {
+    my $class = shift;
+    my $args_to_new = shift;
+
+    return sub {
+        my $env = shift;
+
+        if (not defined $args_to_new->{QUERY}) {
+            require CGI::PSGI;
+            $args_to_new->{QUERY} = CGI::PSGI->new($env);
+        }
+
+        my $webapp = $class->new($args_to_new);
+        return $webapp->run_as_psgi;
+    }
+}
+
 sub run_as_psgi {
     my $self = shift;
     $self->{__IS_PSGI} = 1;
@@ -697,6 +715,10 @@ CGI::Application - Framework for building reusable web-applications
   my $webapp = WebApp->new();
   $webapp->run();
 
+  ### Or, in a PSGI file, webapp.psgi
+  use WebApp;
+  WebApp->psgi_app();
+
 =head1 INTRODUCTION
 
 CGI::Application makes it easier to create sophisticated, high-performance,
@@ -997,7 +1019,26 @@ data returned is print()'ed to STDOUT and to the browser.  If
 the specified mode is not found in the run_modes() table, run() will
 croak().
 
-=head3 run_as_psgi
+=head2 PSGI support
+
+CGI::Application offers native L<PSGI> support. The default query object
+for this is L<CGI::PSGI>, which simply wrappers CGI.pm to provide PSGI
+support to it.
+
+=head3 psgi_app()
+
+ $psgi_coderef = WebApp->psgi_app({ ... args to new() ... });
+
+The simplest way to create and return a PSGI-compatible coderef. Pass in
+arguments to a hashref just as would to new. This return a PSGI-compatible
+coderef, using L<CGI:::PSGI> as the query object. To use a different query
+object, construct your own object using C<< run_as_psgi() >>, as shown below.
+
+It's possible that we'll change from CGI::PSGI to a different-but-compatible
+query object for PSGI support in the future, perhaps if CGI.pm adds native
+PSGI support.
+
+=head3 run_as_psgi()
 
  my $psgi_aref = $webapp->run_as_psgi;
 
