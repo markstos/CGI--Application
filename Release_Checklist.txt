@@ -1,11 +1,11 @@
 * Update $VERSION in Application.pm
 * Update Changes file
 * Is the POD up to date?
-* Have any new files been added to darcs?
+* Have any new files been added to git?
 * Has the MANIFEST been updated to include any new files?
 * Make dist and check on variety of machines
-* If done, tag release in darcs
-  - E.g., for version 3.2: "darcs tag v3.2'"
+* If done, tag release in git
+  - E.g., for version 3.2: "git tag v3.2'"
 * Release via PAUSE
 * Make announcements
   - CGI::Application list:  cgiapp@lists.erlbaum.net

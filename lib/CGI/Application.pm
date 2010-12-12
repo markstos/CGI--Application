@@ -2418,10 +2418,9 @@ some people involved with the project there.
 
 B<Source Code>
 
-This project is managed using the darcs source control system (
-http://www.darcs.net/ ). The darcs archive is here:
-http://mark.stosberg.com/darcs_hive/cgi-app
+This project is managed using git and is available on Github:
 
+    https://github.com/markstos/CGI--Application
 
 =head1 SEE ALSO
 

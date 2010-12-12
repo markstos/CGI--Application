@@ -1,4 +1,9 @@
 Revision history for CGI::Application.
+    
+    [INTERNAL]
+    - source control management was moved from darcs to git. Those who prefer
+      darcs are are more familiar with it are advised to try the darcs-git.py
+      wrapper for git.
 
 4.32_01 Sat Feb 13, 2010
     [FEATURES]
