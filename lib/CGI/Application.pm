@@ -1665,17 +1665,24 @@ been set.
 
 =head3 header_props()
 
-    $webapp->header_props(-type=>'image/gif',-expires=>'+3d');
+    # Set a complete set of headers
+    %set_headers = $webapp->header_props(-type=>'image/gif',-expires=>'+3d');
+
+    # clobber / reset all headers
+    %set_headers = $webapp->header_props({});
+
+    # Just retrieve the headers 
+    %set_headers = $webapp->header_props(); 
 
 The C<header_props()> method expects a hash of CGI.pm-compatible
 HTTP header properties.  These properties will be passed directly
-to CGI.pm's C<header()> or C<redirect()> methods.  Refer to L<CGI>
-for exact usage details.
+to the C<header()> or C<redirect()> methods of the query() object. Refer
+to the docs of your query object for details. (Be default, it's L<CGI>.pm).
 
-Calling header_props any arguments will clobber any existing headers that have
+Calling header_props with an empty hashref clobber any existing headers that have
 previously set.
 
-C<header_props()> return a hash of all the headers that have currently been
+C<header_props()> returns a hash of all the headers that have currently been
 set. It can be called with no arguments just to get the hash current headers
 back.
 

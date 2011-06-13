@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 6;
+use Test::More tests => 9;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -61,5 +61,34 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
     qr{^Expires: }im,
     "headed added via hashref arg to header_add",
   );
+}
+
+{
+  my $app = CGI::Application->new;
+
+  $app->header_props({ -type => 'banana/ripe' });
+
+  like(
+    $app->run,
+    qr{Content-type: banana/ripe}i,
+    "headed added via hashref arg to header_props",
+  );
+
+  $app->header_props();
+
+  like(
+    $app->run,
+    qr{Content-type: banana/ripe}i,
+    "Calling with no args is safe",
+  );
+
+  $app->header_props({});
+
+  unlike(
+    $app->run,
+    qr{Content-type: banana/ripe}i,
+    "Calling with an empty hashref clobbers existing data",
+  );
+
 }
 
