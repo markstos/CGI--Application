@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use Class::ISA;
 
-$CGI::Application::VERSION = '4.32_1';
+$CGI::Application::VERSION = '4.50';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -1030,7 +1030,7 @@ support to it.
  $psgi_coderef = WebApp->psgi_app({ ... args to new() ... });
 
 The simplest way to create and return a PSGI-compatible coderef. Pass in
-arguments to a hashref just as would to new. This return a PSGI-compatible
+arguments to a hashref just as would to new. This returns a PSGI-compatible
 coderef, using L<CGI:::PSGI> as the query object. To use a different query
 object, construct your own object using C<< run_as_psgi() >>, as shown below.
 

@@ -1,5 +1,15 @@
 Revision history for CGI::Application.
 
+4.50 Thu Jun 16, 2011
+
+    [FEATURES]
+    Better PSGI support in the core
+    - run_as_psgi() works like run, but directly returns the expected PSGI response structure
+    - psgi_app() wraps up all the PSGI bits to call and run the application and return a PSGI 
+      code ref:
+
+        $psgi_coderef = WebApp->psgi_app({ ... args to new() ... });
+
     [DOCUMENTATION]
     - docs for header_props() were improved
     
@@ -8,12 +18,8 @@ Revision history for CGI::Application.
       darcs are are more familiar with it are advised to try the darcs-git.py
       wrapper for git.
 
+    - The test file psgi_app.t is missing from this release and will be added later. 
 
-4.32_01 Sat Feb 13, 2010
-    [FEATURES]
-    - A new run_as_psgi() method is being proposed. Working code are docs are
-      included in this release. Comments on the possible feature are being
-      sought before February 19th and should be sent to the mailing list.
 
 4.31 Wed Jul 29, 2009
 
