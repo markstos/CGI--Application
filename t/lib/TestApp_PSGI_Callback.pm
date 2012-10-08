@@ -12,8 +12,8 @@ sub callback {
     my $self = shift;
 
     $self->header_props(-type => 'text/plain');
-	$self->psgi_streaming_callback(sub {
-	   my $writer = shift;
+    $self->psgi_streaming_callback(sub {
+       my $writer = shift;
        foreach my $i (1..10) {
            #sleep 1;
            $writer->write("check $i: " . time . "\n");
