@@ -1101,6 +1101,25 @@ The final result might look like this:
         $webapp->run_as_psgi;
     };
 
+=head3 psgi_streaming_callback()
+
+Return a streaming body in a psgi.streaming environment, e.g. if downloading large files.  Method takes a subref which is passed to the plack handler.  The subroutine will receive as a single argument an object that implements write and close methods.
+
+For example, a run mode to return a simple streaming response might be implemented like this:
+
+	sub callback_rm {
+	    my $self = shift;
+
+	    $self->header_props(-type => 'text/plain');
+	    $self->psgi_streaming_callback(sub {
+	       my $writer = shift;
+	       foreach my $i (1..10) {
+	           #sleep 1;
+	           $writer->write("check $i: " . time . "\n");
+			}
+		});
+		return undef;
+	}
 
 =head2 Methods to possibly override
 
