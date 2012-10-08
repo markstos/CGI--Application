@@ -200,16 +200,16 @@ sub run {
     if ($self->{__IS_PSGI}) {
         my ($status, $headers) = $self->_send_psgi_headers();
 
-		if (my $callback = $self->psgi_streaming_callback) {
-			$return_value = sub {
-				my $respond = shift;
-	            my $writer = $respond->([ $status, $headers ]);
- 	            &$callback($writer);
-			};
-		}
-		else {
-	        $return_value = [ $status, $headers, [ $body ]];
-		}
+        if (my $callback = $self->psgi_streaming_callback) {
+            $return_value = sub {
+                my $respond = shift;
+                my $writer = $respond->([ $status, $headers ]);
+                &$callback($writer);
+            };
+        }
+        else {
+            $return_value = [ $status, $headers, [ $body ]];
+        }
     }
     else {
         # Set up HTTP headers non-PSGI responses
