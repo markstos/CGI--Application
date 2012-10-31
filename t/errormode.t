@@ -8,9 +8,6 @@ BEGIN {
 	use_ok('TestApp12');
 };
 
-# Prevent output to STDOUT
-$ENV{CGI_APP_RETURN_ONLY} = 1;
-
 # Usage of error_mode will catch a runtime failure
 {
     my $app = TestApp11->new;

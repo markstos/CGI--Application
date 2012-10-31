@@ -1,14 +1,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
-
-$ENV{'CGI_APP_RETURN_ONLY'} = 1; # don't print
+use Test::More;
+use Plack::Test;
+use HTTP::Request::Common;
 
 {
     package WithStartIssue;
-
-    use base 'CGI::Application';
+    use Any::Moose;
+    extends 'PSGI::Application';
 
     # register custom "start" run mode.
     # this is what CAP::AutoRunmode and CAP::RunmodeDeclare do.
@@ -20,12 +20,17 @@ $ENV{'CGI_APP_RETURN_ONLY'} = 1; # don't print
     sub my_start { return 'my start' }
 
     # don't output a header
-    sub cgiapp_prerun {
+    sub prerun {
         shift->header_type('none');
     }
 }
 
-my $issue = WithStartIssue->new;
-my $out = $issue->run;
+test_psgi
+    app => WithStartIssue->psgi_app,
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/');
+        is($res->content,'my start');
+    };
 
-is $out, 'my start';
+done_testing();

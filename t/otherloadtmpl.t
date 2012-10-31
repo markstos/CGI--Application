@@ -1,14 +1,9 @@
-use Test::More tests=>3;
+use Test::More;
 
 # Include the test hierarchy
 use lib 't/lib';
+use TestApp13;
 
-BEGIN {
-	use_ok('TestApp13');
-};
-
-# Prevent output to STDOUT
-$ENV{CGI_APP_RETURN_ONLY} = 1;
 
 # testing filehandle template
 {
@@ -24,3 +19,5 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
     like($output, qr/HELLO/, "scalar template works");
 }
 
+
+done_testing;

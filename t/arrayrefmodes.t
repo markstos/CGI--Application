@@ -1,49 +1,40 @@
-use Test::More tests => 7;
+use Test::More;
 
 use CGI;
+use CGI::PSGI;
 
 # Include the test hierarchy
 use lib 't/lib';
 
-# Can we even use this module?
-use_ok('TestApp8');
+use TestApp8;
+use Plack::Test;
+use HTTP::Request::Common;
 
-# Prevent output to STDOUT
-$ENV{CGI_APP_RETURN_ONLY} = 1;
+test_psgi
+    app => TestApp8->psgi_app(),
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/');
+        like($res->header('Content-Type'), qr{text/html});
+        like($res->content,qr/Hello\ World\:\ testcgi1\_mode\ OK/);
+    };
 
-# Test array-ref mode
-{
-	my $ta_obj = TestApp8->new();
-	my $output = $ta_obj->run();
+test_psgi
+    app => TestApp8->psgi_app(),
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/?rm=testcgi2_mode');
+        like($res->header('Content-Type'), qr{text/html});
+        like($res->content,qr/Hello\ World\:\ testcgi2\_mode\ OK/);
+    };
 
-	# Did the run mode work?
-	like($output, qr/^Content\-Type\:\ text\/html/);
-	like($output, qr/Hello\ World\:\ testcgi1\_mode\ OK/);
-}
-
-
-{
-	my $q = CGI->new({rm=>testcgi2_mode});
-	my $ta_obj = TestApp8->new(QUERY=>$q);
-	my $output = $ta_obj->run();
-
-	# Did the run mode work?
-	like($output, qr/^Content\-Type\:\ text\/html/);
-	like($output, qr/Hello\ World\:\ testcgi2\_mode\ OK/);
-}
-
-
-{
-	my $q = CGI->new({rm=>testcgi3_mode});
-	my $ta_obj = TestApp8->new(QUERY=>$q);
-	my $output = $ta_obj->run();
-
-	# Did the run mode work?
-	like($output, qr/^Content\-Type\:\ text\/html/);
-	like($output, qr/Hello\ World\:\ testcgi3\_mode\ OK/);
-}
+# test_psgi
+#     app => TestApp8->psgi_app(),
+#     client => sub {
+#         my $res = $cb->(GET '/?rm=testcgi3_mode');
+#         like($res->header('Content-Type'), qr{text/html});
+#         like($res->content,qr/Hello\ World\:\ testcgi3\_mode\ OK/);
+#     };
 
 
-###############
-####  EOF  ####
-###############
+done_testing();

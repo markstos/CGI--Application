@@ -1,13 +1,17 @@
 
 use strict;
-use Test::More tests => 6;
+use Test::More;
+use Plack::Test;
+use HTTP::Request::Common;
+use HTTP::Response;
+use HTTP::Message::PSGI;
+use Try::Tiny;
+use CGI::PSGI;
 
-BEGIN{use_ok('CGI::Application');}
-
-$ENV{CGI_APP_RETURN_ONLY} = 1;
+use PSGI::Application;
 
 {
-  my $app = CGI::Application->new;
+  my $app = PSGI::Application->new;
 
   $app->header_type('none');
 
@@ -25,41 +29,54 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 }
 
 {
-  my $app = CGI::Application->new;
+  my $app = PSGI::Application->new;
 
-  eval { $app->header_props(123); };
+  try { $app->header_props(123); }
+  finally {
+      my $err = shift;
+      like(
+          $err,
+          qr/odd number/i,
+          "croak on odd number of non-ref args to header_props",
+      );
 
-  like(
-    $@,
-    qr/odd number/i,
-    "croak on odd number of non-ref args to header_props",
-  );
+  };
 
-  eval { $app->header_add(123); };
 
-  like(
-    $@,
-    qr/odd number/i,
-    "croak on odd number of non-ref args to header_add",
-  );
+  try { $app->header_add(123); }
+  finally {
+      my $err = shift;
+      like(
+          $err,
+          qr/odd number/i,
+          "croak on odd number of non-ref args to header_add",
+      );
+  };
 }
 
-{
-  my $app = CGI::Application->new;
+test_psgi
+    app => sub {
+        my $env = shift;
+        my $app = PSGI::Application->new( REQUEST => CGI::PSGI->new($env) );
+        $app->header_props( -type => 'banana/ripe' );
+        $app->header_add( -expires => '1d' );
+        return $app->run;
+    },
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/');
+        like(
+          $res->header('Content-Type'),
+          qr{banana/ripe},
+          "headed added via hashref arg to header_props",
+        );
 
-  $app->header_props({ -type => 'banana/ripe' });
-  $app->header_add({ -expires => '1d' });
+        like(
+          $res->as_string,
+          qr{^Expires: }im,
+          "headed added via hashref arg to header_add",
+        );
+    };
 
-  like(
-    $app->run,
-    qr{Content-type: banana/ripe}i,
-    "headed added via hashref arg to header_props",
-  );
 
-  like(
-    $app->run,
-    qr{^Expires: }im,
-    "headed added via hashref arg to header_add",
-  );
-}
-
+done_testing();

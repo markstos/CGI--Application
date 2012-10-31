@@ -1,82 +1,87 @@
-use Test::More tests => 10;
+use Test::More;
 
-# Need CGI.pm for tests
 use CGI;
+use CGI::PSGI;
 
 # Include the test hierarchy
 use lib 't/lib';
 
-# Can we even use this module?
-use_ok('TestApp6');
+use Plack::Test;
+use HTTP::Request::Common;
+use TestApp6;
+use CGI::PSGI;
 
-# Prevent output to STDOUT
-$ENV{CGI_APP_RETURN_ONLY} = 1;
+# Test basic prerun() and get_current_runmode()
+test_psgi
+    app => sub { 
+        my $env = shift;
+        my $app = TestApp6->new( REQUEST => CGI::PSGI->new($env) );
+        my $aref = $app->run;
+        # Did the prerun work?
+        is($app->param('PRERUN_RUNMODE'), 'prerun_test');
 
-# Test basic cgiapp_prerun() and get_current_runmode()
+        # get_current_runmode() working?
+        is($app->get_current_runmode(), 'prerun_test');
+
+        return $aref;
+    }, 
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/');
+        like($res->header('Content-Type'), qr{text/html});
+	    like($res->content, qr/Hello\ World\:\ prerun\_test\ OK/);
+    };
+
+# # Test basic prerun_mode()
+test_psgi
+    app => sub { 
+        my $env = shift;
+        my $app = TestApp6->new( REQUEST => CGI::PSGI->new($env) );
+        my $aref = $app->run;
+
+        # get_current_runmode() working?
+        is($app->get_current_runmode(), 'new_prerun_mode_test');
+
+        return $aref;
+    }, 
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/?rm=prerun_mode_test');
+        like($res->header('Content-Type'), qr{text/html});
+	    like($res->content, qr/Hello\ World\:\ new\_prerun\_mode\_test\ OK/);
+    };
+
+# # Test fail-case for prerun_mode()
+test_psgi
+    app => sub { 
+        my $env = shift;
+        my $app = TestApp6->new( REQUEST => CGI::PSGI->new($env) );
+        my $aref = $app->run;
+
+ 	    eval {
+ 	    	$aref = $app->run();
+ 	    };
+ 
+ 	    my $eval_error = $@;
+ 
+ 	    # Should result in an error
+ 	    like($eval_error, qr/prerun\_mode\(\) can only be called within cgiapp\_prerun\(\)/);
+
+        return $aref;
+    }, 
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET '/?rm=illegal_prerun_mode');
+    };
+
+# # Test fail-case for prerun_mode() called from setup()
+$ENV{PRERUN_IN_SETUP} = 1;
 {
-	my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
-	my $output = $ta_obj->run();
-
-	# Did the run mode work?
-	like($output, qr/^Content\-Type\:\ text\/html/);
-	like($output, qr/Hello\ World\:\ prerun\_test\ OK/);
-
-	# Did the cgiapp_prerun work?
-	is($ta_obj->param('PRERUN_RUNMODE'), 'prerun_test');
-
-	# get_current_runmode() working?
-	is($ta_obj->get_current_runmode(), 'prerun_test');
-}
-
-
-# Test basic prerun_mode()
-{
-	local($^W) = undef;  # Temporarily disable warnings
-
-	my $ta_obj = TestApp6->new(QUERY=>CGI->new('rm=prerun_mode_test'));
-	my $output = $ta_obj->run();
-
-	# Did the run mode work?
-	like($output, qr/^Content\-Type\:\ text\/html/);
-
-	# We will be in mode 'new_prerun_mode_test' if everything is working
-	like($output, qr/Hello\ World\:\ new\_prerun\_mode\_test\ OK/);
-
-	# get_current_runmode() working?
-	is($ta_obj->get_current_runmode(), 'new_prerun_mode_test');
-}
-
-
-# Test fail-case for prerun_mode()
-{
-	my $ta_obj = TestApp6->new(QUERY=>CGI->new('rm=illegal_prerun_mode'));
-
-	eval {
-		my $output = $ta_obj->run();
-	};
-
+	eval { TestApp6->new };
 	my $eval_error = $@;
 
 	# Should result in an error
 	like($eval_error, qr/prerun\_mode\(\) can only be called within cgiapp\_prerun\(\)/);
 }
 
-
-# Test fail-case for prerun_mode() called from setup()
-{
-	$ENV{PRERUN_IN_SETUP} = 1;
-
-	eval {
-		my $ta_obj = TestApp6->new(QUERY=>CGI->new(""));
-	};
-
-	my $eval_error = $@;
-
-	# Should result in an error
-	like($eval_error, qr/prerun\_mode\(\) can only be called within cgiapp\_prerun\(\)/);
-}
-
-
-###############
-####  EOF  ####
-###############
+done_testing();

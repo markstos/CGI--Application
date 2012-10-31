@@ -1,8 +1,6 @@
 package TestApp9;
-use strict;
-use CGI::Application;
-@TestApp9::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
     my $self = shift;
@@ -14,21 +12,22 @@ sub setup {
 }
 
 
-sub cgiapp_postrun {
+sub postrun {
     my $self = shift;
     my $output_ref = shift;
 
+
     my $rm = $self->get_current_runmode();
 
-    if ($rm eq "postrun_body") {
+    warn "in postrun: $rm";
 
+    if ($rm eq 'postrun_body') {
         $$output_ref .= "\npostrun was here";
-
-    } elsif ($rm eq "postrun_header") {
-
-        $self->header_type("redirect");
-        $self->header_props(-url=>"postrun.html");
-
+    } 
+    elsif ($rm eq 'postrun_header') {
+        warn "rm eq postrun headers!";
+        $self->header_type('redirect');
+        $self->header_props(-url=>'postrun.html');
     }
 }
 

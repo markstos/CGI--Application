@@ -1,29 +1,31 @@
-use Test::More tests=>2;
+
+use Test::More;
+use Plack::Test;
+use HTTP::Request::Common;
 
 # Include the test hierarchy
 use lib 't/lib';
 
-use CGI;
+use CGI::PSGI;
 use TestCGI;
 use TestApp9;
 
-# Prevent output to STDOUT
-$ENV{CGI_APP_RETURN_ONLY} = 1;
 
 # Query object may be initialized via new()
 # to a non-CGI.pm object type
-{
-    my $cgi_obj = TestCGI->new();
-    my $testapp = TestApp9->new(QUERY=>$cgi_obj);
-    my $query_back = $testapp->query();
-    isa_ok($query_back, "TestCGI");
-}
+test_psgi
+    app => sub {
+        my $env = shift;
+        my $app = TestApp9->new( REQUEST => TestCGI->new($env) );
+        isa_ok($app->req, 'TestCGI');
+        return $app->run;
+    },
+    client => sub {
+        my $cb = shift;
 
+        # # $CGIApp->header_type('none') returns only content.
+        my $res = $cb->(GET '/?rm=noheader');
+        unlike($res->as_string, qr/^Content\-Type\:\ text\/html/, "Headers 'none'");
+    };
 
-# $CGIApp->header_type('none') returns only content.
-{
-    my $q = CGI->new({rm=>"noheader"});
-    my $app = TestApp9->new(QUERY=>$q);
-    my $output = $app->run();
-    unlike($output, qr/^Content\-Type\:\ text\/html/, "Headers 'none'");
-}
+done_testing;

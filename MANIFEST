@@ -1,11 +1,6 @@
-lib/CGI/Application.pm
-lib/CGI/Application/Mailform.pm
+lib/PSGI/Application.pm
 ARTISTIC
 Changes
-Examples/Mailform/README
-Examples/Mailform/mailform.cgi
-Examples/Mailform/mailform.html
-Examples/Mailform/thankyou.html
 GPL
 MANIFEST
 META.yml
@@ -13,10 +8,10 @@ Build.PL
 Makefile.PL
 README
 t/basic.t
+t/class_isa_vs_moose.t
 t/default_runmode.t
-t/mailform.t
 t/prerun.t
-t/getquery.t
+t/get_req.t
 t/header_props.t
 t/arrayrefmodes.t
 t/enhancement31.t
@@ -26,8 +21,7 @@ t/errormode.t
 t/callbacks.t
 t/mode_param_path_info.t
 t/mode_param_overwritten.t
-t/load_tmpl_hook.t
-t/query.t
+t/req.t
 t/run_as_psgi.t
 t/psgi_app.t
 t/lib/TestApp.pm
@@ -46,3 +40,4 @@ t/lib/TestApp13.pm
 t/lib/TestApp14.pm
 t/lib/TestCGI.pm
 t/lib/templates/test.tmpl
+META.json

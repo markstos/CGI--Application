@@ -1,45 +1,24 @@
-
 package TestApp4;
-
-use strict;
-
-
-use CGI::Application;
-@TestApp4::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
-	my $self = shift;
+    my $self = shift;
 
-	$self->start_mode('subref_test');
-
-	$self->run_modes(
-		'subref_test' => \&subref_test,
-		'AUTOLOAD' => \&autoload_meth
-	);
+    $self->start_mode('subref_test');
+    $self->run_modes(
+        'subref_test' => \&subref_test,
+        'AUTOLOAD' => \&autoload_meth
+    );
 }
 
 
-
-
-############################
-####  RUN MODE METHODS  ####
-############################
-
-sub subref_test {
-	my $self = shift;
-
-	my $output = "Hello World: subref_test OK";
-
-	return \$output;
-}
-
+sub subref_test { \"Hello World: subref_test OK" };
 
 sub autoload_meth {
-	my $self = shift;
-	my $real_rm = shift;
-
-	return "Hello World: $real_rm OK";
+    my $self = shift;
+    my $real_rm = shift;
+    return "Hello World: $real_rm OK";
 }
 
 

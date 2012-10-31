@@ -2,19 +2,20 @@
 # didn't work if it was set in a sub-class. 
 
 package My::CA;
-use base 'CGI::Application';
+use base 'PSGI::Application';
 
-sub cgiapp_init {
+sub init {
     my $self = shift;
     $self->mode_param('mine');
 }
 
 
 package main;
-use Test::More tests => 1;
+use Test::More;
 
 {
     my $app = My::CA->new();
     is( $app->mode_param, 'mine', "setting mode_param in a sub-class works");
 }
 
+done_testing();

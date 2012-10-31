@@ -2,16 +2,14 @@
 use strict;
 use Test::More tests => 6;
 
-BEGIN{use_ok('CGI::Application');}
+BEGIN{use_ok('PSGI::Application');}
 
 # Need CGI.pm for tests
 use CGI;
 
-$ENV{CGI_APP_RETURN_ONLY} = 1;
-
 {
-	my $app = CGI::Application->new();
-	isa_ok($app, 'CGI::Application');
+	my $app = PSGI::Application->new();
+	isa_ok($app, 'PSGI::Application');
 
   is($app->mode_param, "rm", "default mode_param is rm");
   is($app->mode_param(''), "rm", "we can't change it to q{}");

@@ -1,13 +1,9 @@
 
 package TestApp2;
-
-use strict;
-
-use TestApp;
-@TestApp2::ISA = qw(TestApp);
+use Any::Moose;
+extends 'TestApp';
 
 # Test sub-inheritance
-
 
 1;
 

@@ -1,4 +1,68 @@
-Revision history for CGI::Application.
+Revision history for PSGI::Application.
+
+4.90_01 Sat Feb 13, 2010
+our $VERSION = '4.90_01';
+
+
+   - renamed CGI/PSGI
+   - Eliminated Mailform app
+   - s/foreach /for / 
+   - removed dump() and dump_html(). 
+     These should be provided through a development plugin and documented in "compat" notes.
+   - run_as_psgi() is renamed to "run" and the non-PSGI code path is eliminated. 
+   - _send_headers() is removed
+   - s/query/req/ throughout the code base. Referring to the incoming data stream
+     as an "HTTP request" is both clear and standard.
+     We haven't had a "response method" before, and will just use the PSGI
+     array along with response header setting methods. #compat
+   - cgiapp_get_query is now get_request #compat
+   - s/cgiapp_init/init/ #compat
+   - s/cgiapp_prerun/prerun/ #compat
+   - s/cgiapp_postrun/postrun/ #compat
+   - s/__get_runmode/_get_runmode/ #compat
+   - s/__get_runmeth/_get_runmeth/ #compat
+   - s/__get_body/_get_body/ #compat
+   - s/$INSTALLED_CALLBACKS/$CLASS_CALLBACKS/
+   - _cap_hash() was removed. 
+      Hash keys for new() must be upper-case now, and are case-sensitive. #compat
+   - Deleted the delete() method, in the spirit of reducing some kinds of bugs
+     by making the object more read-only. If you need read-write data structure
+     based on the initial param settings(), consider making a copy. # compat. 
+   - start_mode(), error_mode() and tmpl_path() had their implementations replaced
+     by Moose attributes. In the process, they gained type validation
+   - PRERUN_MODE_LOCKED was replaced by a private boolean attribute. 
+   - get_current_rumode() / $self->{CURRENT_RUNMODE} were replaced by a Moose attribute.
+   - $self->{MODE_PARAM} was replaced by a Moose attribute. 
+   - header_type() was replaced by a Moose attribute
+   - header_type values are now case-sensitive (lower-case) # compat
+   - $self->{__HEADER_PROPS} was replaced with _header_props attribute
+   - Replaced CGI with CGI::PSGI as the default query object. 
+     (This is temporary, until a complete replacement is developed or adopted). 
+   - In the constructor, QUERY has been replaced with 'REQUEST' # compat
+   - $self->{PARAMS} was replaced by _params attribute
+   - new() was refactored into a simpler BUILD() statement
+     ( new() is provided through Moose now ). 
+   - $self->{__RUN__MODES} has been replaced by a _run_modes attribute 
+   - The default run behavior for the 'start' run mode has been changed 
+     from calling the dump() method to a simple 'hello world' page.
+     The previous behavior could be restored through a development/debugging plugin. #compat
+   - A new method is available called "default_run_modes" that want to provide an
+     alternate default run mode. For example, a debugging plugin that prints
+     diagnostic information, or a framework based on this which wants to provide a
+     pretty branded page for an enhanced first impression. It won't be used
+     in normal development.
+   - forward() method from the ::Forward plugin is now in the core
+   - redirect() method from the ::Redirect plugin is now in the core. 
+   - started using Try::Tiny for evals
+   - $self->{__HTML_TMPL_CLASS} was replaced with html_tmpl_class attribute
+   - $self->{__CURRENT_TMPL_EXTENSION} was replaced with 'tmpl_extension' attribute.
+     This value was not previously modifiable outside of the object.
+
+  Not changing:
+      - header_add()
+      - header_props()
+      - header_type()
+      - param() 
     
     [INTERNAL]
     - source control management was moved from darcs to git. Those who prefer

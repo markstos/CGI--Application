@@ -1,7 +1,8 @@
 
 use	strict;
-
-use Test::More tests => 5;
+use Test::More;
+use CGI::PSGI;
+use PSGI::Application;
 
 # Record the subroutines we've seen in a session
 my @Event_History;
@@ -15,12 +16,11 @@ sub	main::record_event {
 }
 
 
-BEGIN {	use_ok('CGI::Application') };
 
 
 ######################################
 {
-	package	CGI::Application::Plugin::Foo;
+	package	PSGI::Application::Plugin::Foo;
 	use	vars qw/@EXPORT	@ISA/;
 	@ISA	   = ('Exporter');
 	@EXPORT	   = qw(
@@ -61,7 +61,7 @@ BEGIN {	use_ok('CGI::Application') };
 }
 ######################################
 {
-	package	CGI::Application::Plugin::Bar;
+	package	PSGI::Application::Plugin::Bar;
 	use	vars qw/@EXPORT	@ISA/;
 	@ISA	   = ('Exporter');
 	@EXPORT	   = qw(
@@ -99,7 +99,7 @@ BEGIN {	use_ok('CGI::Application') };
 }
 ######################################
 {
-	package	CGI::Application::Plugin::Baz;
+	package	PSGI::Application::Plugin::Baz;
 	use	vars qw/@EXPORT	@ISA/;
 	@ISA	   = ('Exporter');
 	@EXPORT	   = qw(
@@ -136,7 +136,7 @@ BEGIN {	use_ok('CGI::Application') };
 }
 ######################################
 {
-	package	CGI::Application::Plugin::Bam;
+	package	PSGI::Application::Plugin::Bam;
 	use	vars qw/@EXPORT	@ISA/;
 	@ISA	   = ('Exporter');
 	@EXPORT	   = qw(
@@ -177,27 +177,27 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	My::Framework;
-    use vars qw/@ISA/;
-    @ISA = ('CGI::Application');
-	sub	cgiapp_init	   { main::record_event('init')       }
-	sub	cgiapp_prerun  { main::record_event('prerun')     }
-	sub	cgiapp_postrun { main::record_event('postrun')    }
-	sub	teardown	   { main::record_event('teardown')   }
+    use Any::Moose;
+    extends 'PSGI::Application';
+	sub	init	  { main::record_event('init')       }
+	sub	prerun    { main::record_event('prerun')     }
+	sub	postrun   { main::record_event('postrun')    }
+	sub	teardown  { main::record_event('teardown')   }
 }
 
 ######################################
 {
 	package	My::Project;
-    use vars qw/@ISA/;
-	@ISA = ('My::Framework');
-	import CGI::Application::Plugin::Foo;
+    use Any::Moose;
+    extends 'PSGI::Application'; 
+	import PSGI::Application::Plugin::Foo;
 
 	# install another init callback	for	all	users of My::Project
 	My::Project->add_callback('init',      'my_project_init');
 
-	# install an impolite callback that	will get run by	all	CGI::Application apps
+	# install an impolite callback that	will get run by	all	PSGI::Application apps
 	# regardless of	whether	or not they	use	My::Project
-	CGI::Application->add_callback('init', \&my_project_global_init);
+	PSGI::Application->add_callback('init', \&my_project_global_init);
 
 	sub	my_project_init	{ main::record_event('init')          }
 	sub	my_project_global_init { main::record_event('init')   }
@@ -207,17 +207,17 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	Other::Project;
-    use vars qw/@ISA/;
-    @ISA = ('My::Framework');
-	import CGI::Application::Plugin::Baz;
-	import CGI::Application::Plugin::Bam;
+    use Any::Moose;
+    extends 'My::Framework';
+	import PSGI::Application::Plugin::Baz;
+	import PSGI::Application::Plugin::Bam;
 
 	# install another init callback	for	all	users of Other::Project
 	Other::Project->add_callback('init',      'other_project_init');
 
-	# install an impolite callback that	will get run by	all	CGI::Application apps
+	# install an impolite callback that	will get run by	all	PSGI::Application apps
 	# regardless of	whether	or not they	use	My::Project
-	CGI::Application->add_callback('init', \&other_project_global_init);
+	PSGI::Application->add_callback('init', \&other_project_global_init);
 
 	sub	other_project_init { main::record_event('init')          }
 	sub	other_project_global_init {	main::record_event('init')   }
@@ -227,9 +227,9 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	My::App;
-    use vars qw/@ISA/;
-    @ISA = ('My::Project');
-	import CGI::Application::Plugin::Bar;
+    use Any::Moose;
+    extends 'My::Project';
+	import PSGI::Application::Plugin::Bar;
 
 	sub	setup {
 		my $self = shift;
@@ -237,18 +237,18 @@ BEGIN {	use_ok('CGI::Application') };
 		$self->run_modes(['begin']);
 		$self->start_mode('begin');
 	}
-	sub	cgiapp_init		{
+	sub	init		{
 		my $self = shift;
 		main::record_event('init');
 		__PACKAGE__->add_callback('prerun', 'my_app_class_prerun');
 		__PACKAGE__->add_callback('teardown', 'my_app_teardown');
 		$self->add_callback('teardown', 'my_app_teardown');
 	}
-	sub	cgiapp_prerun		{ main::record_event('prerun')      }
+	sub	prerun		        { main::record_event('prerun')      }
 	sub	my_app_class_prerun	{ main::record_event('prerun')      }
 	sub	my_app_obj_prerun	{ main::record_event('prerun')      }
 	sub	my_app_teardown		{ main::record_event('teardown')    }
-	sub	cgiapp_postrun		{ main::record_event('postrun')     }
+	sub	postrun		        { main::record_event('postrun')     }
 	sub	teardown			{ main::record_event('teardown')    }
 
 	sub	begin {
@@ -261,10 +261,9 @@ BEGIN {	use_ok('CGI::Application') };
 ######################################
 {
 	package	Other::App;
-    use vars qw/@ISA/;
-    @ISA = 'Other::Project';
-
-	import CGI::Application::Plugin::Bam;
+    use Any::Moose;
+    extends 'Other::Project';
+	import PSGI::Application::Plugin::Bam;
 
 	sub	setup {
 		my $self = shift;
@@ -272,13 +271,13 @@ BEGIN {	use_ok('CGI::Application') };
 		$self->run_modes(['begin']);
 		$self->start_mode('begin');
 	}
-	sub	cgiapp_init		{
+	sub	init		{
 		my $self = shift;
 		$self->add_callback('postrun', 'other_app_postrun');
 		main::record_event('init')
 	}
-	sub	cgiapp_prerun	   { main::record_event('prerun')      }
-	sub	cgiapp_postrun	   { main::record_event('postrun')     }
+	sub	prerun	   { main::record_event('prerun')      }
+	sub	postrun	   { main::record_event('postrun')     }
 	sub	other_app_postrun  { main::record_event('postrun')     }
 	sub	teardown		   { main::record_event('teardown')    }
 
@@ -290,8 +289,8 @@ BEGIN {	use_ok('CGI::Application') };
 
 {
 	package	Unrelated::App;
-    use vars qw/@ISA/;
-    @ISA = ('CGI::Application');
+    use Any::Moose;
+    extends 'PSGI::Application';
 
 	sub	setup {
 		my $self = shift;
@@ -299,10 +298,10 @@ BEGIN {	use_ok('CGI::Application') };
 		$self->run_modes(['begin']);
 		$self->start_mode('begin');
 	}
-	sub	cgiapp_init		{ main::record_event('init')        }
-	sub	cgiapp_prerun	{ main::record_event('prerun')      }
-	sub	cgiapp_postrun	{ main::record_event('postrun')     }
-	sub	teardown		{ main::record_event('teardown')    }
+	sub	init	   { main::record_event('init')        }
+	sub	prerun	   { main::record_event('prerun')      }
+	sub	postrun	   { main::record_event('postrun')     }
+	sub	teardown   { main::record_event('teardown')    }
 
 	sub	begin {
 		main::record_event('runmode');
@@ -313,60 +312,60 @@ BEGIN {	use_ok('CGI::Application') };
 
 @Event_History = ();
 
-my $app	= My::App->new;
+my $app	= My::App->new( REQUEST => CGI::PSGI->new({}) );
 $app->add_callback('prerun', 'my_app_obj_prerun');
 $app->run;
 
 my @expected_events	= (
 	# init
 
-	'init/CGI::Application::Plugin::Bar::bar_init1',        # CAP::Bar
-	'bar_hook/CGI::Application::Plugin::Bar::bar_custom',
-	'init/CGI::Application::Plugin::Bar::bar_init2',
+	'init/PSGI::Application::Plugin::Bar::bar_init1',        # CAP::Bar
+	'bar_hook/PSGI::Application::Plugin::Bar::bar_custom',
+	'init/PSGI::Application::Plugin::Bar::bar_init2',
 
-	'init/CGI::Application::Plugin::Foo::foo_init1',        # CAP::Foo
-	'init/CGI::Application::Plugin::Foo::foo_init2',
+	'init/PSGI::Application::Plugin::Foo::foo_init1',        # CAP::Foo
+	'init/PSGI::Application::Plugin::Foo::foo_init2',
 
 
 	'init/My::Project::my_project_init',                   # My::Project
 
-	'init/My::App::cgiapp_init',                           # My::App (but installed via CGI::Application)
+	'init/My::App::init',                           # My::App (but installed via PSGI::Application)
 
 	'init/My::Project::my_project_global_init',            # My::Project (rudely) registered a callback in the
-														   # CGI::Application class
+														   # PSGI::Application class
 
 	'init/Other::Project::other_project_global_init',      # Other::Project (rudely) registered a callback in the
-														   # CGI::Application class, which forces us to	run	it
+														   # PSGI::Application class, which forces us to	run	it
 
 
 	# prerun
 
 	'prerun/My::App::my_app_obj_prerun',                   # My::App (installed in object)
 
-	'prerun/CGI::Application::Plugin::Bar::bar_prerun',    # CAP::Foo
+	'prerun/PSGI::Application::Plugin::Bar::bar_prerun',    # CAP::Foo
 
 	'prerun/My::App::my_app_class_prerun',                 # My::App (but installed at runtime)
 
-	'prerun/CGI::Application::Plugin::Foo::foo_prerun',    # CAP::Bar
+	'prerun/PSGI::Application::Plugin::Foo::foo_prerun',    # CAP::Bar
 
-	'prerun/My::App::cgiapp_prerun',                       # My::App (but installed via CGI::Application)
+	'prerun/My::App::prerun',                       # My::App (but installed via PSGI::Application)
 
 
 	# Run mode
 	'runmode/My::App::begin',                              # My::App
 
 	# postrun
-	'postrun/CGI::Application::Plugin::Bar::bar_postrun',  # CAP::Bar
-	'postrun/CGI::Application::Plugin::Foo::foo_postrun',  # CAP::Foo
-	'postrun/My::App::cgiapp_postrun',                     # My::App (but installed via CGI::Application)
+	'postrun/PSGI::Application::Plugin::Bar::bar_postrun',  # CAP::Bar
+	'postrun/PSGI::Application::Plugin::Foo::foo_postrun',  # CAP::Foo
+	'postrun/My::App::postrun',                     # My::App (but installed via PSGI::Application)
 
 	# teardown
 	'teardown/My::App::my_app_teardown',                   # My::App (but installed in object)
 
-	'teardown/CGI::Application::Plugin::Bar::bar_teardown',  # CAP::Bar
-	'teardown/CGI::Application::Plugin::Foo::foo_teardown',  # CAP::Foo
-	'foo_hook/CGI::Application::Plugin::Foo::foo_custom',    # CAP::Foo
-	'teardown/My::App::teardown',                            # My::App (but installed via CGI::Application)
+	'teardown/PSGI::Application::Plugin::Bar::bar_teardown',  # CAP::Bar
+	'teardown/PSGI::Application::Plugin::Foo::foo_teardown',  # CAP::Foo
+	'foo_hook/PSGI::Application::Plugin::Foo::foo_custom',    # CAP::Foo
+	'teardown/My::App::teardown',                            # My::App (but installed via PSGI::Application)
 
 );
 
@@ -383,58 +382,58 @@ is_deeply(\@Event_History, \@expected_events, 'My::App - callbacks executed corr
 
 @Event_History = ();
 
-My::App->new->run;
+My::App->psgi_app->();
 
 @expected_events = (
 	# init
 
-	'init/CGI::Application::Plugin::Bar::bar_init1',        # CAP::Bar
-	'bar_hook/CGI::Application::Plugin::Bar::bar_custom',
-	'init/CGI::Application::Plugin::Bar::bar_init2',
+	'init/PSGI::Application::Plugin::Bar::bar_init1',        # CAP::Bar
+	'bar_hook/PSGI::Application::Plugin::Bar::bar_custom',
+	'init/PSGI::Application::Plugin::Bar::bar_init2',
 
-	'init/CGI::Application::Plugin::Foo::foo_init1',        # CAP::Foo
-	'init/CGI::Application::Plugin::Foo::foo_init2',
+	'init/PSGI::Application::Plugin::Foo::foo_init1',        # CAP::Foo
+	'init/PSGI::Application::Plugin::Foo::foo_init2',
 
 
 	'init/My::Project::my_project_init',                   # My::Project
 
-	'init/My::App::cgiapp_init',                           # My::App (but installed via CGI::Application)
+	'init/My::App::init',                           # My::App (but installed via PSGI::Application)
 
 	'init/My::Project::my_project_global_init',            # My::Project (rudely) registered a callback in the
-														   # CGI::Application class
+														   # PSGI::Application class
 
 	'init/Other::Project::other_project_global_init',      # Other::Project (rudely) registered a callback in the
-														   # CGI::Application class, which forces us to	run	it
+														   # PSGI::Application class, which forces us to	run	it
 
 
 	# prerun
 
 
-	'prerun/CGI::Application::Plugin::Bar::bar_prerun',    # CAP::Foo
+	'prerun/PSGI::Application::Plugin::Bar::bar_prerun',    # CAP::Foo
 
 	'prerun/My::App::my_app_class_prerun',                 # My::App (but installed at runtime)
 
 
-	'prerun/CGI::Application::Plugin::Foo::foo_prerun',    # CAP::Bar
+	'prerun/PSGI::Application::Plugin::Foo::foo_prerun',    # CAP::Bar
 
-	'prerun/My::App::cgiapp_prerun',                       # My::App (but installed via CGI::Application)
+	'prerun/My::App::prerun',                       # My::App (but installed via PSGI::Application)
 
 
 	# Run mode
 	'runmode/My::App::begin',                              # My::App
 
 	# postrun
-	'postrun/CGI::Application::Plugin::Bar::bar_postrun',  # CAP::Bar
-	'postrun/CGI::Application::Plugin::Foo::foo_postrun',  # CAP::Foo
-	'postrun/My::App::cgiapp_postrun',                     # My::App (but installed via CGI::Application)
+	'postrun/PSGI::Application::Plugin::Bar::bar_postrun',  # CAP::Bar
+	'postrun/PSGI::Application::Plugin::Foo::foo_postrun',  # CAP::Foo
+	'postrun/My::App::postrun',                     # My::App (but installed via PSGI::Application)
 
 	# teardown
 	'teardown/My::App::my_app_teardown',                   # My::App (but installed in object)
 
-	'teardown/CGI::Application::Plugin::Bar::bar_teardown',  # CAP::Bar
-	'teardown/CGI::Application::Plugin::Foo::foo_teardown',  # CAP::Foo
-	'foo_hook/CGI::Application::Plugin::Foo::foo_custom',    # CAP::Foo
-	'teardown/My::App::teardown',                            # My::App (but installed via CGI::Application)
+	'teardown/PSGI::Application::Plugin::Bar::bar_teardown',  # CAP::Bar
+	'teardown/PSGI::Application::Plugin::Foo::foo_teardown',  # CAP::Foo
+	'foo_hook/PSGI::Application::Plugin::Foo::foo_custom',    # CAP::Foo
+	'teardown/My::App::teardown',                            # My::App (but installed via PSGI::Application)
 
 );
 
@@ -457,40 +456,40 @@ is_deeply(\@Event_History, \@expected_events, 'My::App - callbacks executed corr
 
 
 @Event_History = ();
-Other::App->new->run;
+Other::App->psgi_app->();
 
 @expected_events = (
 	# init
 
-	'init/CGI::Application::Plugin::Bam::bam_init1',        # CAP::Bam
-	'init/CGI::Application::Plugin::Bam::bam_init2',
+	'init/PSGI::Application::Plugin::Bam::bam_init1',        # CAP::Bam
+	'init/PSGI::Application::Plugin::Bam::bam_init2',
 
-	'init/CGI::Application::Plugin::Baz::baz_init1',        # CAP::Baz
-	'init/CGI::Application::Plugin::Baz::baz_init2',
+	'init/PSGI::Application::Plugin::Baz::baz_init1',        # CAP::Baz
+	'init/PSGI::Application::Plugin::Baz::baz_init2',
 
 
 	'init/Other::Project::other_project_init',             # Other::Project
 
-	'init/Other::App::cgiapp_init',                        # Other::App (but installed via CGI::Application)
+	'init/Other::App::init',                        # Other::App (but installed via PSGI::Application)
 
 	'init/My::Project::my_project_global_init',            # My::Project (rudely) registered a callback in the
-														   # CGI::Application class, which forces us to	run	it
+														   # PSGI::Application class, which forces us to	run	it
 
 	'init/Other::Project::other_project_global_init',      # Other::Project (rudely) registered a callback in the
-														   # CGI::Application class
+														   # PSGI::Application class
 
 
 	# prerun
 
 
-	'prerun/CGI::Application::Plugin::Bam::bam_prerun',    # CAP::Baz
+	'prerun/PSGI::Application::Plugin::Bam::bam_prerun',    # CAP::Baz
 
-	'prerun/CGI::Application::Plugin::Baz::baz_prerun',    # CAP::Bam
+	'prerun/PSGI::Application::Plugin::Baz::baz_prerun',    # CAP::Bam
 
-	'baz_hook/CGI::Application::Plugin::Baz::baz_custom',  # CAP::Bam
+	'baz_hook/PSGI::Application::Plugin::Baz::baz_custom',  # CAP::Bam
 
 
-	'prerun/Other::App::cgiapp_prerun',                    # Other::App (but installed via CGI::Application)
+	'prerun/Other::App::prerun',                    # Other::App (but installed via PSGI::Application)
 
 
 	# Run mode
@@ -499,17 +498,17 @@ Other::App->new->run;
 	# postrun
 	'postrun/Other::App::other_app_postrun',               # Other::App (but installed in object)
 
-	'postrun/CGI::Application::Plugin::Bam::bam_postrun',  # CAP::Bam
-	'bam_hook/CGI::Application::Plugin::Bam::bam_custom',  # CAP::Bam
+	'postrun/PSGI::Application::Plugin::Bam::bam_postrun',  # CAP::Bam
+	'bam_hook/PSGI::Application::Plugin::Bam::bam_custom',  # CAP::Bam
 
 
-	'postrun/CGI::Application::Plugin::Baz::baz_postrun',  # CAP::Baz
-	'postrun/Other::App::cgiapp_postrun',                  # Other::App (but installed via CGI::Application)
+	'postrun/PSGI::Application::Plugin::Baz::baz_postrun',  # CAP::Baz
+	'postrun/Other::App::postrun',                  # Other::App (but installed via PSGI::Application)
 
 	# teardown
-	'teardown/CGI::Application::Plugin::Bam::bam_teardown',  # CAP::Bam
-	'teardown/CGI::Application::Plugin::Baz::baz_teardown',  # CAP::Baz
-	'teardown/Other::App::teardown',                         # Other::App (but installed via CGI::Application)
+	'teardown/PSGI::Application::Plugin::Bam::bam_teardown',  # CAP::Bam
+	'teardown/PSGI::Application::Plugin::Baz::baz_teardown',  # CAP::Baz
+	'teardown/Other::App::teardown',                         # Other::App (but installed via PSGI::Application)
 
 );
 
@@ -522,33 +521,33 @@ is_deeply(\@Event_History, \@expected_events, 'Other::App - callbacks executed c
 
 
 @Event_History = ();
-Unrelated::App->new->run;
+Unrelated::App->psgi_app->();
 
 @expected_events = (
 	# init
 
-	'init/Unrelated::App::cgiapp_init',                    # Unrelated::App (but installed via CGI::Application)
+	'init/Unrelated::App::init',                    # Unrelated::App (but installed via PSGI::Application)
 
 	'init/My::Project::my_project_global_init',            # My::Project (rudely) registered a callback in the
-														   # CGI::Application class, which forces us to	run	it
+														   # PSGI::Application class, which forces us to	run	it
 
 	'init/Other::Project::other_project_global_init',      # Unrelated::Project (rudely) registered a callback in the
-														   # CGI::Application class, which forces us to	run	it
+														   # PSGI::Application class, which forces us to	run	it
 
 
 	# prerun
 
-	'prerun/Unrelated::App::cgiapp_prerun',                # Unrelated::App (but installed via CGI::Application)
+	'prerun/Unrelated::App::prerun',                # Unrelated::App (but installed via PSGI::Application)
 
 
 	# Run mode
 	'runmode/Unrelated::App::begin',                       # Unrelated::App
 
 	# postrun
-	'postrun/Unrelated::App::cgiapp_postrun',              # Unrelated::App (but installed via CGI::Application)
+	'postrun/Unrelated::App::postrun',              # Unrelated::App (but installed via PSGI::Application)
 
 	# teardown
-	'teardown/Unrelated::App::teardown',                   # Unrelated::App (but installed via CGI::Application)
+	'teardown/Unrelated::App::teardown',                   # Unrelated::App (but installed via PSGI::Application)
 
 );
 
@@ -558,3 +557,5 @@ is_deeply(\@Event_History, \@expected_events, 'Unrelated::App - callbacks execut
 		print STDERR "Actual Event History: \n";
 		print STDERR Dumper	\@Event_History;
 };
+
+done_testing;

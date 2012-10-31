@@ -1,13 +1,7 @@
 
 package TestApp7;
-
-use strict;
-
-use CGI::Application;
-@TestApp7::ISA = qw(CGI::Application);
-
-use CGI::Carp;
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
 	my $self = shift;
@@ -17,12 +11,11 @@ sub setup {
 	);
 }
 
-
-sub cgiapp_get_query {
+sub get_request {
 	my $self = shift;
 
 	require TestCGI;
-	my $q = TestCGI->new();
+	my $q = TestCGI->new({});
 
 	return $q;
 }

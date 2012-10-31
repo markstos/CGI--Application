@@ -1,8 +1,6 @@
 package TestApp10;
-use strict;
-use CGI::Application;
-@TestApp10::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
     my $self = shift;

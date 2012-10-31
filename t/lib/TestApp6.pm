@@ -1,11 +1,6 @@
-
 package TestApp6;
-
-use strict;
-
-use CGI::Application;
-@TestApp6::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
 	my $self = shift;
@@ -14,7 +9,7 @@ sub setup {
 
 	$self->run_modes(
 
-		# Test to make sure cgiapp_prerun() works
+		# Test to make sure prerun() works
 		'prerun_test'      => \&prerun_test,
 
 		# Test to make sure prerun_mode() works
@@ -30,7 +25,7 @@ sub setup {
 }
 
 
-sub cgiapp_prerun {
+sub prerun {
 	my $self = shift;
 	my $rm = shift;
 

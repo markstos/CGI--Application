@@ -1,11 +1,7 @@
 
 package TestApp3;
-
-use strict;
-
-use CGI::Application;
-@TestApp3::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
 	my $self = shift;
@@ -26,7 +22,7 @@ sub setup {
 sub set_up_runmode {
 	my $self = shift;
 
-	my $q = $self->query();
+	my $q = $self->req();
 	my $rm = $q->param('go_to_mode');
 
 	return undef if ($rm eq 'undef_rm');
@@ -40,34 +36,10 @@ sub set_up_runmode {
 ####  RUN MODE METHODS  ####
 ############################
 
-sub subref_modeparam_meth {
-	my $self = shift;
-
-	return "Hello World: subref_modeparam OK";
-}
-
-
-sub blank_mode {
-	my $self = shift;
-
-	return "Hello World: blank_mode OK";
-}
-
-
-sub zero_mode {
-	my $self = shift;
-
-	return "Hello World: zero_mode OK";
-}
-
-
-sub default_mode_meth {
-	my $self = shift;
-
-	return "Hello World: default_mode OK";
-}
-
-
+sub subref_modeparam_meth { 'Hello World: subref_modeparam OK' } 
+sub blank_mode            { 'Hello World: blank_mode OK'       } 
+sub zero_mode             { 'Hello World: zero_mode OK'        } 
+sub default_mode_meth     { 'Hello World: default_mode OK'     } 
 
 1;
 

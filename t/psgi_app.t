@@ -36,13 +36,9 @@ sub setup {
 
 package main;
 
-my $app = TestApp->new( REQUEST => CGI::PSGI->new($env) );
-
-my $response = $app->run;
-
-is_deeply $response, [
+is_deeply( TestApp->psgi_app->(), [
     '200',
     [ 'Content-Type' => 'text/html; charset=ISO-8859-1' ],
     [ 'Hello World' ],
 ],
-"run_as_psgi: reality check basic response";
+"run_as_psgi: reality check basic response");

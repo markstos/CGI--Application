@@ -1,12 +1,7 @@
 
 package TestApp;
-
-use strict;
-
-
-use CGI::Application;
-@TestApp::ISA = qw(CGI::Application);
-
+use Any::Moose;
+extends 'PSGI::Application';
 
 sub setup {
 	my $self = shift;
@@ -26,8 +21,6 @@ sub setup {
  		'header_add_arrayref_test'		=> \&header_add_arrayref_test,
  		'header_props_before_header_add'		=> \&header_props_before_header_add,
  		'header_add_after_header_props'		=> \&header_add_after_header_props,
-
-    'dump_txt'    => 'dump',
 		'eval_test'		=> 'eval_test',
 	);
 
@@ -42,7 +35,7 @@ sub teardown {
 }
 
 
-sub cgiapp_init {
+sub init {
 	my $self = shift;
 	$self->param('CGIAPP_INIT', 'true');
 }
@@ -74,7 +67,7 @@ sub redirect_test {
 
 sub cookie_test {
 	my $self = shift;
-	my $q = $self->query();
+	my $q = $self->req();
 
 	my $cookie = $q->cookie(
 		-name => 'c_name',
@@ -94,24 +87,24 @@ sub cookie_test {
 sub tmpl_test {
 	my $self = shift;
 
-	my $t = $self->load_tmpl('test.tmpl');
-	$t->param('ping', 'Hello World: tmpl_test');
-	
-	return $t->output();
+    # my $t = $self->load_tmpl('test.tmpl');
+	# $t->param('ping', 'Hello World: tmpl_test');
+	# 
+	# return $t->output();
 }
 
 
 sub tmpl_badparam_test {
 	my $self = shift;
 
-	my $t = $self->load_tmpl('test.tmpl', die_on_bad_params => 0);
+    # my $t = $self->load_tmpl('test.tmpl', die_on_bad_params => 0);
 
-	# This tests to see if die_on_bad_params was really turned off!
-	$t->param('some_non_existent_tmpl_var', 123);
+	# # This tests to see if die_on_bad_params was really turned off!
+	# $t->param('some_non_existent_tmpl_var', 123);
 
-	$t->param('ping', 'Hello World: tmpl_badparam_test');
-	
-	return $t->output();
+	# $t->param('ping', 'Hello World: tmpl_badparam_test');
+	# 
+	# return $t->output();
 }
 
 
