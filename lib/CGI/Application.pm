@@ -219,18 +219,17 @@ sub run {
 
 sub psgi_app {
     my $class = shift;
-    my @args = ref $_[0] eq 'HASH' ? %{$_[0]} : @_;
+    my $args_to_new = shift;
 
     require CGI::PSGI;
 
     return sub {
         my $env = shift;
 
-        my $webapp = $class->new(
-            @args,
-            QUERY => CGI::PSGI->new($env),
-        );
+        # Update the query object
+        $args_to_new->{QUERY} = CGI::PSGI->new($env);
 
+        my $webapp = $class->new($args_to_new);
         return $webapp->run_as_psgi;
     }
 }
