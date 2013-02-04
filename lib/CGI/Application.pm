@@ -216,22 +216,35 @@ sub run {
 	return $return_value;
 }
 
-
 sub psgi_app {
     my $class = shift;
     my $args_to_new = shift;
 
-    require CGI::PSGI;
+    my $app;
 
-    return sub {
-        my $env = shift;
-
-        # Update the query object
-        $args_to_new->{QUERY} = CGI::PSGI->new($env);
-
-        my $webapp = $class->new($args_to_new);
-        return $webapp->run_as_psgi;
+    if (defined $args_to_new->{QUERY}) {
+        $app = sub {
+            my $env = shift;
+            my $webapp = $class->new($args_to_new);
+            return $webapp->run_as_psgi;
+        };
     }
+    else {
+        require CGI::PSGI;
+
+        $app = sub {
+            my $env = shift;
+
+            my $webapp = $class->new(
+                %{ $args_to_new },
+                QUERY => CGI::PSGI->new($env),
+            );
+
+            return $webapp->run_as_psgi;
+        };
+    }
+
+    return $app;
 }
 
 sub run_as_psgi {
