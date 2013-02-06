@@ -5,12 +5,7 @@ sub setup {
     my $self = shift;
     $self->start_mode('test');
     $self->mode_param('rm');
-    $self->run_modes(
-    	'test' => 'test',
-    	'file_handle' => 'file_handle',
-    	'callback_subref' => 'callback_subref',
-    	'callback_explicit' => 'callback_explicit',
-    );
+	$self->run_modes([qw/test file_handle callback_subref callback_explicit/])
 }
 
 sub test {
