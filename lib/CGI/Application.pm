@@ -198,16 +198,28 @@ sub run {
 
     my $return_value;
     if ($self->{__IS_PSGI}) {
+
         my ($status, $headers) = $self->_send_psgi_headers();
 
-        if (my $callback = $self->psgi_streaming_callback) {
+		#if (ref($body) eq 'GLOB' || (Scalar::Util::blessed($body) && $body->can('getline'))) { # not sure if we want Scalar::Util here?  is any benefit?
+		if (ref($body) eq 'GLOB') {
+
+			# body a file handle - return it
+            $return_value = [ $status, $headers, $body];
+		}
+        elsif (my $callback = ref($body) eq 'CODE' ? $body : $self->psgi_streaming_callback) {
+
+			# body is a subref, or an explicit callback method is set
             $return_value = sub {
                 my $respond = shift;
+
                 my $writer = $respond->([ $status, $headers ]);
+
                 &$callback($writer);
             };
         }
         else {
+
             $return_value = [ $status, $headers, [ $body ]];
         }
     }
@@ -1120,6 +1132,33 @@ For example, a run mode to return a simple streaming response might be implement
 		});
 		return undef;
 	}
+
+=head2 Additional PSGI Return Values
+
+The PSGI Specification allows for returning a file handle or a subroutine reference instead of byte strings.  In PSGI mode this is supported directly by CGI::Application.  Have your run mode return a file handle or compatible subref as follows:
+
+	sub returning_a_file_handle {
+	    my $self = shift;
+
+	    $self->header_props(-type => 'text/plain');
+
+        open my $fh, "<", 'test_file.txt' or die "OOPS! $!";
+
+	    return $fh;
+	}
+
+    sub returning_a_subref {
+        my $self = shift;
+
+        $self->header_props(-type => 'text/plain');
+        return sub {
+           my $writer = shift;
+           foreach my $i (1..10) {
+               #sleep 1;
+               $writer->write("check $i: " . time . "\n");
+    		}
+    	};
+    }
 
 =head2 Methods to possibly override
 
