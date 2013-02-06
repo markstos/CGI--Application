@@ -2,6 +2,7 @@ package CGI::Application;
 use Carp;
 use strict;
 use Class::ISA;
+use Scalar::Util;
 
 $CGI::Application::VERSION = '4.50';
 
@@ -198,12 +199,9 @@ sub run {
 
     my $return_value;
     if ($self->{__IS_PSGI}) {
-
         my ($status, $headers) = $self->_send_psgi_headers();
 
-		#if (ref($body) eq 'GLOB' || (Scalar::Util::blessed($body) && $body->can('getline'))) { # not sure if we want Scalar::Util here?  is any benefit?
-		if (ref($body) eq 'GLOB') {
-
+		if (ref($body) eq 'GLOB' || (Scalar::Util::blessed($body) && $body->can('getline'))) {
 			# body a file handle - return it
             $return_value = [ $status, $headers, $body];
 		}
