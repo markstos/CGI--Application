@@ -197,38 +197,38 @@ sub run {
 	# Call cgiapp_postrun() hook
 	$self->call_hook('postrun', \$body);
 
-    my $return_value;
-    if ($self->{__IS_PSGI}) {
-        my ($status, $headers) = $self->_send_psgi_headers();
+	my $return_value;
+	if ($self->{__IS_PSGI}) {
+		my ($status, $headers) = $self->_send_psgi_headers();
 
 		if (ref($body) eq 'GLOB' || (Scalar::Util::blessed($body) && $body->can('getline'))) {
 			# body a file handle - return it
-            $return_value = [ $status, $headers, $body];
+			$return_value = [ $status, $headers, $body];
 		}
-        elsif (my $callback = ref($body) eq 'CODE' ? $body : $self->psgi_streaming_callback) {
+		elsif (ref($body) eq 'CODE') {
 
 			# body is a subref, or an explicit callback method is set
-            $return_value = sub {
-                my $respond = shift;
+			$return_value = sub {
+				my $respond = shift;
 
-                my $writer = $respond->([ $status, $headers ]);
+				my $writer = $respond->([ $status, $headers ]);
 
-                &$callback($writer);
-            };
-        }
-        else {
+				&$body($writer);
+			};
+		}
+		else {
 
-            $return_value = [ $status, $headers, [ $body ]];
-        }
-    }
-    else {
-        # Set up HTTP headers non-PSGI responses
-        my $headers = $self->_send_headers();
+			$return_value = [ $status, $headers, [ $body ]];
+		}
+	}
+	else {
+		# Set up HTTP headers non-PSGI responses
+		my $headers = $self->_send_headers();
 
-        # Build up total output
-        $return_value  = $headers.$body;
-        print $return_value unless $ENV{CGI_APP_RETURN_ONLY};
-    }
+		# Build up total output
+		$return_value  = $headers.$body;
+		print $return_value unless $ENV{CGI_APP_RETURN_ONLY};
+	}
 
 	# clean up operations
 	$self->call_hook('teardown');
@@ -262,17 +262,6 @@ sub run_as_psgi {
     return $self->run(@_);
 }
 
-sub psgi_streaming_callback
-{
-    my ($self, $callback) = @_;
-
-	if ($callback) {
-		$self->{__PSGI_STREAMING_CALLBACK} = $callback;
-	}
-	else {
-		return $self->{__PSGI_STREAMING_CALLBACK};
-	}
-}
 
 ############################
 ####  OVERRIDE METHODS  ####
@@ -1110,26 +1099,6 @@ The final result might look like this:
         my $webapp = WebApp->new({ QUERY => CGI::PSGI->new($env) });
         $webapp->run_as_psgi;
     };
-
-=head3 psgi_streaming_callback()
-
-Return a streaming body in a psgi.streaming environment, e.g. if downloading large files.  Method takes a subref which is passed to the plack handler.  The subroutine will receive as a single argument an object that implements write and close methods.
-
-For example, a run mode to return a simple streaming response might be implemented like this:
-
-	sub callback_rm {
-	    my $self = shift;
-
-	    $self->header_props(-type => 'text/plain');
-	    $self->psgi_streaming_callback(sub {
-	       my $writer = shift;
-	       foreach my $i (1..10) {
-	           #sleep 1;
-	           $writer->write("check $i: " . time . "\n");
-			}
-		});
-		return undef;
-	}
 
 =head2 Additional PSGI Return Values
 

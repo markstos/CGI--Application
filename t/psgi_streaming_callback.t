@@ -1,5 +1,5 @@
 use lib "t/lib";
-use Test::More tests => 22;
+use Test::More tests => 18;
 #use Plack::Test;
 use Test::Requires qw(Plack::Loader LWP::UserAgent);
 use Test::TCP;
@@ -103,23 +103,3 @@ test_tcp(
     },
 );
 
-diag "now do streaming with CGI::Application - excplicit callback method";
-test_tcp(
-    client => sub {
-        my $port = shift;
-        my $ua = LWP::UserAgent->new;
-        my $res = $ua->get("http://127.0.0.1:$port/?rm=callback_explicit");
-        like $res->content, qr/check 1: \d+\n/;
-        like $res->content, qr/check 5: \d+\n/;
-        unlike $res->content, qr/Content-Type/, "No headers";
-        like $res->content_type, qr/plain/;
-    },
-    server => sub {
-        my $port = shift;
-        Plack::Loader->auto(port => $port)->run(sub {
-        	my $env = shift;
-            my $cgiapp = TestApp_PSGI_Callback->new({ QUERY => CGI::PSGI->new($env) });
-            return $cgiapp->run_as_psgi;
-	    });
-    },
-);

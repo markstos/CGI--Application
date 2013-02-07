@@ -5,7 +5,7 @@ sub setup {
     my $self = shift;
     $self->start_mode('test');
     $self->mode_param('rm');
-	$self->run_modes([qw/test file_handle callback_subref callback_explicit/])
+	$self->run_modes([qw/test file_handle callback_subref/])
 }
 
 sub test {
@@ -35,20 +35,6 @@ sub callback_subref {
            $writer->write("check $i: " . time . "\n");
 		}
 	};
-}
-
-sub callback_explicit {
-    my $self = shift;
-
-    $self->header_props(-type => 'text/plain');
-    $self->psgi_streaming_callback(sub {
-       my $writer = shift;
-       foreach my $i (1..10) {
-           #sleep 1;
-           $writer->write("check $i: " . time . "\n");
-		}
-	});
-	return undef;
 }
 
 1;
