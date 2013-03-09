@@ -1119,7 +1119,8 @@ The PSGI Specification allows for returning a file handle or a subroutine refere
            foreach my $i (1..10) {
                #sleep 1;
                $writer->write("check $i: " . time . "\n");
-    		}
+           }
+           $writer->close;
     	};
     }
 
