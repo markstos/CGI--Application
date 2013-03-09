@@ -1114,7 +1114,7 @@ The PSGI Specification allows for returning a file handle or a subroutine refere
 
         return sub {
            my $respond = shift;
-           my $writer = $respond->([ $self->psgi_header ]);
+           my $writer = $respond->([ $self->_send_psgi_header ]);
 
            foreach my $i (1..10) {
                #sleep 1;
