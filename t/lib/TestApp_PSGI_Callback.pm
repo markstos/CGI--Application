@@ -28,12 +28,18 @@ sub callback_subref {
     my $self = shift;
 
     $self->header_props(-type => 'text/plain');
+
     return sub {
-       my $writer = shift;
+       my $respond = shift;
+
+       #my $writer = $respond->([200, ['Content-Type' => 'text/plain']]);   # this works fine
+       #my $writer = $respond->([ $self->query->psgi_header ]);             # this doesn't work?
+       my $writer = $respond->([ $self->_send_psgi_headers ]);              # this works, but uses an internal call - perhaps it should be made public?
        foreach my $i (1..10) {
            #sleep 1;
            $writer->write("check $i: " . time . "\n");
 		}
+		$writer->close;
 	};
 }
 

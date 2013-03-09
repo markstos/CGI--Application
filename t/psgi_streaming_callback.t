@@ -27,7 +27,6 @@ test_tcp(
         	my $env = shift;
         	return sub {
   		        my $respond = shift;
-	   	     	use Data::Dumper;
 	        	my $w = $respond->([ 200, ['X-Foo' => 'bar', 'Content-Type' => 'text/plain'] ]);
 	        	foreach my $i (1..5) {
 	            	#sleep 1;

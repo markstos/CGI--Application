@@ -207,14 +207,8 @@ sub run {
 		}
 		elsif (ref($body) eq 'CODE') {
 
-			# body is a subref, or an explicit callback method is set
-			$return_value = sub {
-				my $respond = shift;
-
-				my $writer = $respond->([ $status, $headers ]);
-
-				&$body($writer);
-			};
+			# body is a subref
+			$return_value = $body;
 		}
 		else {
 
@@ -1116,10 +1110,12 @@ The PSGI Specification allows for returning a file handle or a subroutine refere
 
     sub returning_a_subref {
         my $self = shift;
-
         $self->header_props(-type => 'text/plain');
+
         return sub {
-           my $writer = shift;
+           my $respond = shift;
+           my $writer = $respond->([ $self->psgi_header ]);
+
            foreach my $i (1..10) {
                #sleep 1;
                $writer->write("check $i: " . time . "\n");
