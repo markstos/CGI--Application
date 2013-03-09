@@ -38,8 +38,8 @@ sub callback_subref {
        foreach my $i (1..10) {
            #sleep 1;
            $writer->write("check $i: " . time . "\n");
-		}
-		$writer->close;
+       }
+       $writer->close;
 	};
 }
 
