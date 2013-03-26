@@ -5,7 +5,7 @@ use Test::Requires qw(Plack::Loader LWP::UserAgent);
 use Test::TCP;
 
 use TestApp_PSGI_Callback;
-use CGI::Application::PSGI;
+use CGI::PSGI;
 
 my $test_file = 't/test_file_to_stream.txt';
 

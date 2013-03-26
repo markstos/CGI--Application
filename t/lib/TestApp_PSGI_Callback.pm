@@ -32,9 +32,8 @@ sub callback_subref {
     return sub {
        my $respond = shift;
 
-       #my $writer = $respond->([200, ['Content-Type' => 'text/plain']]);   # this works fine
-       #my $writer = $respond->([ $self->query->psgi_header ]);             # this doesn't work?
-       my $writer = $respond->([ $self->_send_psgi_headers ]);              # this works, but uses an internal call - perhaps it should be made public?
+       #my $writer = $respond->([200, ['Content-Type' => 'text/plain']]);  # this method is fine
+       my $writer = $respond->([ $self->send_psgi_headers ]);              # using cgi-app header props
        foreach my $i (1..10) {
            #sleep 1;
            $writer->write("check $i: " . time . "\n");
