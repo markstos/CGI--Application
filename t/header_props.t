@@ -92,3 +92,14 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 
 }
 
+{
+  my $app = CGI::Application->new;
+
+  $app->header_props( type => 'banana/ripe' );
+
+  like(
+    $app->run,
+    qr{Content-type: banana/ripe}i,
+    "an initial dash of prop. name can be omitted",
+  );
+}
