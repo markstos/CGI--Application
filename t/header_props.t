@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 BEGIN{use_ok('CGI::Application');}
 
