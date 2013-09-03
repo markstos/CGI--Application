@@ -23,6 +23,11 @@ my $build = Module::Build->new
    meta_add             => {
         no_index =>  { file => [ <test/*.pm> ] }, 
    },
+   meta_merge           => {
+      resources => {
+         repository => 'https://github.com/markstos/CGI--Application',
+      },
+   },
   );
 
 $build->create_build_script;
