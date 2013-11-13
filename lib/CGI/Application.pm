@@ -1015,7 +1015,7 @@ many configuration file formats.
  my %cfg = $self->cfg()
  # or ... $self->cfg('HTML_ROOT_DIR');
 
-See the list of of plugins below for more config file integration solutions.
+See the list of plugins below for more config file integration solutions.
 
 =head3 run()
 
@@ -1583,7 +1583,7 @@ Specifying the run modes by array reference:
 
     $webapp->run_modes([ 'mode1', 'mode2', 'mode3' ]);
 
-Is is the same as using a hash, with keys equal to values
+This is the same as using a hash, with keys equal to values
 
     $webapp->run_modes(
         'mode1' => 'mode1',
@@ -1746,7 +1746,7 @@ headers. If a scalar value is passed to C<header_add()> it will replace
 the existing value for that key.
 
 If an array reference is passed as a value to C<header_add()>, values in
-that array ref will be appended to any existing values values for that key.
+that array ref will be appended to any existing values for that key.
 This is primarily useful for setting an additional cookie after one has already
 been set.
 
@@ -1814,7 +1814,7 @@ To simplify that further, use L<CGI::Application::Plugin::Redirect>:
 
 Setting the header to 'none' may be useful if you are streaming content.
 In other contexts, it may be more useful to set C<$ENV{CGI_APP_RETURN_ONLY} = 1;>,
-which supresses all printing, including headers, and returns the output instead.
+which suppresses all printing, including headers, and returns the output instead.
 
 That's commonly used for testing, or when using L<CGI::Application> as a controller
 for a cron script!
@@ -1895,7 +1895,7 @@ sub load_tmpl {
 =head3 mode_param()
 
  # Name the CGI form parameter that contains the run mode name.
- # This is the the default behavior, and is often sufficient.
+ # This is the default behavior, and is often sufficient.
  $webapp->mode_param('rm');
 
  # Set the run mode name directly from a code ref
@@ -2103,7 +2103,7 @@ meaning that a local web-browser would be used, allowing testing of websites
 that contain JavaScript.
 
 Direct testing is also easy. CGI::Application will normally print the output of it's
-run modes directly to STDOUT. This can be suppressed with an enviroment variable,
+run modes directly to STDOUT. This can be suppressed with an environment variable,
 CGI_APP_RETURN_ONLY. For example:
 
   $ENV{CGI_APP_RETURN_ONLY} = 1;
