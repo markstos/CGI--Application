@@ -2092,15 +2092,9 @@ have your own private application server up and running.
 
 =head2 Automated Testing
 
-There a couple of testing modules specifically made for CGI::Application.
-
 L<Test::WWW::Mechanize::CGIApp> allows functional testing of a CGI::App-based project
 without starting a web server. L<Test::WWW::Mechanize> could be used to test the app
 through a real web server.
-
-L<Test::WWW::Selenium::CGIApp> is similar, but uses Selenium for the testing,
-meaning that a local web-browser would be used, allowing testing of websites
-that contain JavaScript.
 
 Direct testing is also easy. CGI::Application will normally print the output of it's
 run modes directly to STDOUT. This can be suppressed with an environment variable,
