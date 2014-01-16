@@ -1,4 +1,3 @@
-
 package TestApp;
 
 use strict;
@@ -16,19 +15,20 @@ sub setup {
 	$self->mode_param('test_rm');
 
 	$self->run_modes(
-		'basic_test'		         => \&basic_test,
-		'redirect_test'		         => \&redirect_test,
-		'cookie_test'		         => \&cookie_test,
-		'tmpl_test'		             => \&tmpl_test,
-		'tmpl_badparam_test'	     => \&tmpl_badparam_test,
-    'props_before_redirect_test' => \&props_before_redirect_test,
-    'header_props_twice_nomerge'    => \&header_props_twice_nomerge,
- 		'header_add_arrayref_test'		=> \&header_add_arrayref_test,
- 		'header_props_before_header_add'		=> \&header_props_before_header_add,
- 		'header_add_after_header_props'		=> \&header_add_after_header_props,
+		'basic_test'			  => \&basic_test,
+		'redirect_test'			  => \&redirect_test,
+		'cookie_test'			  => \&cookie_test,
+		'tmpl_test'			  => \&tmpl_test,
+		'tmpl_badparam_test'		  => \&tmpl_badparam_test,
+		'props_before_redirect_test'	  => \&props_before_redirect_test,
+		'header_props_twice_nomerge'	  => \&header_props_twice_nomerge,
+ 		'header_add_arrayref_test'	  => \&header_add_arrayref_test,
+ 		'header_props_before_header_add'  => \&header_props_before_header_add,
+ 		'header_add_after_header_props'	  => \&header_add_after_header_props,
 
-    'dump_txt'    => 'dump',
-		'eval_test'		=> 'eval_test',
+		'dump_htm'  => 'dump_html',
+		'dump_txt'  => 'dump',
+		'eval_test' => 'eval_test',
 	);
 
 	$self->param('last_orm', 'setup');
