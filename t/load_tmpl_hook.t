@@ -8,7 +8,7 @@ $ENV{CGI_APP_RETURN_ONLY} = 1;
 my $app = CGI::Application->new();
 my $out = $app->run;
 
-like($out, qr/start/, "normal app output contains start");
+like($out, qr/Error - No runmodes specified/, "normal app output contains start");
 unlike($out, qr/load_tmpl_hook/, "normal app output doesn't contain load_tmpl_hook");
 
  {
