@@ -7,7 +7,8 @@ my $build = Module::Build->new
        'CGI'            => 0, 
        'HTML::Template' => 0,
        'Test::More'     => 0.47,
-	   'Carp'		    => 0,
+       'Test::Requires' => 0,
+       'Carp'		=> 0,
        'Class::ISA'     => 0,
        },
     recommends => {
