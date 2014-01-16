@@ -50,7 +50,7 @@ sub response_like {
 {
 	
 	my $app = TestApp->new();
-	$app->query(CGI->new({'test_rm' => 'dump_html'}));
+	$app->query(CGI->new({'test_rm' => 'dump_htm'}));
 
 	response_like(
 		$app,
