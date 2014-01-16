@@ -379,6 +379,27 @@ sub dump_html {
 }
 
 
+sub no_runmodes {
+
+	my $self   = shift;
+	my $query  = $self->query();
+	
+	# If no runmodes specified by app return error message 
+	my $current_runmode = $self->get_current_runmode();
+	my $query_params = $query->Dump;
+	
+	my $output = qq{
+		<h2>Error - No runmodes specified.</h2>
+		<p>Runmode called: $current_runmode"</p>
+		<p>Query paramaters:</p> $query_params
+		<p>Your application has not specified any runmodes.</p>
+		<p>Please read the <a href="http://search.cpan.org/~markstos/CGI-Appli
+		cation/">CGI::Application</a> documentation.</p>
+	};
+	return $output;
+}
+
+
 sub header_add {
 	my $self = shift;
 	return $self->_header_props_update(\@_,add=>1);
@@ -533,7 +554,7 @@ sub run_modes {
 	my (@data) = (@_);
 
 	# First use?  Create new __RUN_MODES!
-    $self->{__RUN_MODES} = { 'start' => 'dump_html' } unless (exists($self->{__RUN_MODES}));
+	$self->{__RUN_MODES} = { 'start' => 'no_runmodes' } unless (exists($self->{__RUN_MODES}));
 
 	my $rr_m = $self->{__RUN_MODES};
 
