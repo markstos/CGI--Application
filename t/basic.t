@@ -1,6 +1,5 @@
-
 use strict;
-use Test::More tests => 110;
+use Test::More tests => 112;
 
 BEGIN{use_ok('CGI::Application');}
 
@@ -28,7 +27,8 @@ sub response_like {
 }
 
 # Instantiate CGI::Application
-# run() CGI::Application object.	Expect header + output dump_html()
+# run() CGI::Application object.
+# Expect header + output no_runmodes()
 {
 	my $app = CGI::Application->new();
 	isa_ok($app, 'CGI::Application');
@@ -39,9 +39,27 @@ sub response_like {
 	response_like(
 		$app,
 		qr{^Content-Type: text/html},
-		qr/Query Environment:/,
+		qr/Error - No runmodes specified./,
 		'base class response',
 	);
+}
+
+# Instantiate CGI::Application
+# run() CGI::Application sub-class. 
+# Expect header + output dump_html()
+{
+	
+	my $app = TestApp->new();
+	$app->query(CGI->new({'test_rm' => 'dump_html'}));
+
+	response_like(
+		$app,
+		qr{^Content-Type: text/html},
+		qr/Query Environment:/,
+		'dump_html class response'
+
+	);
+	
 }
 
 # Instantiate CGI::Application sub-class.
