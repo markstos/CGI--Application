@@ -23,7 +23,7 @@ sub response_like {
 	my $output = $app->run;
 	my ($header, $body) = split /\r\n\r\n/m, $output;
 	like($header, $header_re, "$comment (header match)");
-	like($body,	 $body_re,	 "$comment (body match)");
+	like($body, $body_re, "$comment (body match)");
 }
 
 # Instantiate CGI::Application
