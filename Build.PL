@@ -4,12 +4,12 @@ my $build = Module::Build->new
    module_name => 'CGI::Application',
    license => 'perl',
    requires => {
-	    'Module::Build'	 => 0,
+	    'Module::Build'  => 0,
 	    'CGI'            => 0, 
 	    'HTML::Template' => 0,
 	    'Test::More'     => 0.47,
 	    'Test::Requires' => 0, 
-	    'Carp'		     => 0,
+	    'Carp'	     => 0,
 	    'Class::ISA'     => 0,
        },
     recommends => {
