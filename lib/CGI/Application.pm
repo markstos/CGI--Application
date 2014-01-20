@@ -1720,7 +1720,8 @@ Useful for outputting to STDERR.
 The dump_html() method is a debugging function which will return
 a chunk of text which contains all the environment and web form
 data of the request, formatted nicely for human readability via
-a web browser.  Useful for outputting to a browser.
+a web browser.  Useful for outputting to a browser. Please consider
+the security implications of using this in production code.
 
 =head3 error_mode()
 
