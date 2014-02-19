@@ -353,7 +353,7 @@ sub dump {
 sub dump_html {
 	my $self   = shift;
 	my $query  = $self->query();
-	my $output = '';
+	my $output = $query->start_html;
 
 	# Dump run-mode
 	my $current_runmode = $self->get_current_runmode();
@@ -374,7 +374,7 @@ sub dump_html {
 		);
 	}
 	$output .= "</ol>\n";
-
+	$output .= $query->end_html();
 	return $output;
 }
 
