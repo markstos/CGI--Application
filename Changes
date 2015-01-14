@@ -5,7 +5,7 @@ Revision history for CGI::Application.
     - A new runmode named 'no_runmodes' is now called rather than 'dump_html'
       when no run modes are specified. This returns a message to the user 
       reporting the problem, without exposing anything which may raise 
-      security concerns. 
+      security concerns.  
 
       This fixes RT #84403 / CVE-2013-7329
       (Martin McGrath)
