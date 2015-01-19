@@ -681,8 +681,8 @@ sub _send_headers {
 	my $type = $self->header_type;
 
     return
-        $type eq 'redirect' ? $q->redirect( $self->header_props )
-      : $type eq 'header'   ? $q->header  ( $self->header_props )
+        $type eq 'redirect' ? $q->redirect( $self->{__HEADER_PROPS} )
+      : $type eq 'header'   ? $q->header  ( $self->{__HEADER_PROPS} )
       : $type eq 'none'     ? ''
       : croak "Invalid header_type '$type'"
 }
@@ -694,8 +694,8 @@ sub _send_psgi_headers {
 	my $type = $self->header_type;
 
     return
-        $type eq 'redirect' ? $q->psgi_redirect( $self->header_props )
-      : $type eq 'header'   ? $q->psgi_header  ( $self->header_props )
+        $type eq 'redirect' ? $q->psgi_redirect( $self->{__HEADER_PROPS} )
+      : $type eq 'header'   ? $q->psgi_header  ( $self->{__HEADER_PROPS} )
       : $type eq 'none'     ? ''
       : croak "Invalid header_type '$type'"
 
