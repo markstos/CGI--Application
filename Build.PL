@@ -28,7 +28,7 @@ my $build = Module::Build->new
    },
    meta_merge           => {
       resources => {
-         repository => 'https://github.com/markstos/CGI--Application',
+         repository => 'https://github.com/MartinMcGrath/CGI--Application',
       },
    },
   );
