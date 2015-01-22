@@ -3,8 +3,8 @@ use Carp;
 use strict;
 use Class::ISA;
 use Scalar::Util;
-g
-$CGI::Application::VERSION = '4.51';
+
+$CGI::Application::VERSION = '4.50_';
 
 my %INSTALLED_CALLBACKS = (
 #	hook name          package                 sub
@@ -358,7 +358,7 @@ sub dump_html {
 	# Dump run-mode
 	my $current_runmode = $self->get_current_runmode();
 	$output .= "<p>Current Run-mode:
-'<strong>$current_runmode</strong>'</p>\n";
+	'<strong>$current_runmode</strong>'</p>\n";
 
 	# Dump Params
 	$output .= "<p>Query Parameters:</p>\n";
@@ -394,8 +394,8 @@ sub no_runmodes {
 		<p>Runmode called: $current_runmode"</p>
 		<p>Query paramaters:</p> $query_params
 		<p>Your application has not specified any runmodes.</p>
-		<p>Please read the <a href="http://search.cpan.org/~markstos/CGI-Appli
-		cation/">CGI::Application</a> documentation.</p>
+		<p>Please read the <a href="https://metacpan.org/pod/CGI::Application">
+		CGI::Application</a> documentation.</p>
 	};
 	
 	$output .= $query->end_html();
