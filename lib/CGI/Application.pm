@@ -3,7 +3,7 @@ use Carp;
 use strict;
 use Class::ISA;
 use Scalar::Util;
-
+g
 $CGI::Application::VERSION = '4.51';
 
 my %INSTALLED_CALLBACKS = (
@@ -2533,7 +2533,7 @@ B<Source Code>
 
 This project is managed using git and is available on Github:
 
-    https://github.com/markstos/CGI--Application
+    L<https://github.com/MartinMcGrath/CGI--Application>
 
 =head1 SEE ALSO
 
