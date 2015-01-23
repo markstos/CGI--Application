@@ -2572,8 +2572,9 @@ they provide to the Perl community!
 
 Jesse Erlbaum <jesse@erlbaum.net>
 
-Mark Stosberg has served as a co-maintainer since version 3.2, with the help of
-the numerous contributors documented in the Changes file.
+Mark Stosberg has served as a co-maintainer since version 3.2, Martin McGrath 
+became a co-maintainer as of version 4.51, with the help of the numerous 
+contributors documented in the Changes file.
 
 =head1 CREDITS
 
