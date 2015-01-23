@@ -29,6 +29,7 @@ my $build = Module::Build->new
    meta_merge           => {
       resources => {
          repository => 'https://github.com/MartinMcGrath/CGI--Application',
+         bugtracker => 'https://github.com/MartinMcGrath/CGI--Application/issues'
       },
    },
   );
