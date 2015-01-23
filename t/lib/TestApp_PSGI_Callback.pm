@@ -28,12 +28,17 @@ sub callback_subref {
     my $self = shift;
 
     $self->header_props(-type => 'text/plain');
+
     return sub {
-       my $writer = shift;
+       my $respond = shift;
+
+       #my $writer = $respond->([200, ['Content-Type' => 'text/plain']]);  # this method is fine
+       my $writer = $respond->([ $self->send_psgi_headers ]);              # using cgi-app header props
        foreach my $i (1..10) {
            #sleep 1;
            $writer->write("check $i: " . time . "\n");
-		}
+       }
+       $writer->close;
 	};
 }
 

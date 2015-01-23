@@ -5,7 +5,7 @@ use Test::Requires qw(Plack::Loader LWP::UserAgent);
 use Test::TCP;
 
 use TestApp_PSGI_Callback;
-use CGI::Application::PSGI;
+use CGI::PSGI;
 
 my $test_file = 't/test_file_to_stream.txt';
 
@@ -27,7 +27,6 @@ test_tcp(
         	my $env = shift;
         	return sub {
   		        my $respond = shift;
-	   	     	use Data::Dumper;
 	        	my $w = $respond->([ 200, ['X-Foo' => 'bar', 'Content-Type' => 'text/plain'] ]);
 	        	foreach my $i (1..5) {
 	            	#sleep 1;

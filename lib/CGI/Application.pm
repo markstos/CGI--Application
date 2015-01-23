@@ -199,7 +199,7 @@ sub run {
 
 	my $return_value;
 	if ($self->{__IS_PSGI}) {
-		my ($status, $headers) = $self->_send_psgi_headers();
+		my ($status, $headers) = $self->send_psgi_headers();
 
 		if (ref($body) eq 'GLOB' || (Scalar::Util::blessed($body) && $body->can('getline'))) {
 			# body a file handle - return it
@@ -207,14 +207,8 @@ sub run {
 		}
 		elsif (ref($body) eq 'CODE') {
 
-			# body is a subref, or an explicit callback method is set
-			$return_value = sub {
-				my $respond = shift;
-
-				my $writer = $respond->([ $status, $headers ]);
-
-				&$body($writer);
-			};
+			# body is a subref
+			$return_value = $body;
 		}
 		else {
 
@@ -688,7 +682,7 @@ sub _send_headers {
 }
 
 # return a 2 element array modeling the first PSGI redirect values: status code and arrayref of header pairs
-sub _send_psgi_headers {
+sub send_psgi_headers {
 	my $self = shift;
 	my $q    = $self->query;
 	my $type = $self->header_type;
@@ -1140,14 +1134,17 @@ The PSGI Specification allows for returning a file handle or a subroutine refere
 
     sub returning_a_subref {
         my $self = shift;
-
         $self->header_props(-type => 'text/plain');
+
         return sub {
-           my $writer = shift;
+           my $respond = shift;
+           my $writer = $respond->([ $self->send_psgi_headers ]);
+
            foreach my $i (1..10) {
                #sleep 1;
                $writer->write("check $i: " . time . "\n");
-    		}
+           }
+           $writer->close;
     	};
     }
 
@@ -2092,6 +2089,15 @@ changes to the mode under specific conditions.
 B<Note:>  The prerun_mode() method may ONLY be called in the context of
 a cgiapp_prerun() method.  Your application will die() if you call
 prerun_mode() elsewhere, such as in setup() or a run mode method.
+
+=head3 send_psgi_headers()
+
+    my ($http_status_code, $headers_aref) = $self->send_psgi_headers;
+
+This method generates PSGI headers based on header_type and header_props. It is
+normally called automatically for you. However, you may call it directly if you
+are using the coderef return value option, and writing your own callback to
+generate the headers.
 
 =head2 Dispatching Clean URIs to run modes
 
