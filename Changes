@@ -1,13 +1,17 @@
 Revision history for CGI::Application.
 
-4.50_50 (developer releae) Fri Jun 23, 2014
+4.50_50 (developer release) Fri Jun 23, 2014
+
+    - Add PSGI Streaming methods (Mike Tonks)
+    - Added CGI.pm dependency, it is no longer a core module (Martin McGrath)
 
     [BUGS]
     - Fixed rt #84403 - Security problem: missing "start" mode dumps ENV to output page. (Martin McGrath)
     - Ensure dump_html() returns valid HTML. (Martin McGrath)
 	
     [DOCUMENTATION]
-    - Changes to repository URL and bugtracker. Added Martin McGrath as a co-maintainer
+    - Changes to repository URL and bug tracker, added Martin McGrath as a co-maintainer
+    - Typo fixes (David Steinbrunner)
 
 4.50 Thu Jun 16, 2011
 
