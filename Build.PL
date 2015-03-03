@@ -11,6 +11,7 @@ my $build = Module::Build->new
 	    'Test::Requires' => 0, 
 	    'Carp'	     => 0,
 	    'Class::ISA'     => 0,
+	    'Scalar::Util'   => 0,
        },
     recommends => {
         CGI::PSGI       => 0.09, # If you want to use run_as_psgi()
