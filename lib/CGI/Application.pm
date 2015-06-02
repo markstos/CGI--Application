@@ -244,10 +244,10 @@ sub psgi_app {
     return sub {
         my $env = shift;
 
-        if (not defined $args_to_new->{QUERY}) {
+        #if (not defined $args_to_new->{QUERY}) {
             require CGI::PSGI;
             $args_to_new->{QUERY} = CGI::PSGI->new($env);
-        }
+        #}
 
         my $webapp = $class->new($args_to_new);
         return $webapp->run_as_psgi;
