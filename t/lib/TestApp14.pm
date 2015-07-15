@@ -13,7 +13,7 @@ sub start {
     my $self = shift;
 
     my $t = $self->load_tmpl('test.tmpl');                                  
-    $t->param(ping => $self->query->param('message'));                      
+    $t->param(ping => scalar $self->query->param('message'));                      
                                                                                
     return $t->output();
 }

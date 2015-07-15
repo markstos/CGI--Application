@@ -243,11 +243,12 @@ sub psgi_app {
 
     return sub {
         my $env = shift;
-
-        if (not defined $args_to_new->{QUERY}) {
+	
+	# PR from alter https://github.com/markstos/CGI--Application/pull/17
+        #if (not defined $args_to_new->{QUERY}) {
             require CGI::PSGI;
             $args_to_new->{QUERY} = CGI::PSGI->new($env);
-        }
+        #}
 
         my $webapp = $class->new($args_to_new);
         return $webapp->run_as_psgi;
@@ -332,10 +333,11 @@ sub dump {
 	$output .= "Current Run mode: '$current_runmode'\n";
 
 	# Dump Params
+	# updated ->param to ->multi_param to silence CGI.pm warning
 	$output .= "\nQuery Parameters:\n";
-	my @params = $self->query->param();
+	my @params = $self->query->multi_param();
 	foreach my $p (sort(@params)) {
-		my @data = $self->query->param($p);
+		my @data = $self->query->multi_param($p);
 		my $data_str = "'".join("', '", @data)."'";
 		$output .= "\t$p => $data_str\n";
 	}
