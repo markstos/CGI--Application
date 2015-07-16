@@ -19,7 +19,7 @@ http://www.cgi-app.org/
 
 #### How do I install it?
 
-To install this module, cd to the directory that contains this README
+To install this module, `cd` to the directory that contains this README
 file and type the following:
 
 ```

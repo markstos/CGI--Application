@@ -1,8 +1,12 @@
 Revision history for CGI::Application.
 
-4.51
+4.50.51 2015-07-16
 
-    No changes from 4.50_50 developer release    
+    [BUGS]
+    - Create new CGI::PSGI object unconditionally in psgi_app()/Bug #88506 (allter)
+    
+    [DOCUMENTATION]
+    - Introduced Travis CI (Martin McGrath)
 
 4.50_50 (developer release) Fri Jun 23, 2014
 
