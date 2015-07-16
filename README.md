@@ -1,0 +1,55 @@
+# CGI::Application - Framework for building reusable web-applications
+
+![Current build status](https://travis-ci.org/MartinMcGrath/CGI--Application.svg?branch=master)
+
+CGI::Application is intended to make it easier to create sophisticated,
+reusable web-based applications. This module implements a methodology which,
+if followed, will make your web software easier to design, easier to
+document, easier to write, and easier to evolve.
+
+Download site for CGI::Application:
+
+  http://search.cpan.org/dist/CGI-Application/
+
+See the 'Changes' file for recent changes.
+
+For more information about this module, please see our website at:
+
+http://www.cgi-app.org/
+
+#### How do I install it?
+
+To install this module, cd to the directory that contains this README
+file and type the following:
+
+```
+perl Makefile.PL
+make
+make test
+make install
+```
+
+CGI::Application builds on standard, non-proprietary technologies and
+techniques, such as the Common Gateway Interface and Lincoln D. Stein's
+excellent CGI.pm module.  CGI::Application judiciously avoids employing
+technologies and techniques which would bind a developer to any one set
+of tools, operating system or web server.
+
+The guiding philosophy behind CGI::Application is that a web-based
+application can be organized into a specific set of "Run Modes." Each
+Run Mode is roughly analogous to a single screen (a form, some output, etc).
+All the Run Modes are managed by a single "Application Module" which is a
+Perl module. In your web server's document space there is an "Instance
+Script" which is called by the web server as a CGI (or an Apache::Registry
+script if you're using Apache + mod_perl).
+
+CGI::Application is an Object-Oriented Perl module which implements an
+Abstract Class. It is not intended that this package be instantiated
+directly. Instead, it is intended that your Application Module will be
+implemented as a Sub-Class of CGI::Application.
+
+If you have any questions, comments, bug reports or feature suggestions,
+post them to the support mailing list!  To join the mailing list, simply
+send a blank message to "cgiapp-subscribe@lists.erlbaum.net".
+
+We also have an IRC channel named #cgiapp on irc.perl.org.
