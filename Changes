@@ -1,6 +1,6 @@
 Revision history for CGI::Application.
 
-4.50.51 2015-07-16
+4.50.51 (developer release) 2015-07-16
 
     [BUGS]
     - Create new CGI::PSGI object unconditionally in psgi_app()/Bug #88506 (allter)
