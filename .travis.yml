@@ -2,7 +2,7 @@ language: perl
 before_install:
     - cpanm --notest CGI HTML::Template CGI::PSGI
 perl:
-  = "5.23":
+  - "5.23"
   - "5.22"
   - "5.20"
   - "5.18"
