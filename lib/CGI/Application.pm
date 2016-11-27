@@ -60,6 +60,11 @@ sub new {
 	if (exists($rprops->{QUERY})) {
 		$self->query($rprops->{QUERY});
 	}
+	
+	# Set the ENV variable for PSGI Application
+	if (exists($rprops->{ENV})) {
+		$self->env($rprops->{ENV});
+	}
 
 	# Set up init param() values
 	if (exists($rprops->{PARAMS})) {
@@ -258,6 +263,8 @@ sub psgi_app {
 sub run_as_psgi {
     my $self = shift;
     $self->{__IS_PSGI} = 1;
+    my $env = shift;
+    $self->env($env);
 
     # Run doesn't officially support any args, but pass them through in case some sub-class uses them.
     return $self->run(@_);
@@ -535,7 +542,17 @@ sub delete {
 	delete $self->{__PARAMS}->{$param};
 }
 
-
+sub env {
+	my $self = shift;
+	my ($env) = @_;
+	
+	# If data is provided, set it!
+	if (defined($env)) {
+		$self->{__ENV} = $env;
+	}
+	
+	return $self->{__ENV};
+}
 sub query {
 	my $self = shift;
 	my ($query) = @_;
