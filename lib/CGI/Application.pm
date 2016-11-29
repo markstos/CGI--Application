@@ -1035,6 +1035,11 @@ CGI::Application will instantiate its own CGI.pm query object.
 Under certain conditions, it might be useful to be able to use
 one which has already been created.
 
+B<ENV> - This optional parameter allows you to save the PSGI environment hash. 
+This is useful, because you can later get this environment hash in your Application
+Module with the method $self->env which could be important for using Plack::Middlewares 
+and similiar.
+
 B<PARAMS> - This parameter, if used, allows you to set a number
 of custom parameters at run-time.  By passing in different
 values in different instance scripts which use the same application
@@ -1101,7 +1106,7 @@ It's possible that we'll change from CGI::PSGI to a different-but-compatible
 query object for PSGI support in the future, perhaps if CGI.pm adds native
 PSGI support.
 
-=head3 run_as_psgi()
+=head3 run_as_psgi($env)
 
  my $psgi_aref = $webapp->run_as_psgi;
 
@@ -1131,6 +1136,11 @@ Note that calling C<< run_as_psgi >> only handles the I<output> portion of the
 PSGI spec. to handle the input, you need to use a CGI.pm-like query object that
 is PSGI-compliant, such as L<CGI::PSGI>. This query object must provide L<psgi_header>
 and L<psgi_redirect> methods.
+
+You can pass the PSGI enivornment hash as first argument to the run_as_psgi. This 
+is the same as passing C<< {ENV => $env} >> to the method C<< new >> or C<< as_psgi >>.
+The benefit of this is that you can later in your Application Module easily access to this 
+PSGI environment hash by C<< $self->env >>
 
 The final result might look like this:
 
