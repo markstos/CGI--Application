@@ -251,6 +251,7 @@ sub psgi_app {
 	
 	# PR from alter https://github.com/markstos/CGI--Application/pull/17
         #if (not defined $args_to_new->{QUERY}) {
+            $args_to_new->{ENV} = $env;
             require CGI::PSGI;
             $args_to_new->{QUERY} = CGI::PSGI->new($env);
         #}
@@ -1099,8 +1100,10 @@ support to it.
 
 The simplest way to create and return a PSGI-compatible coderef. Pass in
 arguments to a hashref just as would to new. This returns a PSGI-compatible
-coderef, using L<CGI:::PSGI> as the query object. To use a different query
-object, construct your own object using C<< run_as_psgi() >>, as shown below.
+coderef, using L<CGI:::PSGI> as the query object and saving the PSGI 
+environment hash in the key ENV so that it can be accesed with C<< $self->env >>. 
+To use a different query object, construct your own object using C<< run_as_psgi() >>, 
+as shown below.
 
 It's possible that we'll change from CGI::PSGI to a different-but-compatible
 query object for PSGI support in the future, perhaps if CGI.pm adds native
