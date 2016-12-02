@@ -1578,6 +1578,16 @@ you can pass it to c<query()> like this:
     $webapp->query($new_query_object);
     my $q = $webapp->query(); # now uses $new_query_object
 
+=head3 env()
+
+    my $q = $webapp->env();
+    my $session = Plack::Session->new($env);
+
+This method retrieves the PSGI environment hash which has been created
+by instantiating your Application Module as a psgi script. This is important 
+for using Plack::Middlewares, such as Plack::Middleware::Session in the 
+example above.
+
 =head3 run_modes()
 
     # The common usage: an arrayref of run mode names that exactly match subroutine names
