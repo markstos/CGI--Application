@@ -8,9 +8,7 @@ Examples/Mailform/mailform.html
 Examples/Mailform/thankyou.html
 GPL
 MANIFEST
-META.yml
 Build.PL
-Makefile.PL
 README
 t/basic.t
 t/default_runmode.t
