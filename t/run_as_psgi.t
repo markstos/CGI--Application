@@ -35,14 +35,32 @@ sub setup {
 }
 
 package main;
+# Run as PSGI Application directly
+{
+  my $app = TestApp->new( QUERY => CGI::PSGI->new($env) );
 
-my $app = TestApp->new( QUERY => CGI::PSGI->new($env) );
+  my $response = $app->run_as_psgi;
 
-my $response = $app->run_as_psgi;
+  is_deeply $response, [
+      '200',
+      [ 'Content-Type' => 'text/html; charset=ISO-8859-1' ],
+      [ 'Hello World' ],
+  ],
+  "run_as_psgi: reality check basic response";
+}
 
-is_deeply $response, [
-    '200',
-    [ 'Content-Type' => 'text/html; charset=ISO-8859-1' ],
-    [ 'Hello World' ],
-],
-"run_as_psgi: reality check basic response";
+# Retrieve the PGSI app as a subroutine
+{
+  my $app = TestApp->new( QUERY => CGI::PSGI->new($env) );
+
+  my $psgi_app = $app->psgi_app;
+
+  my $response = $psgi_app->();
+
+  is_deeply $response, [
+      '200',
+      [ 'Content-Type' => 'text/html; charset=ISO-8859-1' ],
+      [ 'Hello World' ],
+  ],
+  "run_as_psgi: reality check basic response";
+}
